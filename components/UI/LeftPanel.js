@@ -31,20 +31,27 @@ export default function LeftPanelContent(props) {
     //     socket: state.socket,
     // }));
 
-    const {
-        cameraMode, setCameraMode,
-        teleport, setTeleport,
-        playerLocation, setPlayerLocation,
-        maxHeight, setMaxHeight,
-        shift,
-        characterAnimation, setCharacterAnimation,
-        distance,
-        obstacles,
-        setObstacles,
-        debug, setDebug,
-        highScore
-        // touchControls, setTouchControls
-    } = useGameStore()
+    const cameraMode = useGameStore(state => state.cameraMode);
+    const setCameraMode = useGameStore(state => state.setCameraMode);
+    // const teleport = useGameStore(state => state.teleport);
+    const setTeleport = useGameStore(state => state.setTeleport);
+    // const playerLocation = useGameStore(state => state.playerLocation);
+    // const setPlayerLocation = useGameStore(state => state.setPlayerLocation);
+    const maxHeight = useGameStore(state => state.maxHeight);
+    // const setMaxHeight = useGameStore(state => state.setMaxHeight);
+    // const shift = useGameStore(state => state.shift);
+    const characterAnimation = useGameStore(state => state.characterAnimation);
+    const setCharacterAnimation = useGameStore(state => state.setCharacterAnimation);
+    const distance = useGameStore(state => state.distance);
+    const obstacles = useGameStore(state => state.obstacles);
+    // const setObstacles = useGameStore(state => state.setObstacles);
+    const debug = useGameStore(state => state.debug);
+    const setDebug = useGameStore(state => state.setDebug);
+    const highScore = useGameStore(state => state.highScore);
+    const saferMode = useGameStore(state => state.saferMode);
+    const setSaferMode = useGameStore(state => state.setSaferMode);
+    // const touchControls = useGameStore(state => state.touchControls);
+    // const setTouchControls = useGameStore(state => state.setTouchControls);
 
     return (
         <div className='w-100'>
@@ -130,11 +137,12 @@ export default function LeftPanelContent(props) {
                             {/* <div>Z: {playerLocation.z}</div> */}
 
                             <div>Score: {distance.toFixed(0)}</div>
-                            <div className="mb-2">High Score: {(+highScore || 0)?.toFixed(0)}</div>
+                            <div className="mb-0">High Score: {(+highScore || 0)?.toFixed(0)}</div>
 
                             {/* <div>Shift: {shift ? 'True' : 'False'}</div> */}
                             
-                            <div className="small">Character Animation: {characterAnimation ? characterAnimation : 'None'}</div>
+                            {/* <div className="small">Character Animation: {characterAnimation ? characterAnimation : 'None'}</div> */}
+
                         </div>
 
                         {debug &&
@@ -199,6 +207,47 @@ export default function LeftPanelContent(props) {
                                 }}
                             >
                                 <i className="fad fa-redo"></i>
+                                On
+                            </ArticlesButton>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            {/* Safer Mode */}
+            <div
+                className="card card-articles card-sm"
+            >
+                <div className="card-body">
+
+                    <div className="small text-muted">Safer Mode</div>
+
+                    <div className='d-flex flex-column'>
+
+                        <div>
+                            <ArticlesButton
+                                size="sm"
+                                className="w-50"
+                                active={!saferMode}
+                                onClick={() => {
+                                    setSaferMode(false)
+                                }}
+                            >
+                                <i className="fad fa-flower"></i>
+                                Off
+                            </ArticlesButton>
+
+                            <ArticlesButton
+                                size="sm"
+                                className="w-50"
+                                active={saferMode}
+                                onClick={() => {
+                                    setSaferMode(true)
+                                }}
+                            >
+                                <i className="fad fa-skull"></i>
                                 On
                             </ArticlesButton>
                         </div>

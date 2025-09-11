@@ -10,8 +10,8 @@ export const useStore = create()(
 
     }),
     {
-      name: 'accounts-site-storage', // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+      name: 'school-run-game-storage', // name of the item in the storage (must be unique)
+      // storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
     },
   ),
 )

@@ -130,6 +130,14 @@ export const useGameStore = create((set) => ({
             gameState: newValue
         }))
     },
+
+    saferMode: true,
+    setSaferMode: (newValue) => {
+        set((prev) => ({
+            saferMode: newValue
+        }))
+    },
+
 }))
 
 export const useControlsStore = create((set) => ({

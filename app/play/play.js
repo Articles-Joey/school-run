@@ -385,7 +385,9 @@ export default function SchoolRunGamePage() {
                         >
 
                             <div className="card-header text-center">
-                                <h3 className='mb-0'>{distance.toFixed(0)} ft - You're Dead!</h3>
+                                <h3 className='mb-0'>
+                                    {`${distance.toFixed(0)} ft - You're Dead!`}
+                                </h3>
                             </div>
 
                             <div className="card-body text-center">
