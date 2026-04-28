@@ -5,6 +5,7 @@ import { Dropdown, DropdownButton } from "react-bootstrap";
 // import ROUTES from '@/components/constants/routes';
 import { useGameStore } from "@/hooks/useGameStore";
 import ArticlesButton from "@/components/UI/Button";
+import { useStore } from "@/hooks/useStore";
 
 // import ControllerPreview from "@/components/Games/ControllerPreview";
 
@@ -13,17 +14,24 @@ import ArticlesButton from "@/components/UI/Button";
 export default function LeftPanelContent(props) {
 
     const {
-        server,
-        players,
+        // server,
+        // players,
         touchControlsEnabled,
         setTouchControlsEnabled,
-        reloadScene,
-        controllerState,
-        isFullscreen,
-        requestFullscreen,
-        exitFullscreen,
-        setShowMenu
+        // reloadScene,
+        // controllerState,
+        // isFullscreen,
+        // requestFullscreen,
+        // exitFullscreen,
+        // setShowMenu
     } = props;
+
+    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
+
+    const setSceneKey = useStore(state => state.setSceneKey);
+    const sceneKey = useStore(state => state.sceneKey);
+
+    const setShowMenu = useStore(state => state.setShowMenu);
 
     // const {
     //     socket,
@@ -48,8 +56,16 @@ export default function LeftPanelContent(props) {
     const debug = useGameStore(state => state.debug);
     const setDebug = useGameStore(state => state.setDebug);
     const highScore = useGameStore(state => state.highScore);
-    const saferMode = useGameStore(state => state.saferMode);
-    const setSaferMode = useGameStore(state => state.setSaferMode);
+
+    const safeMode = useStore((state) => state.safeMode);
+    const setSafeMode = useStore((state) => state.setSafeMode);
+    // const saferMode = useGameStore(state => state.saferMode);
+    // const setSaferMode = useGameStore(state => state.setSaferMode);
+
+    const darkMode = useStore(state => state.darkMode);
+    const toggleDarkMode = useStore(state => state.toggleDarkMode);
+    const sidebar = useStore(state => state.sidebar);
+    const toggleSidebar = useStore(state => state.toggleSidebar);
     // const touchControls = useGameStore(state => state.touchControls);
     // const setTouchControls = useGameStore(state => state.setTouchControls);
 
@@ -58,7 +74,7 @@ export default function LeftPanelContent(props) {
 
             <div className="card card-articles card-sm">
 
-                <div className="card-body">
+                <div className="card-body d-flex flex-wrap">
 
                     {/* <div className='flex-header'>
                         <div>Server: {server}</div>
@@ -88,18 +104,23 @@ export default function LeftPanelContent(props) {
                         </div>
                     } */}
 
-                    <Link
-                        href={'/'}
-                        className=""
+                    <a
+                        href={'https://github.com/Articles-Joey/school-run'}
+                        className='w-50'
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         <ArticlesButton
+                            className={`w-100`}
                             small
-                            className='w-50'
+                            onClick={() => {
+
+                            }}
                         >
-                            <i className="fad fa-arrow-alt-square-left"></i>
-                            <span>Leave Game</span>
+                            <i className="fab fa-github"></i>
+                            Github
                         </ArticlesButton>
-                    </Link>
+                    </a>
 
                     <ArticlesButton
                         small
@@ -116,6 +137,43 @@ export default function LeftPanelContent(props) {
                         {isFullscreen && <span>Exit </span>}
                         {!isFullscreen && <span><i className='fad fa-expand'></i></span>}
                         <span>Fullscreen</span>
+                    </ArticlesButton>
+
+                    <div className='w-50 d-flex'>
+                        <ArticlesButton
+                            // ref={el => elementsRef.current[4] = el}
+                            // active={activeIndex === 3}
+                            className={`w-100 flex-grow-1`}
+                            small
+                            onClick={() => {
+                                setShowSettingsModal(true)
+                            }}
+                        >
+                            <i className="fad fa-cog"></i>
+                            Settings
+                        </ArticlesButton>
+                        <ArticlesButton
+                            // ref={el => elementsRef.current[4] = el}
+                            // active={activeIndex === 3}
+                            className={`flex-grow-0`}
+                            small
+                            onClick={() => {
+                                toggleDarkMode()
+                            }}
+                        >
+                            {darkMode ? <i className="fad fa-moon"></i> : <i className="fad fa-sun"></i>}
+                            {/* <i className="fad fa-sun"></i> */}
+                        </ArticlesButton>
+                    </div>
+
+                    <ArticlesButton
+                        size="sm"
+                        className="w-50"
+                        active={sidebar}
+                        onClick={() => toggleSidebar()}
+                    >
+                        <i className="fad fa-bars"></i>
+                        Sidebar
                     </ArticlesButton>
 
                 </div>
@@ -140,7 +198,7 @@ export default function LeftPanelContent(props) {
                             <div className="mb-0">High Score: {(+highScore || 0)?.toFixed(0)}</div>
 
                             {/* <div>Shift: {shift ? 'True' : 'False'}</div> */}
-                            
+
                             {/* <div className="small">Character Animation: {characterAnimation ? characterAnimation : 'None'}</div> */}
 
                         </div>
@@ -230,9 +288,9 @@ export default function LeftPanelContent(props) {
                             <ArticlesButton
                                 size="sm"
                                 className="w-50"
-                                active={!saferMode}
+                                active={!safeMode}
                                 onClick={() => {
-                                    setSaferMode(false)
+                                    setSafeMode(false)
                                 }}
                             >
                                 <i className="fad fa-flower"></i>
@@ -242,9 +300,9 @@ export default function LeftPanelContent(props) {
                             <ArticlesButton
                                 size="sm"
                                 className="w-50"
-                                active={saferMode}
+                                active={safeMode}
                                 onClick={() => {
-                                    setSaferMode(true)
+                                    setSafeMode(true)
                                 }}
                             >
                                 <i className="fad fa-skull"></i>
@@ -271,7 +329,9 @@ export default function LeftPanelContent(props) {
                             <ArticlesButton
                                 size="sm"
                                 className="w-50"
-                                onClick={reloadScene}
+                                onClick={() => {
+                                    setSceneKey(sceneKey + 1)
+                                }}
                             >
                                 <i className="fad fa-redo"></i>
                                 Reload Game
@@ -280,7 +340,9 @@ export default function LeftPanelContent(props) {
                             <ArticlesButton
                                 size="sm"
                                 className="w-50"
-                                onClick={reloadScene}
+                                onClick={() => {
+                                    setSceneKey(sceneKey + 1)
+                                }}
                             >
                                 <i className="fad fa-redo"></i>
                                 Reset Camera
@@ -519,7 +581,7 @@ export default function LeftPanelContent(props) {
                 </div>
             </div>
 
-            {controllerState?.connected &&
+            {/* {controllerState?.connected &&
                 <div className="panel-content-group p-0 text-dark">
 
                     <div className="p-1 border-bottom border-dark">
@@ -541,7 +603,7 @@ export default function LeftPanelContent(props) {
                         </ArticlesButton>
                     </div>
 
-                    {/* {showControllerState && <div className='p-3'>
+                    {showControllerState && <div className='p-3'>
 
                         <ControllerPreview
                             controllerState={controllerState}
@@ -550,10 +612,10 @@ export default function LeftPanelContent(props) {
                             maxHeight={300}
                             showPreview={true}
                         />
-                    </div>} */}
+                    </div>}
 
                 </div>
-            }
+            } */}
 
         </div>
     )

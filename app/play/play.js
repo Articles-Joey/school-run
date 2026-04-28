@@ -12,7 +12,7 @@ import dynamic from 'next/dynamic'
 
 import ArticlesButton from '@/components/UI/Button';
 
-import useFullscreen from '@/hooks/useFullScreen';
+import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 import { useControllerStore } from '@/hooks/useControllerStore';
 // import ControllerPreview from '@/components/Games/ControllerPreview';
 
@@ -23,6 +23,7 @@ import LeftPanelContent from '@/components/UI/LeftPanel';
 import { useSocketStore } from '@/hooks/useSocketStore';
 import { useGameStore } from '@/hooks/useGameStore';
 import SchoolRunContentWarning from '@/components/ContentWarning';
+import { useStore } from '@/hooks/useStore';
 
 const GameCanvas = dynamic(() => import('@/components/GameCanvas'), {
     ssr: false,
@@ -68,6 +69,9 @@ export default function SchoolRunGamePage() {
     const { server } = params
 
     const canvasGameRef = useRef(null);
+
+    const showMenu = useStore(state => state.showMenu);
+    const setShowMenu = useStore(state => state.setShowMenu);
 
     const {
         cameraMode, setCameraMode,
@@ -118,11 +122,11 @@ export default function SchoolRunGamePage() {
 
 
     const { controllerState, setControllerState } = useControllerStore()
-    const [showControllerState, setShowControllerState] = useState(false)
+    // const [showControllerState, setShowControllerState] = useState(false)
 
     // const [ cameraMode, setCameraMode ] = useState('Player')
 
-    const [showMenu, setShowMenu] = useState(false)
+    // const [showMenu, setShowMenu] = useState(false)
 
     // const [touchControlsEnabled, setTouchControlsEnabled] = useState(false)
     const [touchControlsEnabled, setTouchControlsEnabled] = useLocalStorageNew("game:touchControlsEnabled", false)
@@ -279,7 +283,9 @@ export default function SchoolRunGamePage() {
 
     }, []);
 
-    const [sceneKey, setSceneKey] = useState(0);
+    // const [sceneKey, setSceneKey] = useState(0);
+    const sceneKey = useStore(state => state.sceneKey);
+    const setSceneKey = useStore(state => state.setSceneKey);
 
     // Function to handle scene reload
     const reloadScene = () => {
@@ -297,9 +303,9 @@ export default function SchoolRunGamePage() {
         setTouchControlsEnabled,
         reloadScene,
         controllerState,
-        isFullscreen,
-        requestFullscreen,
-        exitFullscreen,
+        // isFullscreen,
+        // requestFullscreen,
+        // exitFullscreen,
         setShowMenu
     }
 

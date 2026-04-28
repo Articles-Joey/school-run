@@ -28,6 +28,8 @@ import Walls from "./Walls";
 
 import { BloodSplatModel } from '@/components/Models/BloodSplat';
 import { DeadBody } from "@/components/Models/DeadBody";
+import { WetFloorSign } from "./Models/WetFloorSign";
+import { useStore } from "@/hooks/useStore";
 // import { degToRad } from "three/src/math/MathUtils.js";
 
 function Decorations(props) {
@@ -280,6 +282,8 @@ function Obstacle({ obstacle }) {
 
     }, [obstacle.position])
 
+    const safeMode = useStore((state) => state.safeMode);
+
     return (
         <group>
 
@@ -291,17 +295,24 @@ function Obstacle({ obstacle }) {
                 <mesh ref={ref}>
 
                     <group position={[0, 0, 0.5]}>
-                        <DeadBody
+
+                        {!safeMode && <DeadBody
                             // position={[-0.15 , 0, -8.5]}
                             rotation={[0, 0, 0]}
                             action="Death"
-                        />
+                        />}
+
+                        {safeMode && <WetFloorSign
+                            // rotation={[0, 0, 0]}
+                            // action="Death"
+                        />}
+
                     </group>
 
-                    <BloodSplatModel
+                    {!safeMode && <BloodSplatModel
                         position={[0, 0, 0]}
                         rotation={[0, -140 * Math.PI / 180, 0]}
-                    />
+                    />}
 
                     <boxGeometry args={[1, 1, 1]} />
                     <meshStandardMaterial

@@ -1,12 +1,11 @@
 import useSWR from "swr";
 
-import axios from "axios";
+// import axios from "axios";
 
-const fetcher = (obj) => axios.get(obj.url, {
-    params: {
-        game: obj.game,
-    }
-}).then((res) => res.data);
+const fetcher = (data) => {
+  const query = new URLSearchParams(data.params).toString();
+  return fetch(`${data.url}?${query}`).then(res => res.json());
+};
 
 const options = {
     dedupingInterval: ((1000 * 60) * 30),
@@ -19,7 +18,7 @@ const useGameScoreboard = (params) => {
         params?.game ?
             {
                 url: "/api/community/games/scoreboard",
-                game: params.game,
+                params: { game: params.game }
             }
             :
             null,

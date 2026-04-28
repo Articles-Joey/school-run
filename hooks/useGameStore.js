@@ -131,26 +131,4 @@ export const useGameStore = create((set) => ({
         }))
     },
 
-    saferMode: true,
-    setSaferMode: (newValue) => {
-        set((prev) => ({
-            saferMode: newValue
-        }))
-    },
-
-}))
-
-export const useControlsStore = create((set) => ({
-
-    touchControls: {
-        jump: false,
-        left: false,
-        right: false
-    },
-    setTouchControls: (newValue) => {
-        set((prev) => ({
-            touchControls: newValue
-        }))
-    }
-
 }))

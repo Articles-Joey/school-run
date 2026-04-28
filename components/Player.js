@@ -1,4 +1,4 @@
-import { useFrame, useThree } from "@react-three/fiber"
+import { useFrame, useStore, useThree } from "@react-three/fiber"
 import { useBox, useSphere } from "@react-three/cannon"
 import { useGLTF, useAnimations, Text } from '@react-three/drei'
 import { memo, useEffect, useRef } from "react"
@@ -17,7 +17,7 @@ import { useLocalStorageNew } from "@/hooks/useLocalStorageNew"
 import { HoodiePlayerModel } from "./PlayerModels/HoodiePlayer"
 import { FpsRigAkmModel } from "./Models/FpsRigAkm"
 // import { useSelector } from "react-redux"
-import axios from "axios"
+// import axios from "axios"
 // import { SuitWomanModel } from "./PlayerModels/SuitWoman"
 
 const JUMP_FORCE = 6;
@@ -58,10 +58,8 @@ function PlayerBase(props) {
 
     const { controllerState, setControllerState } = useControllerStore()
 
-    const [character, setCharacter] = useLocalStorageNew("game:ocean-rings:character", {
-        model: 'Clownfish',
-        color: '#000000'
-    })
+    // const saferMode = useGameStore((state) => state.saferMode);
+    const safeMode = useStore((state) => state.safeMode);
 
     function saveHighScore() {
 
@@ -80,16 +78,25 @@ function PlayerBase(props) {
 
             // If signed in player then save to DB
             if (userReduxState?._id) {
-                axios.post('/api/user/community/games/scoreboard/set', {
-                    game: 'School Run',
-                    value: +currentDistance
+
+                fetch('/api/user/community/games/scoreboard/set', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        game: 'School Run',
+                        value: +currentDistance
+                    })
                 })
-                    .then(response => {
-                        console.log(response.data)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
                     })
-                    .catch(response => {
-                        console.log(response.data)
-                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+
             }
         }
 
@@ -309,17 +316,22 @@ function PlayerBase(props) {
                     rotation={[0, -Math.PI, 0]}
                 />
 
-                <FpsRigAkmModel
-                    position={[-0.18, 0.6, 3.5]}
-                    rotation={[0, Math.PI / 2, 0]}
-                    scale={0.1}
-                />
+                {safeMode ?
+                    <ModelHand />
+                    :
+                    <FpsRigAkmModel
+                        position={[-0.18, 0.6, 3.5]}
+                        rotation={[0, Math.PI / 2, 0]}
+                        scale={0.1}
+                    />
+                }
 
                 {/* <Text
                     color="black" position={[0, -0.7, 0]} scale={0.3} anchorX="center" anchorY="middle"
                 >
                     Player ({character.model})
                 </Text> */}
+                
             </mesh>
 
         </group>

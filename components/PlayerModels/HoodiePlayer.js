@@ -15,23 +15,18 @@ export function HoodiePlayerModel(props) {
     const { nodes, materials, animations } = useGLTF(link)
     const { actions } = useAnimations(animations, group)
 
-    const stopAllAnimations = () => {
-        Object.keys(actions).forEach(actionName => {
-            actions[actionName]?.stop();
-        });
-    };
-
     useEffect(() => {
 
-        console.log("Actions", actions)
+        if (!actions[characterAnimation]) return;
 
+        Object.values(actions).forEach(action => action?.stop());
         actions[characterAnimation].play();
 
         return () => {
-            stopAllAnimations();
+            Object.values(actions).forEach(action => action?.stop());
         };
 
-    }, [actions, characterAnimation]);
+    }, [characterAnimation]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <group ref={group} {...props} dispose={null}>

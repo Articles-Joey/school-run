@@ -18,4 +18,6 @@ npm run dev
 
 ## Attributions 
 
-[School Bag Icon](https://www.flaticon.com/free-icon/school-bag_3429142?term=school&page=1&position=15&origin=tag&related_id=3429142)
+[School Bag Icon](https://www.flaticon.com/free-icon/school-bag_3429142?term=school&page=1&position=15&origin=tag&related_id=3429142)  
+[Wet Floor Sign](https://sketchfab.com/3d-models/wet-floor-sign-d340f904c4684645a4e5282b5fbe963b)  
+[Hand Model](https://poly.pizza/m/eMSuJKMz6vx)
