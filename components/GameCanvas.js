@@ -1,6 +1,6 @@
 import { Canvas, useThree } from '@react-three/fiber';
 import { Debug, Physics } from '@react-three/cannon';
-import { Center, Image, OrbitControls, Plane, Sky, Text, Text3D } from '@react-three/drei'
+import { Center, Image, OrbitControls, Plane, Sky, Stats, Text, Text3D } from '@react-three/drei'
 
 import Player from './Player';
 // import RainbowCube from './RainbowCube';
@@ -17,6 +17,7 @@ import Floor from './Floor';
 import Walls from './Walls';
 import { SuitWomanModel } from './PlayerModels/SuitWoman';
 import { BloodSplatModel } from './Models/BloodSplat';
+import { useStore } from '@/hooks/useStore';
 
 const BackWalls = memo(function BackWalls(props) {
 
@@ -76,12 +77,14 @@ function GameCanvas(props) {
     //     distance
     // } = useGameStore()
 
-    const debug = useGameStore.getState().debug
-
-
+    const debug = useStore(state => state.debug)
 
     return (
         <Canvas camera={{ fov: 45, position: [0, 5, 20] }}>
+
+            {process.env.NODE_ENV === 'development' && <>
+                <Stats className="stats-overlay" />
+            </>}
 
             {/* <color
                 attach="background"
@@ -188,7 +191,7 @@ function GameCanvas(props) {
 const GameContent = () => (
     <>
         <Sections />
-        <Floor position={[0, 0, 0]} />
+        <Floor position={[0, -0.125, 0]} />
         <Player position={[0, 1, 0]} />
     </>
 );

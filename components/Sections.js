@@ -30,6 +30,8 @@ import { BloodSplatModel } from '@/components/Models/BloodSplat';
 import { DeadBody } from "@/components/Models/DeadBody";
 import { WetFloorSign } from "./Models/WetFloorSign";
 import { useStore } from "@/hooks/useStore";
+import { degToRad } from "three/src/math/MathUtils.js";
+import { FireLine } from "./Game/FireLine";
 // import { degToRad } from "three/src/math/MathUtils.js";
 
 function Decorations(props) {
@@ -303,7 +305,7 @@ function Obstacle({ obstacle }) {
                         />}
 
                         {safeMode && <WetFloorSign
-                            // rotation={[0, 0, 0]}
+                            rotation={[0, degToRad(90), 0]}
                             // action="Death"
                         />}
 
@@ -313,6 +315,9 @@ function Obstacle({ obstacle }) {
                         position={[0, 0, 0]}
                         rotation={[0, -140 * Math.PI / 180, 0]}
                     />}
+
+                    {/* TODO - Needs work */}
+                    {/* <FireLine /> */}
 
                     <boxGeometry args={[1, 1, 1]} />
                     <meshStandardMaterial

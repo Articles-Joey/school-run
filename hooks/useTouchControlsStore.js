@@ -1,7 +1,19 @@
 // import { create } from 'zustand'
 import { createWithEqualityFn as create } from 'zustand/traditional'
 
-export const useTouchControlsStore = create((set) => ({
+const useTouchControlsStore = create((set, get) => ({
+
+    enabled: false,
+    setEnabled: (newValue) => {
+        set((prev) => ({
+            enabled: newValue
+        }))
+    },
+    toggleEnabled: () => {
+        set(() => ({
+            enabled: !get().enabled
+        }))
+    },
 
     touchControls: {
         jump: false,
@@ -15,3 +27,5 @@ export const useTouchControlsStore = create((set) => ({
     }
 
 }))
+
+export default useTouchControlsStore

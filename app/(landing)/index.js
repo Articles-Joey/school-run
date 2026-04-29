@@ -49,7 +49,9 @@ export default function SchoolRunGameLandingPage() {
         setContentWarningAccept,
         highScore,
         setHighScore,
+        setDistance
     } = useGameStore(state => ({
+        setDistance: state.setDistance,
         setContentWarningAccept: state.setContentWarningAccept,
         highScore: state.highScore,
         setHighScore: state.setHighScore
@@ -74,21 +76,11 @@ export default function SchoolRunGameLandingPage() {
     const setShowSettingsModal = useStore(state => state.setShowSettingsModal)
     const setShowCreditsModal = useStore(state => state.setShowCreditsModal)
 
-    // useEffect(() => {
+    useEffect(() => {
 
-    //     socket.on('game:four-frogs-landing-details', function (msg) {
-    //         console.log('game:four-frogs-landing-details', msg)
+        setDistance(0)
 
-    //         if (JSON.stringify(msg) !== JSON.stringify(lobbyDetails)) {
-    //             setLobbyDetails(msg)
-    //         }
-    //     });
-
-    //     return () => {
-    //         socket.off('game:four-frogs-landing-details');
-    //     };
-
-    // }, [])
+    }, []);
 
     useEffect(() => {
 

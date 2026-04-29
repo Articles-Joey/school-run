@@ -14,6 +14,9 @@ import { useRouter, usePathname } from 'next/navigation';
 
 import { useSocketStore } from "@/hooks/useSocketStore";
 
+const game_key = 'school-run'
+const game_name = 'School Run'
+
 // SocketContextControl
 export default function SocketLogicHandler(props) {
 
@@ -136,6 +139,14 @@ export default function SocketLogicHandler(props) {
         console.log(`[📶 Socket] Page change emit`)
         socket.emit('activePage', pathname);
 
+        socket.on(`game:${game_key}-landing-details`, function (msg) {
+            console.log(`game:${game_key}-landing-details`, msg)
+
+            if (JSON.stringify(msg) !== JSON.stringify(lobbyDetails)) {
+                setLobbyDetails(msg)
+            }
+        });
+
         // router.events.on('routeChangeStart', handleRouteChange)
 
         return () => {
@@ -144,6 +155,7 @@ export default function SocketLogicHandler(props) {
             socket.off('force-page');
             socket.off('roomsList');
             socket.off('userCount', userCount);
+            socket.off(`game:${game_key}-landing-details`);
             // router.events.off('routeChangeStart', handleRouteChange)
         };
 

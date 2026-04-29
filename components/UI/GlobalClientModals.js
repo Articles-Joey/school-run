@@ -45,6 +45,9 @@ export default function GlobalClientModals() {
     const safeMode = useStore((state) => state.safeMode);
     const setSafeMode = useStore((state) => state.setSafeMode);
 
+    const disableDeath = useStore((state) => state.disableDeath);
+    const setDisableDeath = useStore((state) => state.setDisableDeath);
+
     return (
         <>
             {showInfoModal &&
@@ -113,9 +116,31 @@ export default function GlobalClientModals() {
                             },
                             'Multiplayer': {
                                 serverUrl: true,
+                                // children: <>Test</>
                             },
                             'Other': {
-                                // toontownMode: true,
+                                toontownMode: true,
+                                children: <>
+                                    <div>Disable Death</div>
+                                    <div className="mb-3">
+                                        <ArticlesButton
+                                            active={disableDeath === false}
+                                            onClick={() => {
+                                                setDisableDeath(false);
+                                            }}
+                                        >
+                                            Disabled
+                                        </ArticlesButton>
+                                        <ArticlesButton
+                                            active={disableDeath === true}
+                                            onClick={() => {
+                                                setDisableDeath(true);
+                                            }}
+                                        >
+                                            Enabled
+                                        </ArticlesButton>
+                                    </div>
+                                </>,
                             }
                         }
                     }}

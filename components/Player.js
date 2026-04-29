@@ -1,5 +1,5 @@
-import { useFrame, useStore, useThree } from "@react-three/fiber"
-import { useBox, useSphere } from "@react-three/cannon"
+import { useFrame, useThree } from "@react-three/fiber"
+import { useBox, useCompoundBody, useSphere } from "@react-three/cannon"
 import { useGLTF, useAnimations, Text } from '@react-three/drei'
 import { memo, useEffect, useRef } from "react"
 import { Vector3 } from "three"
@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { useKeyboard } from "@/hooks/useKeyboard"
 
 import { useControllerStore } from '@/hooks/useControllerStore';
-import { useControlsStore, useGameStore } from "@/hooks/useGameStore";
+import { useGameStore } from "@/hooks/useGameStore";
 
 // import ClownfishModel from "./PlayerModels/Clownfish"
 // import BoneFishModel from "./PlayerModels/BoneFish"
@@ -16,12 +16,17 @@ import { useLocalStorageNew } from "@/hooks/useLocalStorageNew"
 
 import { HoodiePlayerModel } from "./PlayerModels/HoodiePlayer"
 import { FpsRigAkmModel } from "./Models/FpsRigAkm"
+import useTouchControlsStore from "@/hooks/useTouchControlsStore"
+import { ModelHand } from "./Models/Human hand"
+import { degToRad } from "three/src/math/MathUtils.js"
+import { useStore } from "@/hooks/useStore"
 // import { useSelector } from "react-redux"
 // import axios from "axios"
 // import { SuitWomanModel } from "./PlayerModels/SuitWoman"
 
 const JUMP_FORCE = 6;
 const SPEED = 4;
+const MOVE_RANGE = 2.5
 
 let lastLocation
 
@@ -44,7 +49,6 @@ function PlayerBase(props) {
         setPlayerLocation,
         maxHeight, setMaxHeight,
         shift, setShift,
-        distance, setDistance,
         addDistance,
         gameOver,
         setGameOver,
@@ -54,7 +58,7 @@ function PlayerBase(props) {
 
     const {
         touchControls, setTouchControls
-    } = useControlsStore()
+    } = useTouchControlsStore()
 
     const { controllerState, setControllerState } = useControllerStore()
 
@@ -129,59 +133,52 @@ function PlayerBase(props) {
 
     }, [teleport]);
 
-    const { moveBackward, moveForward, moveRight, moveLeft, jump, shift: isShifting, crouch } = useKeyboard()
+    const { moveBackward, moveForward, moveRight, moveLeft, jump, shift: isShifting } = useKeyboard()
 
     const { camera } = useThree()
 
     const lastObstacleRef = useRef(false)
 
-    const [ref, api] = useBox(() => ({
+    const cylinderHeight = 1.5
+    const CROUCH_HEIGHT = 0.75
+
+    const [ref, api] = useCompoundBody(() => ({
         mass: 1,
-        args: [0.6, 0.75, 0.75],
-        material: {
-            friction: 0.5 // Adjust this value to control friction
-        },
-        angularFactor: [0, 0, 0],
-        // friction: 0,
         position: [0, 2, 0],
+        angularFactor: [0, 0, 0],
+        material: {
+            friction: 0.5,
+        },
+        // Define the shapes that make up the capsule
+        shapes: [
+            {
+                type: 'Cylinder',
+                args: [0.2, 0.2, cylinderHeight, 5], // [radiusTop, radiusBottom, height, segments]
+                position: [0, 0, 0]
+            },
+            {
+                type: 'Sphere',
+                args: [0.2],
+                position: [0, cylinderHeight / 2 - 0.125, 0] // Offset to the top (height/2)
+            },
+            {
+                type: 'Sphere',
+                args: [0.2],
+                position: [0, -cylinderHeight / 2 + 0.125, 0] // Offset to the bottom (-height/2)
+            },
+        ],
         onCollide: (e) => {
-
-            // console.log("Test Collide Test", e?.body)
-
             if (e.body.userData.isObstacle && e.body.userData.id !== lastObstacleRef.current) {
+                console.log("Player hit an obstacle", e?.body.userData);
+                lastObstacleRef.current = e?.body.userData.id;
 
-                console.log("Player hit an obstacle", e?.body.userData)
-                lastObstacleRef.current = e?.body.userData.id
-                setGameOver(true)
-
-                saveHighScore()
-
+                if (!useStore.getState().disableDeath) {
+                    setGameOver(true);
+                    saveHighScore();
+                }
             }
-
-        }
-    }))
-
-    const [refLeft] = useBox(() => ({
-        mass: 0,
-        type: "Static",
-        args: [0.75, 0.75, 0.75],
-        material: {
-            friction: 0.5
         },
-        angularFactor: [0, 0, 0],
-        position: [-2, 1, 0],
-    }))
-
-    const [refRight] = useBox(() => ({
-        mass: 0,
-        type: "Static",
-        args: [0.75, 0.75, 0.75],
-        material: {
-            friction: 0.5
-        },
-        angularFactor: [0, 0, 0],
-        position: [2, 1, 0],
-    }))
+    }));
 
     const material = new THREE.MeshPhysicalMaterial({
         color: 'green',
@@ -205,6 +202,17 @@ function PlayerBase(props) {
         console.log("Shift", isShifting)
         setShift(isShifting)
     }, [isShifting])
+
+    useEffect(() => {
+        console.log("Shift", isShifting)
+        if (isShifting) {
+            // Scale the whole body down
+            api?.scale?.set(1, 0.5, 1)
+        } else {
+            // Reset to normal scale
+            api?.scale?.set(1, 1, 1)
+        }
+    }, [isShifting, api])
 
     useFrame(() => {
 
@@ -272,6 +280,13 @@ function PlayerBase(props) {
             .multiplyScalar(SPEED * (shift ? 2 : 1))
             .applyEuler(camera.rotation)
 
+        // Limit movement to between -3 and 3 on the x-axis
+        if (pos.current[0] <= -MOVE_RANGE && direction.x < 0) {
+            direction.x = 0;
+        } else if (pos.current[0] >= MOVE_RANGE && direction.x > 0) {
+            direction.x = 0;
+        }
+
         api.velocity.set(direction.x, vel.current[1], 0)
 
         if ((jump || touchControls.jump) && Math.abs(vel.current[1]) < 0.05) {
@@ -307,17 +322,29 @@ function PlayerBase(props) {
                 // position={position}
                 material={material}
             >
-                <boxGeometry
+                {/* <boxGeometry
                     args={[1, 1]}
-                />
+                /> */}
 
                 <HoodiePlayerModel
-                    position={[0, -0.11, 0]}
+                    position={[0, -cylinderHeight / 2 - 0.075, 0]}
                     rotation={[0, -Math.PI, 0]}
                 />
 
                 {safeMode ?
-                    <ModelHand />
+                    <>
+                        <ModelHand
+                            position={[-0.18, -0.25, 3.5]}
+                            rotation={[0, degToRad(90), 0]}
+                            scale={0.1}
+                        />
+
+                        <ModelHand
+                            position={[0.18, -0.25, 3.5]}
+                            rotation={[0, degToRad(90), 0]}
+                            scale={[0.1, 0.1, -0.1]}
+                        />
+                    </>
                     :
                     <FpsRigAkmModel
                         position={[-0.18, 0.6, 3.5]}
@@ -331,7 +358,7 @@ function PlayerBase(props) {
                 >
                     Player ({character.model})
                 </Text> */}
-                
+
             </mesh>
 
         </group>

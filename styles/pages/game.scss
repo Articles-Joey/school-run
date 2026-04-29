@@ -109,7 +109,7 @@
         // max-width: 500px;
         // max-height: 800px;
         width: 100vw;
-        height: calc(100vh - 50px);
+        height: calc(100vh - 0px);
 
         .death-screen {
             position: absolute;
@@ -175,7 +175,7 @@
     .panel-left,
     .panel-right {
         width: 300px;
-        height: calc(100vh - 50px);
+        height: calc(100vh - 0px);
         flex-shrink: 0;
     }
 

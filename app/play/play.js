@@ -297,16 +297,8 @@ export default function SchoolRunGamePage() {
     const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
 
     let panelProps = {
-        server,
-        players,
         touchControlsEnabled,
         setTouchControlsEnabled,
-        reloadScene,
-        controllerState,
-        // isFullscreen,
-        // requestFullscreen,
-        // exitFullscreen,
-        setShowMenu
     }
 
     return (
@@ -359,19 +351,9 @@ export default function SchoolRunGamePage() {
 
             </div>
 
-            {/* <div className='game-info'>
-                <div className="card card-articles card-sm">
-                    <div className="card-body">
-                        <pre> 
-                            {JSON.stringify(playerData, undefined, 2)}
-                        </pre>
-                    </div>
-                </div>
-            </div> */}
-
             <div className='canvas-wrap'>
 
-                {gameOver &&
+                {gameOver ?
                     <div className='death-screen'>
 
                         <img 
@@ -425,47 +407,15 @@ export default function SchoolRunGamePage() {
                         </div>
 
                     </div>
+                    :
+                    ''
                 }
 
                 <GameCanvas
                     key={sceneKey}
-                    // playerData={playerData}
-                    // setPlayerData={setPlayerData}
-                    players={players}
                 />
 
             </div>
-
-            {/* <div className='d-flex justify-content-center w-100'>
-
-                <div className="canvas-wrap">
-                    <canvas
-                        width={300}
-                        height={600}
-                        ref={canvasGameRef}
-                    />
-                    <canvas
-                        width={300}
-                        height={600}
-                        id='static-canvas'
-                    />
-                </div>
-
-            </div> */}
-
-            {/* <div className="container py-3">
-
-                <div className="card card-articles">
-                    <div className="card-body p-2">
-                        {JSON.stringify(playerData)}
-                    </div>
-                </div>
-
-                <ArticlesButton onClick={() => socket.emit('join-room', 'glass-ceiling')} className="">Ping</ArticlesButton>
-
-            </div>
-
-            <div className="background"></div> */}
 
         </div>
     );

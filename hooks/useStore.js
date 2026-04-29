@@ -19,6 +19,14 @@ export const useStore = create()(
         }))
       },
 
+      disableDeath: false,
+      toggleDisableDeath: () => set({ disableDeath: !get().disableDeath }),
+      setDisableDeath: (newValue) => {
+        set((prev) => ({
+          disableDeath: newValue
+        }))
+       },
+
     }),
     {
       name: 'game-storage',
