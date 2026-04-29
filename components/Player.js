@@ -347,7 +347,7 @@ function PlayerBase(props) {
                     </>
                     :
                     <FpsRigAkmModel
-                        position={[-0.18, 0.6, 3.5]}
+                        position={[-0.18, 0.3, 3.5]}
                         rotation={[0, Math.PI / 2, 0]}
                         scale={0.1}
                     />

@@ -78,6 +78,7 @@ function GameCanvas(props) {
     // } = useGameStore()
 
     const debug = useStore(state => state.debug)
+    const darkMode = useStore(state => state.darkMode)
 
     return (
         <Canvas camera={{ fov: 45, position: [0, 5, 20] }}>
@@ -91,8 +92,17 @@ function GameCanvas(props) {
                 args={[0, 0, 0]}
             /> */}
 
-            <Sky sunPosition={[100, 100, 20]} />
-            <ambientLight intensity={0.25} />
+            {darkMode ?
+                <>
+                    <ambientLight intensity={0} />
+                    <Sky sunPosition={[100, -1, 20]} />
+                </>
+                :
+                <>
+                    <ambientLight intensity={0.5} />
+                    <Sky sunPosition={[100, 10, 20]} />
+                </>
+            }
 
             {/* <color attach="background" args={['#215776']} /> */}
 

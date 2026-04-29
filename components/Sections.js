@@ -45,22 +45,28 @@ function Decorations(props) {
         obstacles,
         setObstacles,
         gameOver
-    } = useGameStore()
+    } = useGameStore();
+
+    const graphicsQuality = useStore((state) => state.graphicsQuality);
 
     // Generate initial obstacles
     useEffect(() => {
+
+        const max = 10
+
+        const obstacleCount = graphicsQuality === "High" ? max : graphicsQuality === "Medium" ? max / 2 : max / 4;
 
         if (obstacles?.length !== 0) return
 
         let initialObstacles = []
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < obstacleCount; i++) {
             initialObstacles.push({ position: [generateRandomInteger(-1, 1), 0, -i * 10], id: i })
         }
 
         setObstacles(initialObstacles)
 
-    }, [])
+    }, [graphicsQuality])
 
     useFrame(() => {
 
@@ -123,6 +129,30 @@ function Decorations(props) {
             ref.current.position.z = newZ;
         }
     });
+
+    return (
+        <group ref={ref} position={[0, 0, 0]}>
+
+            {/* Render Obstacles */}
+            {obstacles?.map((obstacle) => (
+                <Obstacle
+                    key={obstacle.id}
+                    obstacle={obstacle}
+                />
+            ))}
+
+        </group>
+    )
+}
+
+export default Decorations
+
+function Obstacle({ obstacle }) {
+    const safeMode = useStore((state) => state.safeMode);
+
+    const randomRotation = useMemo(() => {
+        return [0, Math.random() * Math.PI * 2, 0];
+    }, []);
 
     const leftSideMemo = useMemo(() => {
 
@@ -220,114 +250,61 @@ function Decorations(props) {
 
     }, [])
 
-    return (
-        <group ref={ref} position={[0, 0, 0]}>
-
-            {/* Render Obstacles */}
-            {obstacles?.map((obstacle) => (
-                <Obstacle
-                    key={obstacle.id}
-                    obstacle={obstacle}
-                />
-            ))}
-
-            {/* <group>{leftSideMemo}</group> */}
-            {/* <group>{rightSideMemo}</group> */}
-
-        </group>
-    )
-}
-
-export default Decorations
-
-function Obstacle({ obstacle }) {
-
-    const alreadyTriggeredRef = useRef(false)
-
-    const [alreadyTriggered, setAlreadyTriggered] = useState(false);
-
-    // useEffect(() => {
-
-    //     console.log("alreadyTriggeredRef", alreadyTriggeredRef)
-
-    //     if (alreadyTriggeredRef.current) {
-    //         console.log("alreadyTriggeredRef.current changed")
-    //         setAlreadyTriggered(true)
-    //     }
-    // }, [alreadyTriggeredRef])
-
     const [ref, api] = useBox(() => ({
-        // mass: 0,
-        // type: 'Static',
         isTrigger: true,
-        onCollide: (e) => {
-
-            // console.log("collide detected!", alreadyTriggeredRef.current)
-
-            // Could not pass trigger state via userData to player as state was always stale so now just passing the obstacle id now and player will prevent recalling game over for the same obstacle id after restart
-
-            // alreadyTriggeredRef.current = true
-            // setAlreadyTriggered(true)
-
-        },
         args: [0.7, 1, 1],
         position: obstacle.position,
+        rotation: randomRotation, // Syncs physics body with visual rotation
         userData: {
             isObstacle: true,
             id: obstacle.id
         }
-    }))
+    }));
 
+    // Update position if the obstacle prop changes
     useEffect(() => {
-
-        api.position.set(...obstacle.position)
-
-    }, [obstacle.position])
-
-    const safeMode = useStore((state) => state.safeMode);
+        api.position.set(...obstacle.position);
+    }, [obstacle.position, api]);
 
     return (
         <group>
 
-            <Walls
-                position={obstacle.position}
-            />
+            <Walls position={obstacle.position} />
 
-            <group>
-                <mesh ref={ref}>
+            {/* <group>{leftSideMemo}</group>
+            <group>{rightSideMemo}</group> */}
 
-                    <group position={[0, 0, 0.5]}>
+            {/* The physics ref is on this mesh; it will now use randomRotation */}
+            <mesh ref={ref}>
+                
+                <boxGeometry args={[1, 1, 1]} />
+                <meshStandardMaterial transparent opacity={0} />
 
-                        {!safeMode && <DeadBody
-                            // position={[-0.15 , 0, -8.5]}
-                            rotation={[0, 0, 0]}
-                            action="Death"
-                        />}
+                {/* Models are children, they will inherit the rotation from 'ref' */}
+                <group position={[0, 0, 0.5]}>
+                    {!safeMode ? (
+                        <DeadBody action="Death" />
+                    ) : (
+                        <>
+                            <WetFloorSign
+                                position={[0, 0, -0.15]}
+                            />
+                            <WetFloorSign
+                                position={[0, 0, -0.85]}
+                            />
+                        </>
+                    )}
+                </group>
 
-                        {safeMode && <WetFloorSign
-                            rotation={[0, degToRad(90), 0]}
-                            // action="Death"
-                        />}
+                {/* {!safeMode && ( */}
+                <BloodSplatModel
+                    position={[-0.1, 0, -0.3]}
+                    rotation={[0, -140 * Math.PI / 180, 0]}
+                />
+                {/* )} */}
 
-                    </group>
-
-                    {!safeMode && <BloodSplatModel
-                        position={[0, 0, 0]}
-                        rotation={[0, -140 * Math.PI / 180, 0]}
-                    />}
-
-                    {/* TODO - Needs work */}
-                    {/* <FireLine /> */}
-
-                    <boxGeometry args={[1, 1, 1]} />
-                    <meshStandardMaterial
-                        color="red"
-                        transparent={true}
-                        opacity={0}
-                    />
-                </mesh>
-            </group>
+            </mesh>
 
         </group>
-    )
+    );
 }

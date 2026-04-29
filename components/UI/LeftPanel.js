@@ -54,7 +54,7 @@ export default function LeftPanelContent(props) {
     const characterAnimation = useGameStore(state => state.characterAnimation);
     const setCharacterAnimation = useGameStore(state => state.setCharacterAnimation);
     const distance = useGameStore(state => state.distance);
-    const obstacles = useGameStore(state => state.obstacles);
+
     // const setObstacles = useGameStore(state => state.setObstacles);
     const debug = useStore(state => state.debug)
     const highScore = useGameStore(state => state.highScore);
@@ -200,18 +200,6 @@ export default function LeftPanelContent(props) {
 
                         </div>
 
-                        {debug &&
-                            <div className="small">
-                                {obstacles?.map((obstacle, obstacle_i) => {
-                                    return (
-                                        <div key={obstacle.id}>
-                                            {obstacle_i} - {obstacle.position?.[2].toFixed(2)}
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        }
-
                     </div>
 
                     {/* <div>
@@ -252,7 +240,8 @@ function DebugPanel() {
     const characterAnimation = useGameStore(state => state.characterAnimation);
     const setCharacterAnimation = useGameStore(state => state.setCharacterAnimation);
     const debug = useStore(state => state.debug)
-    const setDebug = useGameStore(state => state.setDebug);
+    const setDebug = useStore(state => state.setDebug);
+    const obstacles = useGameStore(state => state.obstacles);
 
     return (
         <div
@@ -261,6 +250,18 @@ function DebugPanel() {
             <div className="card-body">
 
                 <div className="small text-muted">Debug Controls</div>
+
+                {debug &&
+                    <div className="small border mb-2 p-2">
+                        {obstacles?.map((obstacle, obstacle_i) => {
+                            return (
+                                <div key={obstacle.id}>
+                                    {obstacle_i} - {obstacle.position?.[2].toFixed(2)}
+                                </div>
+                            )
+                        })}
+                    </div>
+                }
 
                 <div className='d-flex flex-column'>
 
