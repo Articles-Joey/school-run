@@ -94,7 +94,7 @@ function GameCanvas(props) {
 
             {darkMode ?
                 <>
-                    <ambientLight intensity={0} />
+                    <ambientLight intensity={0.1} />
                     <Sky sunPosition={[100, -1, 20]} />
                 </>
                 :
@@ -111,17 +111,17 @@ function GameCanvas(props) {
             {/* <spotLight position={[0, 10, 0]} angle={0.5} penumbra={1} /> */}
             <pointLight
                 position={[0, 3, 3]}
-                intensity={30}
+                intensity={10}
             />
 
             <pointLight
                 position={[0, 3, -10]}
-                intensity={30}
+                intensity={10}
             />
 
             <pointLight
                 position={[0, 3, -30]}
-                intensity={30}
+                intensity={10}
             />
 
             {/* <BackWalls /> */}

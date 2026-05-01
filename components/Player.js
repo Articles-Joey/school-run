@@ -53,6 +53,7 @@ function PlayerBase(props) {
         gameOver,
         setGameOver,
         setHighScore,
+        freeze,
         debug
     } = useGameStore()
 
@@ -218,7 +219,7 @@ function PlayerBase(props) {
 
         // setDistance((prevDistance) => prevDistance + 1 * delta)
 
-        if (!gameOver) {
+        if (!gameOver && !freeze) {
             addDistance(0.1)
         }
 
@@ -287,6 +288,11 @@ function PlayerBase(props) {
             direction.x = 0;
         }
 
+        // NOTE - No movement if game over, but I think it is funny that you can still move and jump so leaving it like that for now
+        // if (gameOver) {
+        //     return
+        // }
+
         api.velocity.set(direction.x, vel.current[1], 0)
 
         if ((jump || touchControls.jump) && Math.abs(vel.current[1]) < 0.05) {
@@ -331,27 +337,30 @@ function PlayerBase(props) {
                     rotation={[0, -Math.PI, 0]}
                 />
 
-                {safeMode ?
-                    <>
-                        <ModelHand
-                            position={[-0.18, -0.25, 3.5]}
-                            rotation={[0, degToRad(90), 0]}
+                {/* TODO - Reverse Y good for now but could be improved for performance I am guessing */}
+                <group position={[0, -pos.current[1] + .5, 0]}>
+                    {safeMode ?
+                        <>
+                            <ModelHand
+                                position={[-0.18, -0.25, 3.5]}
+                                rotation={[0, degToRad(90), 0]}
+                                scale={0.1}
+                            />
+    
+                            <ModelHand
+                                position={[0.18, -0.25, 3.5]}
+                                rotation={[0, degToRad(90), 0]}
+                                scale={[0.1, 0.1, -0.1]}
+                            />
+                        </>
+                        :
+                        <FpsRigAkmModel
+                            position={[-0.18, 0.3, 3.5]}
+                            rotation={[0, Math.PI / 2, 0]}
                             scale={0.1}
                         />
-
-                        <ModelHand
-                            position={[0.18, -0.25, 3.5]}
-                            rotation={[0, degToRad(90), 0]}
-                            scale={[0.1, 0.1, -0.1]}
-                        />
-                    </>
-                    :
-                    <FpsRigAkmModel
-                        position={[-0.18, 0.3, 3.5]}
-                        rotation={[0, Math.PI / 2, 0]}
-                        scale={0.1}
-                    />
-                }
+                    }
+                </group>
 
                 {/* <Text
                     color="black" position={[0, -0.7, 0]} scale={0.3} anchorX="center" anchorY="middle"

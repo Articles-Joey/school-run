@@ -1,6 +1,6 @@
 {
   "name": "school-run",
-  "version": "0.2.0",
+  "version": "0.8.0",
   "private": false,
   "homepage": "https://school-run.articles.media",
   "scripts": {
@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@articles-media/articles-dev-box": "^1.0.31",
+    "@articles-media/articles-dev-box": "^1.0.32",
     "@articles-media/articles-gamepad-helper": "^0.0.13",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^10",
     "eslint-config-next": "^16"
   }

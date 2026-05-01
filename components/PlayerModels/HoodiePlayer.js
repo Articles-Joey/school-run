@@ -2,14 +2,14 @@ import { useRef, useEffect } from 'react';
 
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { useGameStore } from '@/hooks/useGameStore';
+import * as THREE from 'three';
 
 const link = `${process.env.NEXT_PUBLIC_CDN}games/School Run/Hoodie Character.glb`
 
 export function HoodiePlayerModel(props) {
 
-    const {
-        characterAnimation
-    } = useGameStore()
+    const characterAnimation = useGameStore(state => state.characterAnimation);
+    const gameOver = useGameStore(state => state.gameOver);
 
     const group = useRef()
     const { nodes, materials, animations } = useGLTF(link)
@@ -17,16 +17,26 @@ export function HoodiePlayerModel(props) {
 
     useEffect(() => {
 
-        if (!actions[characterAnimation]) return;
+        const animationToPlay = gameOver ? 'CharacterArmature|Death' : characterAnimation;
+
+        if (!actions[animationToPlay]) return;
 
         Object.values(actions).forEach(action => action?.stop());
-        actions[characterAnimation].play();
+
+        const action = actions[animationToPlay];
+        action.reset().fadeIn(0.2).play();
+
+        if (gameOver) {
+            action.clampWhenFinished = true;
+            action.setLoop(THREE.LoopOnce);
+        }
 
         return () => {
-            Object.values(actions).forEach(action => action?.stop());
+            const action = actions[animationToPlay];
+            if (action) action.fadeOut(0.2);
         };
 
-    }, [characterAnimation]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [characterAnimation, gameOver]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <group ref={group} {...props} dispose={null}>

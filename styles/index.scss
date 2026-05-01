@@ -19,3 +19,8 @@ button {
     left: initial !important;
     z-index: 4;
 }
+
+// Next.js devtools indicator
+#devtools-indicator {
+    bottom: 80px!important;
+}

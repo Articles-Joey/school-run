@@ -5,6 +5,7 @@ import { useStore } from '@/hooks/useStore';
 import useTouchControlsStore from '@/hooks/useTouchControlsStore';
 import dynamic from 'next/dynamic'
 import ArticlesButton from './Button';
+import { useGameStore } from '@/hooks/useGameStore';
 
 const InfoModal = dynamic(
     () => import('@/components/UI/InfoModal'),
@@ -48,6 +49,8 @@ export default function GlobalClientModals() {
     const disableDeath = useStore((state) => state.disableDeath);
     const setDisableDeath = useStore((state) => state.setDisableDeath);
 
+    const setContentWarningAccept = useGameStore((state) => state.setContentWarningAccept);
+
     return (
         <>
             {showInfoModal &&
@@ -77,17 +80,21 @@ export default function GlobalClientModals() {
                                         <ArticlesButton
                                             active={safeMode === false}
                                             onClick={() => {
-                                                setSafeMode(false);
+                                                // setSafeMode(false);
+                                                setContentWarningAccept(false);
                                             }}
                                         >
+                                            <i className='fad fa-skull'></i>
                                             Disabled
                                         </ArticlesButton>
                                         <ArticlesButton
                                             active={safeMode === true}
                                             onClick={() => {
                                                 setSafeMode(true);
+                                                // setContentWarningAccept(true);
                                             }}
                                         >
+                                            <i className='fad fa-angel'></i>
                                             Enabled
                                         </ArticlesButton>
                                     </div>

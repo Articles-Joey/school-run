@@ -7,6 +7,7 @@ import ArticlesButton from '@/components/UI/Button';
 
 // import { useLocalStorageNew } from 'util/useLocalStorageNew';
 import { useGameStore } from '@/hooks/useGameStore';
+import { useStore } from '@/hooks/useStore';
 
 const ArticlesModal = dynamic(() => import('@/components/UI/ArticlesModal'), {
     ssr: false,
@@ -24,6 +25,9 @@ export default function SchoolRunContentWarning() {
         setContentWarningAccept: state.setContentWarningAccept,
     }));
 
+    // const safeMode = useStore((state) => state.safeMode);
+    const setSafeMode = useStore((state) => state.setSafeMode);
+
     return (
         <>
             {!contentWarningAccept &&
@@ -38,9 +42,37 @@ export default function SchoolRunContentWarning() {
                         // setShowModal(false)
                     }}
                     actionText="I Accept"
+                    footerOverride={(setShow) => {
+                        return (
+                            <div className='d-flex w-100'>
+                                <ArticlesButton
+                                    className="mb-1 w-100"
+                                    variant="warning"
+                                    onClick={() => {
+                                        // setShow(false)
+                                        setContentWarningAccept(true)
+                                        setSafeMode(true)
+                                    }}
+                                >
+                                    Cancel
+                                </ArticlesButton>
+                                <ArticlesButton
+                                    className="mb-1 w-100"
+                                    variant="danger"
+                                    onClick={() => {
+                                        // setShow(false)
+                                        setContentWarningAccept(true)
+                                        setSafeMode(false)
+                                    }}
+                                >
+                                    I accept
+                                </ArticlesButton>
+                            </div>
+                        )
+                    }}
                 >
                     <div className='mb-3'>
-                        This game contains graphic depictions of violence, including school shooting scenarios, which some players may find deeply disturbing. It features themes of gun violence, psychological trauma, and mature language. Viewer and player discretion is strongly advised.
+                        This game contains an optional graphic mode that contains depictions of violence, including school shooting scenarios, which some players may find deeply disturbing. It features themes of gun violence, psychological trauma, and mature language. Viewer and player discretion is strongly advised.
                     </div>
                     <div className="mb-3">
                         This game is a satirical commentary on the ongoing failure to address the epidemic of gun violence, particularly in schools. It seeks to highlight the inaction and complacency surrounding this crisis, forcing players to confront the stark reality of these tragedies. Our goal is to spark meaningful conversations and encourage critical reflection on policies, societal attitudes, and the urgent need for reform. While the content is intentionally provocative, it serves as a call to action: to demand change, accountability, and the protection of lives over indifference.
@@ -67,7 +99,7 @@ export default function SchoolRunContentWarning() {
                         </ArticlesButton>
                     </Link>
                     <div>
-                        {`Note: This content is intended for mature audiences only (17+). If you or someone you know is affected by similar experiences, consider seeking support from trusted individuals, mental health professionals, or crisis resources in your area. If you understand the purpose behind this game, and are desensitized enough to play without harm from these topics then you may continue by clicking "I accept"`}
+                        {`Note: This content is intended for mature audiences only (18+). If you or someone you know is affected by similar experiences keep safe mode enabled. If you understand the purpose behind this game, and are desensitized enough to play without harm from these topics then you may continue by clicking "I accept"`}
                     </div>
                 </ArticlesModal>
             }

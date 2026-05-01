@@ -11,6 +11,7 @@ import SchoolRunContentWarning from '@/components/ContentWarning';
 import { useGameStore } from '@/hooks/useGameStore';
 import useUserGameScore from '@/hooks/useUserGameScore';
 import { useStore } from '@/hooks/useStore';
+import RotatingMascot from '@/components/UI/RotatingMascot';
 
 const GameScoreboard = dynamic(() =>
     import('@articles-media/articles-dev-box/GameScoreboard'),
@@ -109,11 +110,21 @@ export default function SchoolRunGameLandingPage() {
                 />
             </div>
 
-            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center">
+            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center py-3">
 
                 <div
                     style={{ "width": "20rem" }}
                 >
+
+                    <div className='d-flex justify-content-center'>
+                        <img
+                            src={"img/school-bag.png"}
+                            width={200}
+                            style={{
+                                // objectFit: "contain"
+                            }}
+                        ></img>
+                    </div>
 
                     <div className="card card-articles mb-3">
 
@@ -195,7 +206,7 @@ export default function SchoolRunGameLandingPage() {
                             <hr />
 
                             <div className="fw-bold mb-1 small text-center">
-                                {lobbyDetails.players.length || 0} player{(lobbyDetails.players.length > 1 || lobbyDetails.players.length == 0) && 's'} in the school.
+                                {lobbyDetails.players.length || 0} player{(lobbyDetails.players.length !== 1) && 's'} in the school.
                             </div>
 
                             {/* <div className='small fw-bold'>Public Servers</div> */}
@@ -213,15 +224,7 @@ export default function SchoolRunGameLandingPage() {
                                 </ArticlesButton>
                             </Link>
 
-                            <div
-                                className="btn-link small text-center"
-                                type='button'
-                                onClick={() => {
-                                    setContentWarningAccept(false)
-                                }}
-                            >
-                                Content Warning!
-                            </div>
+                            
 
                             {/* <div className='small fw-bold  mt-3 mb-1'>Or</div> */}
 
@@ -338,15 +341,33 @@ export default function SchoolRunGameLandingPage() {
 
                     </div>
 
-                    {/* <SessionButton
+                    <SessionButton
                         port={game_port}
-                    /> */}
+                        friendsButton={true}
+                    />
 
                     <ReturnToLauncherButton />
 
                 </div>
 
-                <GameScoreboard game="School Run" />
+                <GameScoreboard
+                    game={game_name}
+                    style="Default"
+                    darkMode={darkMode ? true : false}
+                    prepend={
+                        <div
+                            style={{
+                                width: '100%',
+                                height: '200px',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <RotatingMascot />
+                        </div>
+                    }
+                />
 
                 <Ad section={"Games"} section_id={game_name} />
 

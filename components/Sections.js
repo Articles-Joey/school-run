@@ -18,7 +18,7 @@ import Bear from "@/components/PlayerModels/Bear";
 import { PearModel } from "@/components/Models/Pear";
 import { TelevisionVintageModel } from "@/components/Models/TelevisionVintage";
 
-import { useGameStore } from "@/hooks/useGameStore";
+import { useGameStore, OBSTACLE_TYPES, pickObstacleType } from "@/hooks/useGameStore";
 import Walls from "./Walls";
 // import { RepeatWrapping } from "three";
 // import { HoodiePlayerDeadModel } from "./PlayerModels/HoodiePlayerDead";
@@ -44,7 +44,9 @@ function Decorations(props) {
         distance,
         obstacles,
         setObstacles,
-        gameOver
+        gameOver,
+        freeze,
+        generateInitialObstacles
     } = useGameStore();
 
     const graphicsQuality = useStore((state) => state.graphicsQuality);
@@ -52,25 +54,27 @@ function Decorations(props) {
     // Generate initial obstacles
     useEffect(() => {
 
-        const max = 10
+        generateInitialObstacles()
 
-        const obstacleCount = graphicsQuality === "High" ? max : graphicsQuality === "Medium" ? max / 2 : max / 4;
+        // const max = 10
 
-        if (obstacles?.length !== 0) return
+        // const obstacleCount = graphicsQuality === "High" ? max : graphicsQuality === "Medium" ? max / 2 : max / 4;
 
-        let initialObstacles = []
+        // if (obstacles?.length !== 0) return
 
-        for (let i = 0; i < obstacleCount; i++) {
-            initialObstacles.push({ position: [generateRandomInteger(-1, 1), 0, -i * 10], id: i })
-        }
+        // let initialObstacles = []
 
-        setObstacles(initialObstacles)
+        // for (let i = 0; i < obstacleCount; i++) {
+        //     initialObstacles.push({ position: [generateRandomInteger(-1, 1), 0, -i * 10], id: i })
+        // }
+
+        // setObstacles(initialObstacles)
 
     }, [graphicsQuality])
 
     useFrame(() => {
 
-        if (gameOver) return
+        if (gameOver || freeze) return
 
         let newObstacles = obstacles.map((obstacle) => ({
             ...obstacle,
@@ -87,7 +91,8 @@ function Decorations(props) {
 
             newObstacles.push({
                 position: [Math.random() * 2 - 1, 0, newPositionZ],
-                id: Date.now(), // Ensure unique ID
+                id: Date.now(), // Ensure unique ID,
+                obstacleType: pickObstacleType(OBSTACLE_TYPES),
             });
         }
 
@@ -148,6 +153,34 @@ function Decorations(props) {
 export default Decorations
 
 function Obstacle({ obstacle }) {
+    // if (obstacle.obstacleType === "Body") return <BodyObstacle obstacle={obstacle} />;
+    // if (obstacle.obstacleType === "Drone") return <DroneObstacle obstacle={obstacle} />;
+    return (
+        <>
+
+            <Walls position={obstacle.position} />
+
+            {obstacle.obstacleType === "FireLine" && (
+                <FireLine
+                    position={obstacle.position}
+                />
+            )}
+            {obstacle.obstacleType === "Body" && (
+                <BodyObstacle
+                    obstacle={obstacle}
+                />
+            )}
+            {obstacle.obstacleType === "Drone" && (
+                <DroneObstacle
+                    obstacle={obstacle}
+                />
+            )}
+            
+        </>
+    );
+}
+
+function BodyObstacle({ obstacle }) {
     const safeMode = useStore((state) => state.safeMode);
 
     const randomRotation = useMemo(() => {
@@ -269,7 +302,7 @@ function Obstacle({ obstacle }) {
     return (
         <group>
 
-            <Walls position={obstacle.position} />
+            
 
             {/* <group>{leftSideMemo}</group>
             <group>{rightSideMemo}</group> */}
@@ -306,5 +339,55 @@ function Obstacle({ obstacle }) {
             </mesh>
 
         </group>
+    );
+}
+
+function DroneObstacle({ obstacle }) {
+    const droneY = 1.5;
+
+    const [ref, api] = useBox(() => ({
+        isTrigger: true,
+        args: [0.8, 0.3, 0.8],
+        position: [obstacle.position[0], droneY, obstacle.position[2]],
+        userData: {
+            isObstacle: true,
+            id: obstacle.id
+        }
+    }));
+
+    useEffect(() => {
+        api.position.set(obstacle.position[0], droneY, obstacle.position[2]);
+    }, [obstacle.position, api]);
+
+    return (
+        <mesh ref={ref}>
+            <boxGeometry args={[0.8, 0.3, 0.8]} />
+            <meshStandardMaterial transparent opacity={0} />
+            <group>
+                {/* Central body */}
+                <mesh>
+                    <boxGeometry args={[0.25, 0.1, 0.25]} />
+                    <meshStandardMaterial color="#222" metalness={0.8} roughness={0.3} />
+                </mesh>
+                {/* Arms + rotors */}
+                {[[-0.3, 0, -0.3], [0.3, 0, -0.3], [-0.3, 0, 0.3], [0.3, 0, 0.3]].map((rPos, i) => (
+                    <group key={i} position={rPos}>
+                        <mesh rotation={[0, Math.PI / 4, 0]}>
+                            <boxGeometry args={[0.28, 0.03, 0.03]} />
+                            <meshStandardMaterial color="#444" />
+                        </mesh>
+                        <mesh position={[0, 0.03, 0]}>
+                            <cylinderGeometry args={[0.1, 0.1, 0.02, 8]} />
+                            <meshStandardMaterial color="#555" metalness={0.6} />
+                        </mesh>
+                    </group>
+                ))}
+                {/* Camera lens */}
+                <mesh position={[0, -0.08, 0.1]}>
+                    <sphereGeometry args={[0.035, 8, 8]} />
+                    <meshStandardMaterial color="#f00" emissive="#f00" emissiveIntensity={1} />
+                </mesh>
+            </group>
+        </mesh>
     );
 }
