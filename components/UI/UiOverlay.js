@@ -3,6 +3,7 @@ import { useGameStore } from "@/hooks/useGameStore";
 export default function UiOverlay() {
 
     const distance = useGameStore(state => state.distance);
+    const highScore = useGameStore(state => state.highScore);
 
     return (
         <div 
@@ -17,10 +18,18 @@ export default function UiOverlay() {
                 padding: '0.5rem 1rem',
                 borderRadius: '0.5rem',
                 color: '#fff',
+                display: 'flex',
+                fontSize: '0.8rem',
             }}
         >
             <div className='distance'>
-                {`${distance.toFixed(0)} ft`}
+                {`Distance: ${distance.toFixed(0)} ft`}
+            </div>
+            <div className="px-2">
+                -
+            </div>
+            <div className='high-score'>
+                {`High Score: ${highScore.toFixed(0)} ft`}
             </div>
         </div>
     )

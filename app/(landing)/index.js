@@ -13,6 +13,9 @@ import useUserGameScore from '@/hooks/useUserGameScore';
 import { useStore } from '@/hooks/useStore';
 import RotatingMascot from '@/components/UI/RotatingMascot';
 
+import useUserToken from '@articles-media/articles-dev-box/useUserToken';
+import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
+
 const GameScoreboard = dynamic(() =>
     import('@articles-media/articles-dev-box/GameScoreboard'),
     { ssr: false }
@@ -45,6 +48,24 @@ export default function SchoolRunGameLandingPage() {
         socket: state.socket,
         connected: state.connected,
     }));
+
+    const {
+        data: userToken,
+        error: userTokenError,
+        isLoading: userTokenLoading,
+        mutate: userTokenMutate
+    } = useUserToken(
+        game_port
+    );
+
+    const {
+        data: userDetails,
+        error: userDetailsError,
+        isLoading: userDetailsLoading,
+        mutate: userDetailsMutate
+    } = useUserDetails({
+        token: userToken
+    });
 
     const {
         setContentWarningAccept,
@@ -369,7 +390,15 @@ export default function SchoolRunGameLandingPage() {
                     }
                 />
 
-                <Ad section={"Games"} section_id={game_name} />
+                <Ad
+                    style="Default"
+                    section={"Games"}
+                    section_id={game_name}
+                    darkMode={darkMode ? true : false}
+                    user_ad_token={userToken}
+                    userDetails={userDetails}
+                    userDetailsLoading={userDetailsLoading}
+                />
 
             </div>
         </div>

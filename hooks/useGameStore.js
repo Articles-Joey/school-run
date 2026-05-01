@@ -7,10 +7,12 @@ import { useStore } from './useStore';
 import generateRandomInteger from "@/util/generateRandomInteger"
 
 export const OBSTACLE_TYPES = [
-    { name: "Body", weight: 60 },
+    { name: "Body", weight: 55 },
     { name: "Drone", weight: 30 },
-    { name: "FireLine", weight: 10 },
+    { name: "FireLine", weight: 15 },
 ]
+
+const SPAWN_RANGE = 2.5
 
 export function pickObstacleType(types) {
     const total = types.reduce((sum, t) => sum + t.weight, 0);
@@ -141,11 +143,22 @@ export const useGameStore = create((set) => ({
         let initialObstacles = []
 
         for (let i = 0; i < obstacleCount; i++) {
+
+            const pickedObstacle = pickObstacleType(OBSTACLE_TYPES)
+
             initialObstacles.push({
-                position: [generateRandomInteger(-1, 1), 0, -i * 10],
+                position: [
+                    pickedObstacle === "Drone" ?
+                        generateRandomInteger(0, 0)
+                        :
+                        generateRandomInteger(-SPAWN_RANGE, SPAWN_RANGE),
+                    0,
+                    -i * 10
+                ],
                 id: randomId(),
-                obstacleType: i === 0 ? false : pickObstacleType(OBSTACLE_TYPES),
+                obstacleType: i === 0 ? false : pickedObstacle,
             })
+
         }
 
         // setObstacles(initialObstacles)

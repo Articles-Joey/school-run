@@ -1,7 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber"
 import { useBox, useCompoundBody, useSphere } from "@react-three/cannon"
 import { useGLTF, useAnimations, Text } from '@react-three/drei'
-import { memo, useEffect, useRef } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { Vector3 } from "three"
 import * as THREE from 'three';
 import { useKeyboard } from "@/hooks/useKeyboard"
@@ -15,6 +15,7 @@ import { useGameStore } from "@/hooks/useGameStore";
 import { useLocalStorageNew } from "@/hooks/useLocalStorageNew"
 
 import { HoodiePlayerModel } from "./PlayerModels/HoodiePlayer"
+import { BloodSplatModel } from "./Models/BloodSplat"
 import { FpsRigAkmModel } from "./Models/FpsRigAkm"
 import useTouchControlsStore from "@/hooks/useTouchControlsStore"
 import { ModelHand } from "./Models/Human hand"
@@ -62,6 +63,9 @@ function PlayerBase(props) {
     } = useTouchControlsStore()
 
     const { controllerState, setControllerState } = useControllerStore()
+
+    const [showBlood, setShowBlood] = useState(false)
+    const [bloodScale, setBloodScale] = useState(0)
 
     // const saferMode = useGameStore((state) => state.saferMode);
     const safeMode = useStore((state) => state.safeMode);
@@ -215,12 +219,28 @@ function PlayerBase(props) {
         }
     }, [isShifting, api])
 
-    useFrame(() => {
+    useEffect(() => {
+        if (gameOver) {
+            const timeout = setTimeout(() => {
+                setShowBlood(true)
+            }, 1000)
+            return () => clearTimeout(timeout)
+        } else {
+            setShowBlood(false)
+            setBloodScale(0)
+        }
+    }, [gameOver])
+
+    useFrame((state, delta) => {
 
         // setDistance((prevDistance) => prevDistance + 1 * delta)
 
         if (!gameOver && !freeze) {
             addDistance(0.1)
+        }
+
+        if (showBlood && bloodScale < 1) {
+            setBloodScale(prev => Math.min(1, prev + (1 * delta)))
         }
 
         if (cameraMode == "Player") {
@@ -336,6 +356,14 @@ function PlayerBase(props) {
                     position={[0, -cylinderHeight / 2 - 0.075, 0]}
                     rotation={[0, -Math.PI, 0]}
                 />
+
+                {(showBlood && !safeMode) && (
+                    <BloodSplatModel
+                        position={[-0.1, (-cylinderHeight / 2) - 0.08, 1.5]}
+                        rotation={[0, -140 * Math.PI / 180, 0]}
+                        scale={[bloodScale, 1, bloodScale]}
+                    />
+                )}
 
                 {/* TODO - Reverse Y good for now but could be improved for performance I am guessing */}
                 <group position={[0, -pos.current[1] + .5, 0]}>

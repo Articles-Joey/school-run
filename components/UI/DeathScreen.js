@@ -23,20 +23,21 @@ export default function DeathScreen() {
                     {!safeMode &&
                         <img
                             className="background"
-                            src={`${process.env.NEXT_PUBLIC_CDN}games/School Run/blood-splat.png`}
+                            // src={`${process.env.NEXT_PUBLIC_CDN}games/School Run/blood-splat.png`}
+                            src={`img/blood-splat.png`}
                         />
                     }
 
-                    <div 
+                    {safeMode && <div 
                         className="gradient"
                         style={{
                             ...(!safeMode && {
-                                backgroundColor: "rgba(255, 0, 0, 0.5)"
+                                backgroundColor: "rgba(255, 0, 0, 0.25)"
                             })
                         }}
                     >
 
-                    </div>
+                    </div>}
 
                     <div
                         className='card card-articles'

@@ -197,6 +197,7 @@ export function DebugPanel() {
                         <ArticlesButton
                             size="sm"
                             className="w-50"
+                            active={freeze}
                             onClick={() => {
                                 setFreeze(!freeze)
                             }}

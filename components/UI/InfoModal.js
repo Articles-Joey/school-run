@@ -52,14 +52,14 @@ export default function GameInfoModal({
                     <div className="ratio ratio-16x9 border">
                         {darkMode ?
                             <img
-                                src={"img/school-run-thumbnail.jpg"}
+                                src={"img/preview.webp"}
                                 style={{
                                     objectFit: "contain"
                                 }}
                             ></img>
                             :
                             <img
-                                src={"img/school-run-thumbnail.jpg"}
+                                src={"img/preview.webp"}
                                 style={{
                                     objectFit: "contain"
                                 }}

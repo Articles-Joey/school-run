@@ -12,7 +12,7 @@ import { useGameStore } from '@/hooks/useGameStore';
 // import Bounds from '../Ocean Rings/Bounds';
 // import Rings from '../Ocean Rings/Rings';
 import getRandomHexColor from '@/util/getRandomHexColor';
-import Sections from './Sections';
+import Sections from './Game/Sections';
 import Floor from './Floor';
 import Walls from './Walls';
 import { SuitWomanModel } from './PlayerModels/SuitWoman';

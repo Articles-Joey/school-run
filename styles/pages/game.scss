@@ -113,7 +113,7 @@
                 height: 100%;
                 left: 0;
                 top: 0;
-                background-color: rgba(255, 150, 0, 0.5);                
+                background-color: rgba(255, 150, 0, 0.5);
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -126,12 +126,27 @@
                 height: 100%;
                 left: 0;
                 top: 0;
-                background-color: rgba(255, 0, 0, 0.5);
+                // background-color: rgba(255, 0, 0, 0.5);
+                background-color: rgba(255, 0, 0, 0.75);
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 z-index: 1;
                 object-fit: cover;
+                animation: fadeInBackground 5s ease-in-out;
+
+                @keyframes fadeInBackground {
+
+                    from {
+                        background-color: rgba(255, 0, 0, 0);
+                    }
+
+                    to {
+                        // opacity: 1;
+                        background-color: rgba(255, 0, 0, 0.75);
+                    }
+
+                }
             }
         }
 
