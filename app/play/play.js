@@ -26,7 +26,7 @@ import SchoolRunContentWarning from '@/components/ContentWarning';
 import { useStore } from '@/hooks/useStore';
 import useTouchControlsStore from '@/hooks/useTouchControlsStore';
 import DeathScreen from '@/components/UI/DeathScreen';
-import MobileMenu from '@/components/UI/MobileMenu';
+// import MobileMenu from '@/components/UI/MobileMenu';
 
 import GameMenu from '@articles-media/articles-dev-box/GameMenu';
 import { useHotkeys } from 'react-hotkeys-hook';
