@@ -149,24 +149,10 @@ export default function SchoolRunGameLandingPage() {
 
                     <div className="card card-articles mb-3">
 
-                        {/* <div style={{ position: 'relative', height: '200px' }}>
-                            <Image
-                                src={Logo}
-                                alt=""
-                                fill
-                                style={{ objectFit: 'cover' }}
-                            />
-                        </div> */}
-
                         <div className="card-header">
 
                             <div className="form-group articles mb-0">
                                 <label htmlFor="nickname">Nickname</label>
-                                {/* <SingleInput
-                                            value={nickname}
-                                            setValue={setNickname}
-                                            noMargin
-                                        /> */}
                                 <div className="d-flex align-items-center">
                                     <input
                                         type="text"
@@ -244,49 +230,6 @@ export default function SchoolRunGameLandingPage() {
                                     Play
                                 </ArticlesButton>
                             </Link>
-
-                            
-
-                            {/* <div className='small fw-bold  mt-3 mb-1'>Or</div> */}
-
-                            {/* <div className='d-flex'>
-    
-                                <ArticlesButton
-                                    className={`w-50`}
-                                    onClick={() => {
-                                        // TODO
-                                        alert("Coming Soon!")
-                                    }}
-                                >
-                                    <i className="fad fa-robot"></i>
-                                    Practice
-                                </ArticlesButton>
-    
-                                <ArticlesButton
-                                    className={`w-50`}
-                                    onClick={() => {
-                                        setShowPrivateGameModal(prev => !prev)
-                                    }}
-                                >
-                                    <i className="fad fa-lock"></i>
-                                    Private Game
-                                </ArticlesButton>
-    
-                            </div> */}
-
-                            {/* <IsDev className={'mt-3'}>
-                                <div>
-                                    <ArticlesButton
-                                        className="w-50"
-                                        variant='warning'
-                                        onClick={() => {
-                                            socket.emit('game:four-frogs:reset', '');
-                                        }}
-                                    >
-                                        Reset Server
-                                    </ArticlesButton>
-                                </div>
-                            </IsDev> */}
 
                         </div>
 
