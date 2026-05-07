@@ -15,7 +15,8 @@ import RotatingMascot from '@/components/UI/RotatingMascot';
 
 import useUserToken from '@articles-media/articles-dev-box/useUserToken';
 import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
-
+import NicknameInput from '@articles-media/articles-dev-box/NicknameInput';
+import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
 const GameScoreboard = dynamic(() =>
     import('@articles-media/articles-dev-box/GameScoreboard'),
     { ssr: false }
@@ -24,20 +25,18 @@ const Ad = dynamic(() =>
     import('@articles-media/articles-dev-box/Ad'),
     { ssr: false }
 );
-
 const ReturnToLauncherButton = dynamic(() =>
     import('@articles-media/articles-dev-box/ReturnToLauncherButton'),
     { ssr: false }
 );
-
 const SessionButton = dynamic(() =>
     import('@articles-media/articles-dev-box/SessionButton'),
     { ssr: false }
 );
 
-const game_key = 'school-run'
-const game_name = 'School Run'
-const game_port = 3020
+const game_key = process.env.NEXT_PUBLIC_GAME_KEY
+const game_name = process.env.NEXT_PUBLIC_GAME_NAME
+const game_port = process.env.NEXT_PUBLIC_GAME_PORT
 
 export default function SchoolRunGameLandingPage() {
 
@@ -151,34 +150,9 @@ export default function SchoolRunGameLandingPage() {
 
                         <div className="card-header">
 
-                            <div className="form-group articles mb-0">
-                                <label htmlFor="nickname">Nickname</label>
-                                <div className="d-flex align-items-center">
-                                    <input
-                                        type="text"
-                                        value={_hasHydrated ? nickname : ''}
-                                        disabled={!_hasHydrated}
-                                        id="nickname"
-                                        name="nickname"
-                                        placeholder="Enter your nickname"
-                                        onChange={(e) => {
-                                            setNickname(e.target.value)
-                                        }}
-                                        className={`form-control form-control-sm`}
-                                    />
-                                    <ArticlesButton
-                                        small
-                                        className=""
-                                        onClick={() => {
-                                            randomNickname()
-                                        }}
-                                    >
-                                        <i className="fad fa-random"></i>
-                                    </ArticlesButton>
-                                </div>
-                            </div>
-
-                            <div style={{ fontSize: '0.8rem' }}>Visible to all players</div>
+                            <NicknameInput 
+                                useStore={useStore}
+                            />
 
                         </div>
 
@@ -235,78 +209,17 @@ export default function SchoolRunGameLandingPage() {
 
                         <div className="card-footer d-flex flex-wrap justify-content-center">
 
-                            <div className='d-flex w-50'>
-                                <ArticlesButton
-                                    className={`flex-grow-1`}
-                                    small
-                                    onClick={() => {
-                                        setShowSettingsModal(true)
-                                    }}
-                                >
-                                    <i className="fad fa-cog"></i>
-                                    Settings
-                                </ArticlesButton>
-                                <ArticlesButton
-                                    className={``}
-                                    small
-                                    onClick={() => {
-                                        toggleDarkMode()
-                                    }}
-                                >
-                                    {darkMode ?
-                                        <i className="fad fa-sun"></i>
-                                        :
-                                        <i className="fad fa-moon"></i>
-                                    }
-                                </ArticlesButton>
-                            </div>
-
-                            <ArticlesButton
-                                className={`w-50`}
-                                small
-                                onClick={() => {
-                                    setShowInfoModal(true)
-                                }}
-                            >
-                                <i className="fad fa-info-square"></i>
-                                Info
-                            </ArticlesButton>
-
-                            <a
-                                href={'https://github.com/Articles-Joey/school-run'}
-                                className='w-50'
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <ArticlesButton
-                                    className={`w-100`}
-                                    small
-                                    onClick={() => {
-
-                                    }}
-                                >
-                                    <i className="fab fa-github"></i>
-                                    Github
-                                </ArticlesButton>
-                            </a>
-
-                            <ArticlesButton
-                                className={`w-50`}
-                                small
-                                onClick={() => {
-                                    setShowCreditsModal(true)
-                                }}
-                            >
-                                <i className="fad fa-users"></i>
-                                Credits
-                            </ArticlesButton>
+                            <GameMenuPrimaryButtonGroup 
+                                useStore={useStore}
+                                type="Landing"
+                            />
 
                         </div>
 
                     </div>
 
                     <SessionButton
-                        port={game_port}
+                        port={process.env.NEXT_PUBLIC_GAME_PORT}
                         friendsButton={true}
                     />
 
@@ -315,7 +228,7 @@ export default function SchoolRunGameLandingPage() {
                 </div>
 
                 <GameScoreboard
-                    game={game_name}
+                    game={process.env.NEXT_PUBLIC_GAME_NAME}
                     style="Default"
                     darkMode={darkMode ? true : false}
                     prepend={
@@ -336,7 +249,7 @@ export default function SchoolRunGameLandingPage() {
                 <Ad
                     style="Default"
                     section={"Games"}
-                    section_id={game_name}
+                    section_id={process.env.NEXT_PUBLIC_GAME_NAME}
                     darkMode={darkMode ? true : false}
                     user_ad_token={userToken}
                     userDetails={userDetails}
