@@ -117,7 +117,7 @@ export default function SchoolRunGameLandingPage() {
 
     return (
 
-        <div className="school-run-lobby-page">
+        <div className="landing-page">
 
             <SchoolRunContentWarning />
 

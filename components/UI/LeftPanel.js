@@ -20,7 +20,7 @@ export default function LeftPanelContent(props) {
 
                     <GameMenuPrimaryButtonGroup
                         useStore={useStore}
-                        type="Game Menu"
+                        type="GameMenu"
                     />
 
                 </div>
