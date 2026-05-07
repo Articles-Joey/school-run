@@ -1,69 +1,15 @@
-import Link from "next/link";
-
 import { useGameStore } from "@/hooks/useGameStore";
 import ArticlesButton from "@/components/UI/Button";
 import { useStore } from "@/hooks/useStore";
-import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 import { DebugPanel } from "./DebugPanel";
+import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
 
 export default function LeftPanelContent(props) {
 
-    const {
-        // server,
-        // players,
-        // touchControlsEnabled,
-        // setTouchControlsEnabled,
-        // reloadScene,
-        // controllerState,
-        // isFullscreen,
-        // requestFullscreen,
-        // exitFullscreen,
-        // setShowMenu
-    } = props;
-
-    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
-
-    const setSceneKey = useStore(state => state.setSceneKey);
-    const sceneKey = useStore(state => state.sceneKey);
-
-    const setShowMenu = useStore(state => state.setShowMenu);
-
-    const setShowSettingsModal = useStore(state => state.setShowSettingsModal)
-
-    // const {
-    //     socket,
-    // } = useSocketStore(state => ({
-    //     socket: state.socket,
-    // }));
-
-    const cameraMode = useGameStore(state => state.cameraMode);
-    const setCameraMode = useGameStore(state => state.setCameraMode);
-    // const teleport = useGameStore(state => state.teleport);
-    const setTeleport = useGameStore(state => state.setTeleport);
-    // const playerLocation = useGameStore(state => state.playerLocation);
-    // const setPlayerLocation = useGameStore(state => state.setPlayerLocation);
-    const maxHeight = useGameStore(state => state.maxHeight);
-    // const setMaxHeight = useGameStore(state => state.setMaxHeight);
-    // const shift = useGameStore(state => state.shift);
-    const characterAnimation = useGameStore(state => state.characterAnimation);
-    const setCharacterAnimation = useGameStore(state => state.setCharacterAnimation);
-    const distance = useGameStore(state => state.distance);
-
-    // const setObstacles = useGameStore(state => state.setObstacles);
     const debug = useStore(state => state.debug)
+
+    const distance = useGameStore(state => state.distance);
     const highScore = useGameStore(state => state.highScore);
-
-    const safeMode = useStore((state) => state.safeMode);
-    const setSafeMode = useStore((state) => state.setSafeMode);
-    // const saferMode = useGameStore(state => state.saferMode);
-    // const setSaferMode = useGameStore(state => state.setSaferMode);
-
-    const darkMode = useStore(state => state.darkMode);
-    const toggleDarkMode = useStore(state => state.toggleDarkMode);
-    const sidebar = useStore(state => state.sidebar);
-    const toggleSidebar = useStore(state => state.toggleSidebar);
-    // const touchControls = useGameStore(state => state.touchControls);
-    // const setTouchControls = useGameStore(state => state.setTouchControls);
 
     return (
         <div className='w-100'>
