@@ -27,6 +27,7 @@ export default function GamePage() {
     const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
 
     const sidebar = useStore(state => state.sidebar);
+    const showMenu = useStore(state => state.showMenu);
 
     useHotkeys('p', () => {
         useGameStore.getState().toggleFreeze();
@@ -38,8 +39,15 @@ export default function GamePage() {
     return (
 
         <div
-            className={`school-run-game-page ${isFullscreen && 'fullscreen'} ${sidebar && 'show-sidebar'}`}
-            id="school-run-game-page"
+            className={classNames(
+                `${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`,
+                {
+                    'menu-open': showMenu,
+                    'fullscreen': useFullscreen().isFullscreen,
+                    'show-sidebar': sidebar,
+                }
+            )}
+            id={`${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`}
         >
 
             <SchoolRunContentWarning />
