@@ -11,7 +11,7 @@ import { useGameStore } from '@/hooks/useGameStore';
 import SchoolRunContentWarning from '@/components/ContentWarning';
 import { useStore } from '@/hooks/useStore';
 import DeathScreen from '@/components/UI/DeathScreen';
-
+import classNames from "classnames";
 import GameMenu from '@articles-media/articles-dev-box/GameMenu';
 import { useHotkeys } from 'react-hotkeys-hook';
 import UiOverlay from '@/components/UI/UiOverlay';
