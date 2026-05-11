@@ -140,7 +140,7 @@ function PlayerBase(props) {
 
     const { moveBackward, moveForward, moveRight, moveLeft, jump, shift: isShifting } = useKeyboard()
 
-    const { camera } = useThree()
+    const { camera, size } = useThree()
 
     const lastObstacleRef = useRef(false)
 
@@ -244,7 +244,14 @@ function PlayerBase(props) {
         }
 
         if (cameraMode == "Player") {
-            camera.position.copy(new Vector3(0, 2, (pos.current[2] + 5)))
+            let cameraZOffset = 5
+            if (size.width < 600) {
+                cameraZOffset = 13
+            } else if (size.width < 1200) {
+                // cameraZOffset = 7.5
+            }
+
+            camera.position.copy(new Vector3(0, 2, (pos.current[2] + cameraZOffset)))
             camera.lookAt(new Vector3(0, 1, (pos.current[2] + 0)))
         }
 
@@ -366,7 +373,7 @@ function PlayerBase(props) {
                 )}
 
                 {/* TODO - Reverse Y good for now but could be improved for performance I am guessing */}
-                <group position={[0, -pos.current[1] + .5, 0]}>
+                <group position={[0, -pos.current[1] + .5, 13 /2]}>
                     {safeMode ?
                         <>
                             <ModelHand

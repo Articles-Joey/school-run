@@ -5,6 +5,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/theme';
 
+import packageInfo from '@/package.json';
+
 import "bootstrap/dist/css/bootstrap.min.css";
 
 // import "./globals.css";
@@ -17,7 +19,7 @@ import "@articles-media/articles-gamepad-helper/dist/articles-gamepad-helper.css
 import SocketLogicHandler from "@/components/SocketLogicHandler";
 import { Suspense } from 'react';
 import LayoutClient from './layout-client';
-import GlobalClientModals from '@/components/UI/GlobalClientModals';
+// import GlobalClientModals from '@/components/UI/GlobalClientModals';
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -30,8 +32,8 @@ import GlobalClientModals from '@/components/UI/GlobalClientModals';
 // });
 
 export const metadata = {
-  title: "Death Race",
-  description: "Make it to the finish line while avoiding detection. If you see any suspicious NPCs that you might think are players then use your bullet to take them out.",
+  title: process.env.NEXT_PUBLIC_GAME_NAME,
+  description: packageInfo.description,
 };
 
 export default function RootLayout({ children }) {
@@ -54,9 +56,9 @@ export default function RootLayout({ children }) {
         <SocketLogicHandler />
         <LayoutClient />
 
-        <Suspense>
+        {/* <Suspense>
           <GlobalClientModals />
-        </Suspense>
+        </Suspense> */}
 
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeProvider theme={theme}>

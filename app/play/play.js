@@ -54,11 +54,11 @@ export default function GamePage() {
                 sidebarConfig={{
                     style: "Static Panel",
                 }}
-            />
-
-            <TouchControls />            
+            />                      
 
             <div className='canvas-wrap'>
+
+                <TouchControls />
 
                 <DeathScreen />
 

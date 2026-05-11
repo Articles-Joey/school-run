@@ -84,7 +84,7 @@ function Decorations(props) {
         }))
 
         // Filter out obstacles that went past the player
-        newObstacles = newObstacles.filter((obstacle) => obstacle.position[2] <= 10);
+        newObstacles = newObstacles.filter((obstacle) => obstacle.position[2] <= 15);
 
         // Add new obstacles to maintain the array length
         while (newObstacles.length < obstacles.length) {

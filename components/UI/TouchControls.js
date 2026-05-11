@@ -32,7 +32,7 @@ function JumpButtonBase() {
 
 const JumpButton = memo(JumpButtonBase, arePropsEqual);
 
-function TouchControlsBase(props) {
+export default function TouchControls(props) {
 
     // const {
     //     touchControlsEnabled,
@@ -40,7 +40,7 @@ function TouchControlsBase(props) {
 
     const touchControls = useTouchControlsStore(state => state.touchControls);
     const setTouchControls = useTouchControlsStore(state => state.setTouchControls);
-    const touchControlsEnabled = useTouchControlsStore(state => state.touchControls.enabled);
+    const touchControlsEnabled = useTouchControlsStore(state => state.enabled);
 
     const [nippleCreated, setNippleCreated] = useState(false)
 
@@ -217,7 +217,3 @@ function TouchControlsBase(props) {
         </div>
     )
 }
-
-const TouchControls = memo(TouchControlsBase, arePropsEqual);
-
-export default TouchControls
