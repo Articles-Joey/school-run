@@ -41,24 +41,20 @@ export default function RootLayout({ children }) {
     <html lang="en">
 
       <head>
-
-        {/* <link
-          rel="stylesheet"
-          href={`${process.env.NEXT_PUBLIC_CDN}fonts/fontawsome/css/all.min.css`}
-        /> */}
-
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+        <link href="https://fonts.googleapis.com/css2?family=Playwrite+AR+Guides&display=swap" rel="stylesheet"></link>
       </head>
 
       <body
       // className={`${geistSans.variable} ${geistMono.variable}`}
       >
 
-        <SocketLogicHandler />
         <LayoutClient />
 
-        {/* <Suspense>
-          <GlobalClientModals />
-        </Suspense> */}
+        <Suspense>
+          <SocketLogicHandler />
+        </Suspense>
 
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeProvider theme={theme}>

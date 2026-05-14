@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import React, { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useBox } from '@react-three/cannon'
+import { useStore } from '@/hooks/useStore'
 
 // basic fire vertex shader
 const vertexShader = `
@@ -81,6 +82,37 @@ const fragmentShader = `
   }
 `
 
+// safe mode/blue fire fragment shader
+const blueFragmentShader = `
+  varying float vLife;
+  varying float vRandom;
+
+  void main() {
+    // 1. Make the point circular instead of square
+    float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
+    // Soft radial gradient
+    float strength = 0.05 / distanceToCenter - 0.1;
+
+    // 2. Define Colors (Blue/Cyan theme)
+    vec3 colorCore = vec3(0.5, 0.9, 1.0);   // Bright Cyan/White inner
+    vec3 colorMiddle = vec3(0.1, 0.4, 1.0); // Bright Blue
+    vec3 colorEdge = vec3(0.0, 0.1, 0.5);   // Dark Blue smoke
+    
+    // 3. Mix Colors based on vLife
+    vec3 color = colorCore;
+    color = mix(color, colorMiddle, step(0.1, vLife));
+    color = mix(color, colorEdge, smoothstep(0.1, 0.8, vLife));
+    
+    // Add slight random noise to color variation
+    color.b += vRandom * 0.1;
+
+    // 4. Apply transparency and final color
+    float alpha = strength * (1.0 - vLife);
+    
+    gl_FragColor = vec4(color, alpha);
+  }
+`
+
 export function FireLine({
   obstacle,
   count = 5000,    // Number of particles
@@ -89,6 +121,8 @@ export function FireLine({
   size = 100,      // Base particle size
   ...props
 }) {
+
+  const safeMode = useStore((state) => state.safeMode);
 
   // const obstaclePosition = obstacle.position
 
@@ -202,7 +236,9 @@ export function FireLine({
             itemSize={1}
           />
         </bufferGeometry>
-        <shaderMaterial
+
+
+        {!safeMode && <shaderMaterial
           blending={THREE.AdditiveBlending} // CRITICAL for "glow" look
           depthWrite={false}               // Prevents ugly black squares behind particles
           transparent                      // Required for alpha blending
@@ -210,7 +246,19 @@ export function FireLine({
           uniforms={uniforms}
           vertexShader={vertexShader}
           fragmentShader={fragmentShader}
-        />
+        />}
+        {safeMode &&
+          <shaderMaterial
+            blending={THREE.AdditiveBlending} // CRITICAL for "glow" look
+            depthWrite={false}               // Prevents ugly black squares behind particles
+            transparent                      // Required for alpha blending
+            vertexColors                     // Useful if passing colors directly
+            uniforms={uniforms}
+            vertexShader={vertexShader}
+            fragmentShader={blueFragmentShader}
+          />
+        }
+
       </points>
     </group>
   )

@@ -13,10 +13,9 @@ import { useStore } from '@/hooks/useStore';
 import DeathScreen from '@/components/UI/DeathScreen';
 import classNames from "classnames";
 import GameMenu from '@articles-media/articles-dev-box/GameMenu';
-import { useHotkeys } from 'react-hotkeys-hook';
 import UiOverlay from '@/components/UI/UiOverlay';
 
-const GameCanvas = dynamic(() => import('@/components/GameCanvas'), {
+const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
 });
 
@@ -28,13 +27,6 @@ export default function GamePage() {
 
     const sidebar = useStore(state => state.sidebar);
     const showMenu = useStore(state => state.showMenu);
-
-    useHotkeys('p', () => {
-        useGameStore.getState().toggleFreeze();
-    }, [])
-    useHotkeys('r', () => {
-        useStore.getState().reloadScene();
-    }, [])
 
     return (
 

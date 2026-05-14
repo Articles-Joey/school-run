@@ -11,6 +11,7 @@ export default function DeathScreen() {
     const setGameOver = useGameStore(state => state.setGameOver);
     const setDistance = useGameStore(state => state.setDistance);
     const generateInitialObstacles = useGameStore(state => state.generateInitialObstacles);
+    const reset = useGameStore(state => state.reset);
 
     if (!gameOver) {
         return null;
@@ -20,72 +21,73 @@ export default function DeathScreen() {
         <>
             <div className='death-screen'>
 
-                    {!safeMode &&
-                        <img
-                            className="background"
-                            // src={`${process.env.NEXT_PUBLIC_CDN}games/School Run/blood-splat.png`}
-                            src={`img/blood-splat.png`}
-                        />
-                    }
+                {!safeMode &&
+                    <img
+                        className="background"
+                        // src={`${process.env.NEXT_PUBLIC_CDN}games/School Run/blood-splat.png`}
+                        src={`img/blood-splat.png`}
+                    />
+                }
 
-                    {safeMode && <div 
-                        className="gradient"
-                        style={{
-                            ...(!safeMode && {
-                                backgroundColor: "rgba(255, 0, 0, 0.25)"
-                            })
-                        }}
-                    >
+                {safeMode && <div
+                    className="gradient"
+                    style={{
+                        ...(!safeMode && {
+                            backgroundColor: "rgba(255, 0, 0, 0.25)"
+                        })
+                    }}
+                >
 
-                    </div>}
+                </div>}
 
-                    <div
-                        className='card card-articles'
-                        style={{
-                            width: "300px"
-                        }}
-                    >
+                <div
+                    className='card card-articles'
+                    style={{
+                        width: "300px"
+                    }}
+                >
 
-                        <div className="card-header text-center">
-                            <h3 className='mb-0'>
-                                {`${distance.toFixed(0)} ft - ${safeMode ? "You Tripped!" : "You're Dead!"}`}
-                            </h3>
-                        </div>
+                    <div className="card-header text-center">
+                        <h3 className='mb-0'>
+                            {`${distance.toFixed(0)} ft - ${safeMode ? "You Tripped!" : "You're Dead!"}`}
+                        </h3>
+                    </div>
 
-                        <div className="card-body text-center">
-                            {safeMode ?
-                                "You slipped and the chaser got you."
-                                :
-                                "You tripped over a dead classmate and the shooter got you. If only your government cared!"
-                            }
-                        </div>
+                    <div className="card-body text-center">
+                        {safeMode ?
+                            "You slipped and the chaser got you."
+                            :
+                            "You tripped over a dead classmate and the shooter got you. If only your government cared!"
+                        }
+                    </div>
 
-                        <div className="card-footer d-flex justify-content-center">
+                    <div className="card-footer d-flex justify-content-center">
 
-                            <Link href={'/'} className="w-50">
-                                <ArticlesButton
-                                    className="w-100"
-                                >
-                                    Leave Game
-                                </ArticlesButton>
-                            </Link>
-
+                        <Link href={'/'} className="w-50">
                             <ArticlesButton
-                                className="w-50"
+                                className="w-100"
                                 onClick={() => {
-                                    generateInitialObstacles()
-                                    setGameOver(false)
-                                    setDistance(0)
+                                    reset()
                                 }}
                             >
-                                Restart Game
+                                Leave Game
                             </ArticlesButton>
+                        </Link>
 
-                        </div>
+                        <ArticlesButton
+                            className="w-50"
+                            onClick={() => {
+                                reset()
+                            }}
+                        >
+                            Restart Game
+                        </ArticlesButton>
 
                     </div>
 
                 </div>
+
+            </div>
         </>
     )
 

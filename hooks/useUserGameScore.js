@@ -5,6 +5,9 @@ import useSWR from "swr";
 // import axios from "axios";
 import { minutesToMilliseconds } from "date-fns";
 
+import useUserToken from '@articles-media/articles-dev-box/useUserToken';
+import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
+
 // const fetcher = (data) => axios.get(data.url, {
 //     params: {
 //         game: data.game
@@ -12,20 +15,47 @@ import { minutesToMilliseconds } from "date-fns";
 // }).then((res) => res.data);
 
 const fetcher = (data) => {
-  const query = new URLSearchParams(data.params).toString();
-  return fetch(`${data.url}?${query}`).then(res => res.json());
+    const query = new URLSearchParams(data.params).toString();
+    return fetch(`${data.url}?${query}`, {
+        headers: {
+            'x-articles-api-key': data.userToken
+        }
+    }).then(res => res.json());
 };
 
 const useUserGameScore = (params) => {
 
     // const userReduxState = useSelector((state) => state.auth.user_details)
-    const userReduxState = false
+    // const userReduxState = false
+    const {
+        data: userToken,
+        error: userTokenError,
+        isLoading: userTokenLoading,
+        mutate: userTokenMutate
+    } = useUserToken(
+        process.env.NEXT_PUBLIC_GAME_PORT
+    );
+
+    const {
+        data: userDetails,
+        error: userDetailsError,
+        isLoading: userDetailsLoading,
+        mutate: userDetailsMutate
+    } = useUserDetails({
+        token: userToken
+    });
+
+    const baseLink = process.env.NODE_ENV === 'development' ?
+        'http://localhost:3001'
+        :
+        'https://articles.media'
 
     const { data, error, isLoading, mutate } = useSWR(
-        ((userReduxState?._id && params.game) ?
+        ((userDetails?.user_id && params.game) ?
             {
-                url: "/api/user/community/games/scoreboard/get",
-                params: { game: params.game }
+                url: `${baseLink}/api/user/community/games/scoreboard/get`,
+                params: { game: params.game },
+                userToken
             }
             :
             null

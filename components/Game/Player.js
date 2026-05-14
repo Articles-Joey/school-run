@@ -9,21 +9,17 @@ import { useKeyboard } from "@/hooks/useKeyboard"
 import { useControllerStore } from '@/hooks/useControllerStore';
 import { useGameStore } from "@/hooks/useGameStore";
 
-// import ClownfishModel from "./PlayerModels/Clownfish"
-// import BoneFishModel from "./PlayerModels/BoneFish"
-
-import { useLocalStorageNew } from "@/hooks/useLocalStorageNew"
-
-import { HoodiePlayerModel } from "./PlayerModels/HoodiePlayer"
-import { BloodSplatModel } from "./Models/BloodSplat"
-import { FpsRigAkmModel } from "./Models/FpsRigAkm"
+import { HoodiePlayerModel } from "@/components/PlayerModels/HoodiePlayer"
+import { BloodSplatModel } from "@/components/Models/BloodSplat"
+import { FpsRigAkmModel } from "@/components/Models/FpsRigAkm"
 import useTouchControlsStore from "@/hooks/useTouchControlsStore"
-import { ModelHand } from "./Models/Human hand"
+import { ModelHand } from "@/components/Models/Human hand"
 import { degToRad } from "three/src/math/MathUtils.js"
 import { useStore } from "@/hooks/useStore"
-// import { useSelector } from "react-redux"
-// import axios from "axios"
-// import { SuitWomanModel } from "./PlayerModels/SuitWoman"
+import { useAudioStore } from "@/hooks/useAudioStore"
+
+import useUserToken from '@articles-media/articles-dev-box/useUserToken';
+import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
 
 const JUMP_FORCE = 6;
 const SPEED = 4;
@@ -33,8 +29,55 @@ let lastLocation
 
 function myToFixed(i, digits) {
     var pow = Math.pow(10, digits);
-
     return Math.floor(i * pow) / pow;
+}
+
+function playSound() {
+    const safeMode = useStore.getState().safeMode;
+
+    if (safeMode) return
+
+    const game_volume = useAudioStore.getState().audioSettings.game_volume
+    const audio = new Audio('audio/dennish18-machine-gun-129929.mp3');
+    audio.volume = (game_volume / 100) * 0.5; // Adjust the multiplier as needed to balance with other game sounds
+    audio.play();
+
+}
+
+function GunFlickerForJump() {
+    const { jump } = useKeyboard()
+    const { touchControls } = useTouchControlsStore()
+    const [visible, setVisible] = useState(false)
+    const timeoutRef = useRef(null)
+    const lightRef = useRef()
+
+    useEffect(() => {
+        if (jump || touchControls.jump) {
+            setVisible(true)
+            if (timeoutRef.current) clearTimeout(timeoutRef.current)
+            timeoutRef.current = setTimeout(() => {
+                setVisible(false)
+            }, 400)
+        }
+    }, [jump, touchControls.jump])
+
+    useFrame(() => {
+        if (visible && lightRef.current) {
+            lightRef.current.intensity = Math.random() * 10
+        }
+    })
+
+    if (!visible) return null
+
+    return (
+        <pointLight
+            ref={lightRef}
+            position={[0, 0.5, 4.5]}
+            intensity={5}
+            distance={5}
+            color="orange"
+        />
+    )
 }
 
 function PlayerBase(props) {
@@ -57,6 +100,24 @@ function PlayerBase(props) {
         freeze,
         debug
     } = useGameStore()
+
+    const {
+        data: userToken,
+        error: userTokenError,
+        isLoading: userTokenLoading,
+        mutate: userTokenMutate
+    } = useUserToken(
+        process.env.NEXT_PUBLIC_GAME_PORT
+    );
+
+    const {
+        data: userDetails,
+        error: userDetailsError,
+        isLoading: userDetailsLoading,
+        mutate: userDetailsMutate
+    } = useUserDetails({
+        token: userToken
+    });
 
     const {
         touchControls, setTouchControls
@@ -86,16 +147,22 @@ function PlayerBase(props) {
             setHighScore(+currentDistance)
 
             // If signed in player then save to DB
-            if (userReduxState?._id) {
+            if (userToken) {
 
-                fetch('/api/user/community/games/scoreboard/set', {
+                const baseLink = process.env.NODE_ENV === 'development' ?
+                    'http://localhost:3001'
+                    :
+                    'https://articles.media'
+
+                fetch(`${baseLink}/api/user/community/games/scoreboard/set`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'x-articles-api-key': userToken
                     },
                     body: JSON.stringify({
                         game: 'School Run',
-                        value: +currentDistance
+                        value: +(+currentDistance || 0).toFixed(0)
                     })
                 })
                     .then(response => response.json())
@@ -146,6 +213,16 @@ function PlayerBase(props) {
 
     const cylinderHeight = 1.5
     const CROUCH_HEIGHT = 0.75
+
+    const calculateChaserDistance = () => {
+        if (size.width < 600) {
+            return 7.25
+        } else if (size.width < 1200) {
+            return -0.25
+        } else {
+            return -0.5
+        }
+    }
 
     const [ref, api] = useCompoundBody(() => ({
         mass: 1,
@@ -244,6 +321,7 @@ function PlayerBase(props) {
         }
 
         if (cameraMode == "Player") {
+
             let cameraZOffset = 5
             if (size.width < 600) {
                 cameraZOffset = 13
@@ -326,6 +404,8 @@ function PlayerBase(props) {
 
             console.log("Jump understood")
 
+            playSound()
+
             api.velocity.set(vel.current[0], JUMP_FORCE, vel.current[2])
 
             if (
@@ -373,7 +453,13 @@ function PlayerBase(props) {
                 )}
 
                 {/* TODO - Reverse Y good for now but could be improved for performance I am guessing */}
-                <group position={[0, -pos.current[1] + .5, 13 /2]}>
+                <group
+                    position={[
+                        0,
+                        -pos.current[1] + .5,
+                        calculateChaserDistance()
+                    ]}
+                >
                     {safeMode ?
                         <>
                             <ModelHand
@@ -381,7 +467,7 @@ function PlayerBase(props) {
                                 rotation={[0, degToRad(90), 0]}
                                 scale={0.1}
                             />
-    
+
                             <ModelHand
                                 position={[0.18, -0.25, 3.5]}
                                 rotation={[0, degToRad(90), 0]}
@@ -389,11 +475,14 @@ function PlayerBase(props) {
                             />
                         </>
                         :
-                        <FpsRigAkmModel
-                            position={[-0.18, 0.3, 3.5]}
-                            rotation={[0, Math.PI / 2, 0]}
-                            scale={0.1}
-                        />
+                        <>
+                            <FpsRigAkmModel
+                                position={[-0.18, 0.3, 3.5]}
+                                rotation={[0, Math.PI / 2, 0]}
+                                scale={0.1}
+                            />
+                            <GunFlickerForJump />
+                        </>
                     }
                 </group>
 

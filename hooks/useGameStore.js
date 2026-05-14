@@ -44,7 +44,7 @@ function randomId() {
     return Math.random().toString(36).substr(2, 9);
 }
 
-export const useGameStore = create((set) => ({
+export const useGameStore = create((set, get, store) => ({
 
     cameraMode: 'Player',
     setCameraMode: (newValue) => {
@@ -218,5 +218,19 @@ export const useGameStore = create((set) => ({
             gameState: newValue
         }))
     },
+
+    reset: () => {
+
+        set((prev) => ({
+            obstacles: [],
+            gameOver: 0,
+            distance: 0,
+        }))
+
+        const { generateInitialObstacles } = get();
+
+        generateInitialObstacles()
+
+    }
 
 }))

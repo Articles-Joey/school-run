@@ -3,21 +3,12 @@ import { Debug, Physics } from '@react-three/cannon';
 import { Center, Image, OrbitControls, Plane, Sky, Stats, Text, Text3D } from '@react-three/drei'
 
 import Player from './Player';
-// import RainbowCube from './RainbowCube';
-// import generateRandomInteger from 'util/generateRandomInteger';
-// import OneWayPlatform from './Platforms/OneWayPlatform';
-import { memo, useMemo } from 'react';
-// import MovingPlatform from './Platforms/MovingPlatform';
-import { useGameStore } from '@/hooks/useGameStore';
-// import Bounds from '../Ocean Rings/Bounds';
-// import Rings from '../Ocean Rings/Rings';
+import { memo, Suspense, useLayoutEffect, useMemo } from 'react';
 import getRandomHexColor from '@/util/getRandomHexColor';
-import Sections from './Game/Sections';
-import Floor from './Game/Floor';
-import Walls from './Game/Walls';
-import { SuitWomanModel } from './PlayerModels/SuitWoman';
-import { BloodSplatModel } from './Models/BloodSplat';
+import Sections from './Sections';
+import Floor from './Floor';
 import { useStore } from '@/hooks/useStore';
+import AnimatedPointLights from './AnimatedPointLights';
 
 const BackWalls = memo(function BackWalls(props) {
 
@@ -53,35 +44,30 @@ const BackWalls = memo(function BackWalls(props) {
     )
 })
 
-function GameCanvas(props) {
-
-    const {
-        // setPlayerData, 
-        players
-    } = props;
-
-    // const generateRandomPlatforms = useMemo((platformNumbers) => {
-
-    //     const originalMaterial = [...Array(platformNumbers)].map((item, i) => {
-    //         return (
-    //             <OneWayPlatform key={i} color="pink" position={[generateRandomInteger(-1.5, 1.5), (16 + (i * 1.5)), 0]} />
-    //         )
-    //     })
-
-    //     return originalMaterial
-
-    // }, [])
-
-    // const { 
-    //     playerLocation,
-    //     distance
-    // } = useGameStore()
+function GameCanvas({
+    landingAnimationMode
+}) {
 
     const debug = useStore(state => state.debug)
     const darkMode = useStore(state => state.darkMode)
 
+    function Scene() {
+        const { camera } = useThree()
+
+        useLayoutEffect(() => {
+            if (landingAnimationMode) {
+                camera.position.set(2, 2.5, 3.5)
+                camera.lookAt(0, 1.5, 0)
+            }
+        }, [landingAnimationMode, camera])
+
+        return null
+    }
+
     return (
         <Canvas camera={{ fov: 45, position: [0, 5, 20] }}>
+
+            <Scene />
 
             {process.env.NODE_ENV === 'development' && <>
                 <Stats className="stats-overlay" />
@@ -109,20 +95,8 @@ function GameCanvas(props) {
             {/* Add your 3D scene components here */}
             {/* <ambientLight intensity={2} /> */}
             {/* <spotLight position={[0, 10, 0]} angle={0.5} penumbra={1} /> */}
-            <pointLight
-                position={[0, 3, 3]}
-                intensity={10}
-            />
 
-            <pointLight
-                position={[0, 3, -10]}
-                intensity={10}
-            />
-
-            <pointLight
-                position={[0, 3, -30]}
-                intensity={10}
-            />
+            <AnimatedPointLights />
 
             {/* <BackWalls /> */}
 
@@ -166,27 +140,18 @@ function GameCanvas(props) {
                 contactMaterial={{ friction: 0.5 }}
             >
 
-                {debug ? (
-                    <Debug color="black" scale={1}>
-                        <GameContent />
-                    </Debug>
-                ) : (
-                    <GameContent />
-                )}
+                <Debug color="black" scale={debug ? 1 : 0}>
 
-                {/* <Debug color="black" scale={1}>
+                    <Suspense>
+                        <Sections />
+                        <Floor position={[0, -0.125, 0]} />
+                    </Suspense>
 
-                    <Sections />
+                    {!landingAnimationMode &&
+                        <Suspense><Player position={[0, 1, 0]} /></Suspense>
+                    }
 
-                    <Floor
-                        position={[0, 0, 0]}
-                    />
-
-                    <Player
-                        position={[0, 1, 0]}
-                    />
-
-                </Debug> */}
+                </Debug>
 
             </Physics>
 
@@ -197,13 +162,5 @@ function GameCanvas(props) {
         </Canvas>
     )
 }
-
-const GameContent = () => (
-    <>
-        <Sections />
-        <Floor position={[0, -0.125, 0]} />
-        <Player position={[0, 1, 0]} />
-    </>
-);
 
 export default memo(GameCanvas)

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useContext, useRef, memo } from 'react'
 
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 // Import session to detect change to sign in and sign out of socket
 // import { useSession } from 'lib/hooks'
@@ -22,6 +22,9 @@ export default function SocketLogicHandler(props) {
 
     const router = useRouter()
     const pathname = usePathname()
+    const searchParams = useSearchParams()
+    const params = Object.fromEntries(searchParams.entries());
+    const { server } = params
 
     // const userReduxState = useSelector((state) => state.auth.user_details)
 

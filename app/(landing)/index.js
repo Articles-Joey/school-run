@@ -17,6 +17,7 @@ import useUserToken from '@articles-media/articles-dev-box/useUserToken';
 import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
 import NicknameInput from '@articles-media/articles-dev-box/NicknameInput';
 import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
+import LandingBackgroundAnimation from '@/components/Game/LandingBackgroundAnimation';
 const GameScoreboard = dynamic(() =>
     import('@articles-media/articles-dev-box/GameScoreboard'),
     { ssr: false }
@@ -54,7 +55,7 @@ export default function SchoolRunGameLandingPage() {
         isLoading: userTokenLoading,
         mutate: userTokenMutate
     } = useUserToken(
-        game_port
+        process.env.NEXT_PUBLIC_GAME_PORT
     );
 
     const {
@@ -85,6 +86,7 @@ export default function SchoolRunGameLandingPage() {
         game: 'School Run'
     });
 
+    const landingAnimation = useStore(state => state.landingAnimation);
     const toggleDarkMode = useStore(state => state.toggleDarkMode)
     const darkMode = useStore(state => state.darkMode)
     const nickname = useStore(state => state.nickname)
@@ -122,12 +124,16 @@ export default function SchoolRunGameLandingPage() {
             <SchoolRunContentWarning />
 
             <div className='background-wrap'>
-                <Image
-                    src={`${process.env.NEXT_PUBLIC_CDN}games/School Run/background.jpg`}
-                    alt=""
-                    fill
-                    style={{ objectFit: 'cover', objectPosition: 'bottom' }}
-                />
+                {landingAnimation ?
+                    <LandingBackgroundAnimation />
+                    :
+                    <Image
+                        src={`${process.env.NEXT_PUBLIC_CDN}games/School Run/background.jpg`}
+                        alt=""
+                        fill
+                        style={{ objectFit: 'cover', objectPosition: 'bottom' }}
+                    />
+                }
             </div>
 
             <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center py-3">
@@ -136,7 +142,7 @@ export default function SchoolRunGameLandingPage() {
                     style={{ "width": "20rem" }}
                 >
 
-                    <div className='d-flex justify-content-center'>
+                    <div className='branding-backpack py-3'>
                         <img
                             src={"img/school-bag.png"}
                             width={200}
@@ -146,11 +152,25 @@ export default function SchoolRunGameLandingPage() {
                         ></img>
                     </div>
 
+                    <div className="branding-chalkboard">
+
+                        <img
+                            src={"img/green-chalkboard.webp"}
+                            width={200}
+                            className="background"
+                        ></img>
+
+                        <h1 className="playwrite-ar-guides-regular text-center">
+                            {process.env.NEXT_PUBLIC_GAME_NAME}
+                        </h1>
+
+                    </div>
+
                     <div className="card card-articles mb-3">
 
                         <div className="card-header">
 
-                            <NicknameInput 
+                            <NicknameInput
                                 useStore={useStore}
                             />
 
@@ -158,21 +178,17 @@ export default function SchoolRunGameLandingPage() {
 
                         <div className="card-body">
 
-                            <div
-                                className="fw-bold mb-1 small text-center"
-                                onClick={() => {
-                                    console.log("Score")
-                                    userHighScoreMutate()
-                                }}
-                            >
-                                User High Score: {userHighScore?.score || 0}
-                            </div>
-
                             <div className="fw-bold mb-1 small text-center d-flex justify-content-center align-items-center">
                                 <span
                                     className=""
+                                    style={{
+                                        cursor: 'pointer',
+                                        marginRight: '0.25rem'
+                                    }}
                                     onClick={() => {
-                                        setHighScore(0)
+                                        if (window.confirm("Are you sure you want to reset your local high score?")) {
+                                            setHighScore(0);
+                                        }
                                     }}
                                 >
                                     <i className="action fas fa-eraser"></i>
@@ -180,9 +196,27 @@ export default function SchoolRunGameLandingPage() {
                                 Local High Score: {+highScore?.toFixed(0)}
                             </div>
 
-                            <div className="fw-bold mb-3 small text-center">
-                                Global User High Score: 0
+                            <div
+                                className="fw-bold mb-0 small text-center"
+                            >
+                                <span
+                                    className=""
+                                    style={{
+                                        cursor: 'pointer',
+                                        marginRight: '0.25rem'
+                                    }}
+                                    onClick={() => {
+                                        userHighScoreMutate()
+                                    }}
+                                >
+                                    <i className="action fas fa-redo"></i>
+                                </span>
+                                User High Score: {userHighScore?.score || 0}
                             </div>
+
+                            {/* <div className="fw-bold mb-3 small text-center">
+                                Global User High Score: 0
+                            </div> */}
 
                             <hr />
 
@@ -209,7 +243,7 @@ export default function SchoolRunGameLandingPage() {
 
                         <div className="card-footer d-flex flex-wrap justify-content-center">
 
-                            <GameMenuPrimaryButtonGroup 
+                            <GameMenuPrimaryButtonGroup
                                 useStore={useStore}
                                 type="Landing"
                             />
@@ -231,6 +265,19 @@ export default function SchoolRunGameLandingPage() {
                     game={process.env.NEXT_PUBLIC_GAME_NAME}
                     style="Default"
                     darkMode={darkMode ? true : false}
+                    append_score_text="m"
+                    metrics={[
+                        {
+                            label: 'Max Distance',
+                            key: "score",
+                            format: (value) => `${value} m`
+                        },
+                        {
+                            label: 'Distance Ran',
+                            key: "total_distance",
+                            format: (value) => `${value} m`
+                        }
+                    ]}
                     prepend={
                         <div
                             style={{

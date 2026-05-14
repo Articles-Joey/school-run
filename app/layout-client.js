@@ -13,6 +13,8 @@ import GlobalBody from '@articles-media/articles-dev-box/GlobalBody';
 import GlobalClientModals from '@articles-media/articles-dev-box/GlobalClientModals';
 import { useGameStore } from '@/hooks/useGameStore';
 import ArticlesButton from '@/components/UI/Button';
+import { useHotkeys } from 'react-hotkeys-hook';
+import AudioHandler from '@/components/Game/AudioHandler';
 
 export default function LayoutClient({ children }) {
 
@@ -25,12 +27,21 @@ export default function LayoutClient({ children }) {
 
     const setContentWarningAccept = useGameStore((state) => state.setContentWarningAccept);
 
+    useHotkeys('p', () => {
+        useGameStore.getState().toggleFreeze();
+    }, [])
+    useHotkeys('r', () => {
+        console.log("Reloading Scene")
+        useStore.getState().reloadScene();
+    }, [])
+
     return (
         <>
             <GlobalBody />
             <DarkModeHandler
                 useStore={useStore}
             />
+            <AudioHandler />
             <Suspense>
                 <GlobalClientModals
                     useStore={useStore}
