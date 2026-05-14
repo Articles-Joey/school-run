@@ -1,46 +1,17 @@
-import { useBox, useCylinder } from "@react-three/cannon";
-import { Text, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useGLTF } from '@react-three/drei'
 import { memo, useEffect, useMemo, useRef, useState } from "react"
 
-import generateRandomInteger from "@/util/generateRandomInteger"
-// import getRandomHexColor from "util/getRandomHexColor"
-
-import { ChairModel } from "@/components/Models/Chair";
-import { DeskModel } from "@/components/Models/Desk";
-import { ComputerScreenModel } from "@/components/Models/ComputerScreen";
-import { ComputerKeyboardModel } from "@/components/Models/ComputerKeyboard";
-import Witch from "@/components/PlayerModels/Witch";
-import Duck from "@/components/PlayerModels/Duck";
-import Dog from "@/components/PlayerModels/Dog";
-import Bear from "@/components/PlayerModels/Bear";
-import { PearModel } from "@/components/Models/Pear";
-import { TelevisionVintageModel } from "@/components/Models/TelevisionVintage";
-
 import { useGameStore, OBSTACLE_TYPES, pickObstacleType } from "@/hooks/useGameStore";
-import Walls from "../Walls";
-// import { RepeatWrapping } from "three";
-// import { HoodiePlayerDeadModel } from "./PlayerModels/HoodiePlayerDead";
+import Walls from "./Walls";
 
-// import { SuitWomanModel } from './PlayerModels/SuitWoman';
-// import { Model as ModelManBeach } from '@/components/Games/Assets/Quaternius/men/Beach';
-
-import { BloodSplatModel } from '@/components/Models/BloodSplat';
-import { DeadBody } from "@/components/Models/DeadBody";
-import { WetFloorSign } from "../Models/WetFloorSign";
 import { useStore } from "@/hooks/useStore";
-import { degToRad } from "three/src/math/MathUtils.js";
 import { FireLine } from "./FireLine";
 import DroneObstacle from "./DroneObstacle";
 import BodyObstacle from "./BodyObstacle";
-// import { degToRad } from "three/src/math/MathUtils.js";
 
-function Decorations(props) {
+function GameSections(props) {
 
     const ref = useRef();
-
-    // const obstacles = useRef([])
 
     const {
         distance,
@@ -53,25 +24,8 @@ function Decorations(props) {
 
     const graphicsQuality = useStore((state) => state.graphicsQuality);
 
-    // Generate initial obstacles
     useEffect(() => {
-
         generateInitialObstacles()
-
-        // const max = 10
-
-        // const obstacleCount = graphicsQuality === "High" ? max : graphicsQuality === "Medium" ? max / 2 : max / 4;
-
-        // if (obstacles?.length !== 0) return
-
-        // let initialObstacles = []
-
-        // for (let i = 0; i < obstacleCount; i++) {
-        //     initialObstacles.push({ position: [generateRandomInteger(-1, 1), 0, -i * 10], id: i })
-        // }
-
-        // setObstacles(initialObstacles)
-
     }, [graphicsQuality])
 
     useFrame(() => {
@@ -100,41 +54,6 @@ function Decorations(props) {
 
         setObstacles(newObstacles);
 
-        return
-
-        // let newObstacles = obstacles.map(obstacle => {
-        //     obstacle.position[2] += 0.1
-        //     return obstacle
-        // })
-
-        // setObstacles(newObstacles)
-
-        // return
-
-        // // console.log("obstacles", obstacles.current)
-
-        // // Update obstacles' positions and remove them if they go behind the player
-        // obstacles.current.forEach((obstacle, index) => {
-        //     obstacle.position[2] += 0.1 // Move towards the player
-
-        //     // if (obstacle.position[2] < distance + 5) {
-        //     //     // Remove obstacle if it goes behind the player
-        //     //     obstacles.current.splice(index, 1)
-        //     //     // Add a new obstacle in front
-        //     //     const newObstacle = {
-        //     //         position: [0, 0, obstacles.current[obstacles.current.length - 1]?.position[2] - 10 || -10],
-        //     //         id: Date.now(),
-        //     //     }
-        //     //     obstacles.current.push(newObstacle)
-        //     // }
-        // })
-
-        return
-
-        if (ref.current) {
-            const newZ = ref.current.position.z + 0.05;
-            ref.current.position.z = newZ;
-        }
     });
 
     return (
@@ -142,7 +61,7 @@ function Decorations(props) {
 
             {/* Render Obstacles */}
             {obstacles?.map((obstacle) => (
-                <Obstacle
+                <Section
                     key={obstacle.id}
                     obstacle={obstacle}
                 />
@@ -152,11 +71,10 @@ function Decorations(props) {
     )
 }
 
-export default Decorations
+export default GameSections
 
-function Obstacle({ obstacle }) {
-    // if (obstacle.obstacleType === "Body") return <BodyObstacle obstacle={obstacle} />;
-    // if (obstacle.obstacleType === "Drone") return <DroneObstacle obstacle={obstacle} />;
+function Section({ obstacle }) {
+
     return (
         <>
 
@@ -182,4 +100,3 @@ function Obstacle({ obstacle }) {
         </>
     );
 }
-

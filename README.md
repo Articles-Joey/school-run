@@ -18,7 +18,7 @@ npm run dev
 
 ## Content Warning
 
-This game contains a graphic mode with depictions of violence, including school shooting scenarios, which some players may find deeply disturbing. It features themes of gun violence, psychological trauma, and mature language. Viewer and player discretion is strongly advised.
+This game contains a opt in graphic mode with depictions of violence, including school shooting scenarios, which some players may find deeply disturbing. It features themes of gun violence, psychological trauma, and mature language. Viewer and player discretion is strongly advised.
 
 ## Attributions 
 
@@ -28,3 +28,5 @@ This game contains a graphic mode with depictions of violence, including school 
 [Backpack Model - J-Toastie](https://poly.pizza/m/uRRsiIZKHG)  
 [FPS Rig AKM - J-Toastie](https://poly.pizza/m/U6l6wjxFhC)  
 [Hoodie Player Model - Quaternius](https://poly.pizza/m/gKLBoRsyKe)
+[Broken Window Model - Justin Randall](https://poly.pizza/m/a_Q2-bs4zu9)
+[Unbroken Window Model - Justin Randall](https://poly.pizza/m/dwBpM-aSA_t)

@@ -47,6 +47,8 @@ export default function DroneObstacle({ obstacle }) {
             useGameStore.getState().gameOver
         ) return;
 
+        // if (obstacle.position[2] < -30) return;
+
         const t = state.clock.getElapsedTime();
         const xOffset = Math.sin(t * 2) * MOVE_RANGE;
         api.position.set(initialX + xOffset, droneY, obstacle.position[2]);

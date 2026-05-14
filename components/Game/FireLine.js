@@ -145,8 +145,31 @@ export function FireLine({
 
   // 3. Update time uniform every frame for animation
   useFrame((state) => {
+    if (obstacle.position[2] < -50) return;
+
     if (pointsRef.current) {
       pointsRef.current.material.uniforms.uTime.value = state.clock.elapsedTime
+
+      // Dynamically adjust particle count (draw range) based on distance
+      // Drops to 0 at z=-50, increases in percentages every 10 units
+      const z = obstacle.position[2];
+      let visiblePercent = 0;
+
+      if (z > -10) {
+        visiblePercent = 1.0; // 100%
+      } else if (z > -20) {
+        visiblePercent = 0.8; // 80%
+      } else if (z > -30) {
+        visiblePercent = 0.6; // 60%
+      } else if (z > -40) {
+        visiblePercent = 0.4; // 40%
+      } else if (z > -50) {
+        visiblePercent = 0.2; // 20%
+      } else {
+        visiblePercent = 0.0; // 0%
+      }
+
+      pointsRef.current.geometry.setDrawRange(0, Math.floor(count * visiblePercent));
     }
   })
 
