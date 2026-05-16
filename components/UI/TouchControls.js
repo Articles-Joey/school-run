@@ -3,40 +3,60 @@ import { memo, useEffect, useState } from "react";
 import ArticlesButton from "@/components/UI/Button"
 // import { useControlsStore, useGameStore } from "@/hooks/useGameStore"
 import useTouchControlsStore from "@/hooks/useTouchControlsStore";
+import { useStore } from "@/hooks/useStore";
+import { useGameStore } from "@/hooks/useGameStore";
 
 const arePropsEqual = (prevProps, nextProps) => {
     // Compare all props for equality
     return JSON.stringify(prevProps) === JSON.stringify(nextProps);
 };
 
-function JumpButtonBase() {
+function ActionButtons() {
 
-    const {
-        touchControls, setTouchControls
-    } = useTouchControlsStore()
+    const setTouchControls = useTouchControlsStore(state => state.setTouchControls);
 
     return (
-        <ArticlesButton
-            onClick={() => {
-                console.log("Jump!")
-                setTouchControls({
-                    ...touchControls,
-                    jump: true
-                })
-            }}
-        >
-            Jump
-        </ArticlesButton>
+        <div className="action-buttons d-flex flex-column g-3">
+
+            <ArticlesButton
+                className="jump-button"
+                onClick={() => {
+                    const touchControls = useTouchControlsStore.getState().touchControls;
+                    console.log("Jump!")
+                    setTouchControls({
+                        ...touchControls,
+                        jump: true
+                    })
+                }}
+            >
+                Jump
+            </ArticlesButton>
+
+            <ArticlesButton
+                className="roll-button"
+                onClick={() => {
+                    const touchControls = useTouchControlsStore.getState().touchControls;
+                    setTouchControls({
+                        ...touchControls,
+                        roll: true
+                    })
+                }}
+            >
+                Roll
+            </ArticlesButton>
+
+        </div>
     )
 }
-
-const JumpButton = memo(JumpButtonBase, arePropsEqual);
 
 export default function TouchControls(props) {
 
     // const {
     //     touchControlsEnabled,
     // } = props;
+
+    const sceneKey = useStore(state => state.sceneKey)
+    const cameraMode = useGameStore(state => state.cameraMode)
 
     const touchControls = useTouchControlsStore(state => state.touchControls);
     const setTouchControls = useTouchControlsStore(state => state.setTouchControls);
@@ -161,21 +181,42 @@ export default function TouchControls(props) {
                 //   pressure: data
                 // });
             });
+
+        return manager;
     }
 
     useEffect(() => {
 
-        if (!nippleCreated) {
-            console.log("Load nipple")
-            startNipple()
+        console.log("Load nipple")
+        const manager = startNipple()
+
+        return () => {
+            if (manager) {
+                console.log("Destroy nipple")
+                manager.destroy()
+            }
         }
 
-    }, []);
+    }, [sceneKey]);
+
+    if (cameraMode == "Free") return null
 
     return (
-        <div className={`touch-controls-area ${!touchControlsEnabled && 'd-none'}`}>
+        <div
+            className={`touch-controls-area ${!touchControlsEnabled && 'd-none'}`}
+        >
 
-            <div className='d-flex'>
+            <div className="w-100 h-100">
+                <div style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    // backgroundColor: 'black',
+                    zIndex: 1,
+                }} id="zone_joystick"></div>
+            </div>
+
+            <div className='d-flex d-none'>
 
                 <div>
                     {/* <ArticlesButton
@@ -196,12 +237,7 @@ export default function TouchControls(props) {
                 >
                     Right
                 </ArticlesButton> */}
-                    <div style={{
-                        position: 'relative',
-                        width: '100px',
-                        height: '100px',
-                        backgroundColor: 'black'
-                    }} id="zone_joystick"></div>
+
                 </div>
 
                 <div className='ms-2 d-none d-lg-block'>
@@ -212,7 +248,7 @@ export default function TouchControls(props) {
 
             </div>
 
-            <JumpButton />
+            <ActionButtons />
 
         </div>
     )

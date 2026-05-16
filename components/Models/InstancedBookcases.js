@@ -1,8 +1,13 @@
 import React, { useMemo } from 'react'
 import { useGLTF, Merged } from '@react-three/drei'
+import getAssetSource from "@/util/getAssetSource";
+
+const link = getAssetSource(
+  `models/bookcaseClosedDoors-transformed.glb`
+);
 
 export function InstancedBookcases({ children }) {
-  const { nodes } = useGLTF('models/bookcaseClosedDoors-transformed.glb')
+  const { nodes } = useGLTF(link)
   
   const meshes = useMemo(() => ({
     Bookcase: nodes['bookcaseClosedDoors(Clone)'],
@@ -16,4 +21,4 @@ export function InstancedBookcases({ children }) {
   )
 }
 
-useGLTF.preload('models/bookcaseClosedDoors-transformed.glb')
+useGLTF.preload(link)

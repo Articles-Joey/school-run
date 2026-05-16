@@ -8,7 +8,6 @@ import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 import TouchControls from '@/components/UI/TouchControls';
 import LeftPanelContent from '@/components/UI/LeftPanel';
 import { useGameStore } from '@/hooks/useGameStore';
-import SchoolRunContentWarning from '@/components/ContentWarning';
 import { useStore } from '@/hooks/useStore';
 import DeathScreen from '@/components/UI/DeathScreen';
 import classNames from "classnames";
@@ -41,8 +40,6 @@ export default function GamePage() {
             )}
             id={`${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`}
         >
-
-            <SchoolRunContentWarning />
 
             <GameMenu
                 useStore={useStore}

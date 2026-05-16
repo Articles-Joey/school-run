@@ -24,7 +24,6 @@ export default function DeathScreen() {
                 {!safeMode &&
                     <img
                         className="background"
-                        // src={`${process.env.NEXT_PUBLIC_CDN}games/School Run/blood-splat.png`}
                         src={`img/blood-splat.png`}
                     />
                 }

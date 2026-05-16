@@ -6,9 +6,14 @@ Files: bookcaseClosedDoors.glb [22.64KB] > F:\My Documents\Sites games\school-ru
 
 import React from 'react'
 import { useGLTF } from '@react-three/drei'
+import getAssetSource from "@/util/getAssetSource";
+
+const link = getAssetSource(
+  `models/bookcaseClosedDoors-transformed.glb`
+);
 
 export function ModelBookcaseClosedDoorsNew(props) {
-  const { nodes, materials } = useGLTF('models/bookcaseClosedDoors-transformed.glb')
+  const { nodes, materials } = useGLTF(link)
   return (
     <group {...props} dispose={null}>
       <mesh geometry={nodes['bookcaseClosedDoors(Clone)'].geometry} material={materials.wood} />
@@ -17,4 +22,4 @@ export function ModelBookcaseClosedDoorsNew(props) {
   )
 }
 
-useGLTF.preload('models/bookcaseClosedDoors-transformed.glb')
+useGLTF.preload(link)

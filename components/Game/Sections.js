@@ -8,6 +8,7 @@ import { useStore } from "@/hooks/useStore";
 import { FireLine } from "./FireLine";
 import DroneObstacle from "./DroneObstacle";
 import BodyObstacle from "./BodyObstacle";
+import HorizontalObstacle from "./HorizontalObstacle";
 
 function GameSections(props) {
 
@@ -96,7 +97,12 @@ function Section({ obstacle }) {
                     obstacle={obstacle}
                 />
             )}
-            
+            {obstacle.obstacleType === "Horizontal" && (
+                <HorizontalObstacle
+                    obstacle={obstacle}
+                />
+            )}
+
         </>
     );
 }

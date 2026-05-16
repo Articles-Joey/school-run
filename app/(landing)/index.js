@@ -1,53 +1,28 @@
 "use client"
 import { useEffect, useContext, useState } from 'react';
 
-import Image from 'next/image'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 
 import ArticlesButton from '@/components/UI/Button';
 import { useSocketStore } from '@/hooks/useSocketStore';
-import SchoolRunContentWarning from '@/components/ContentWarning';
 import { useGameStore } from '@/hooks/useGameStore';
 import useUserGameScore from '@/hooks/useUserGameScore';
 import { useStore } from '@/hooks/useStore';
 import RotatingMascot from '@/components/UI/RotatingMascot';
+import LandingBackgroundAnimation from '@/components/Game/LandingBackgroundAnimation';
+import getAssetSource from "@/util/getAssetSource";
 
 import useUserToken from '@articles-media/articles-dev-box/useUserToken';
-import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
-import NicknameInput from '@articles-media/articles-dev-box/NicknameInput';
-import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
-import LandingBackgroundAnimation from '@/components/Game/LandingBackgroundAnimation';
-const GameScoreboard = dynamic(() =>
-    import('@articles-media/articles-dev-box/GameScoreboard'),
-    { ssr: false }
-);
-const Ad = dynamic(() =>
-    import('@articles-media/articles-dev-box/Ad'),
-    { ssr: false }
-);
-const ReturnToLauncherButton = dynamic(() =>
-    import('@articles-media/articles-dev-box/ReturnToLauncherButton'),
-    { ssr: false }
-);
-const SessionButton = dynamic(() =>
-    import('@articles-media/articles-dev-box/SessionButton'),
-    { ssr: false }
-);
+import PageTemplateLandingPage from '@articles-media/articles-dev-box/PageTemplateLandingPage';
 
-const game_key = process.env.NEXT_PUBLIC_GAME_KEY
-const game_name = process.env.NEXT_PUBLIC_GAME_NAME
-const game_port = process.env.NEXT_PUBLIC_GAME_PORT
+const background_link = getAssetSource(
+    `img/preview.webp`
+);
 
 export default function SchoolRunGameLandingPage() {
 
-    const {
-        socket,
-        connected
-    } = useSocketStore(state => ({
-        socket: state.socket,
-        connected: state.connected,
-    }));
+    const connected = useSocketStore(state => state.connected);
 
     const {
         data: userToken,
@@ -58,46 +33,34 @@ export default function SchoolRunGameLandingPage() {
         process.env.NEXT_PUBLIC_GAME_PORT
     );
 
-    const {
-        data: userDetails,
-        error: userDetailsError,
-        isLoading: userDetailsLoading,
-        mutate: userDetailsMutate
-    } = useUserDetails({
-        token: userToken
-    });
+    // const {
+    //     data: userDetails,
+    //     error: userDetailsError,
+    //     isLoading: userDetailsLoading,
+    //     mutate: userDetailsMutate
+    // } = useUserDetails({
+    //     token: userToken
+    // });
 
     const {
-        setContentWarningAccept,
         highScore,
         setHighScore,
         setDistance
     } = useGameStore(state => ({
-        setDistance: state.setDistance,
-        setContentWarningAccept: state.setContentWarningAccept,
         highScore: state.highScore,
-        setHighScore: state.setHighScore
+        setHighScore: state.setHighScore,
+        setDistance: state.setDistance,
     }));
 
     const {
         data: userHighScore,
+        isLoading: userHighScoreLoading,
         mutate: userHighScoreMutate
     } = useUserGameScore({
         game: 'School Run'
     });
 
-    const landingAnimation = useStore(state => state.landingAnimation);
-    const toggleDarkMode = useStore(state => state.toggleDarkMode)
-    const darkMode = useStore(state => state.darkMode)
-    const nickname = useStore(state => state.nickname)
-    const setNickname = useStore(state => state.setNickname)
-    const _hasHydrated = useStore(state => state._hasHydrated)
-    const randomNickname = useStore(state => state.randomNickname)
     const lobbyDetails = useStore(state => state.lobbyDetails)
-    // const setLobbyDetails = useStore(state => state.setLobbyDetails)
-    const setShowInfoModal = useStore(state => state.setShowInfoModal)
-    const setShowSettingsModal = useStore(state => state.setShowSettingsModal)
-    const setShowCreditsModal = useStore(state => state.setShowCreditsModal)
 
     useEffect(() => {
 
@@ -105,43 +68,100 @@ export default function SchoolRunGameLandingPage() {
 
     }, []);
 
-    useEffect(() => {
-
-        if (socket.connected) {
-            socket.emit('join-room', `game:${game_key}-landing`);
-        }
-
-        return function cleanup() {
-            socket.emit('leave-room', `game:${game_key}-landing`)
-        };
-
-    }, [connected]);
-
     return (
-
-        <div className="landing-page">
-
-            <SchoolRunContentWarning />
-
-            <div className='background-wrap'>
-                {landingAnimation ?
+        <>
+            <PageTemplateLandingPage
+                useSocketStore={useSocketStore}
+                useStore={useStore}
+                RotatingMascot={RotatingMascot}
+                Link={Link}
+                // logoImage={logo.src}
+                LandingBackgroundAnimation={
                     <LandingBackgroundAnimation />
-                    :
-                    <Image
-                        src={`${process.env.NEXT_PUBLIC_CDN}games/School Run/background.jpg`}
-                        alt=""
-                        fill
-                        style={{ objectFit: 'cover', objectPosition: 'bottom' }}
-                    />
                 }
-            </div>
+                CardBodyOverride={<>
+                    <div className="card-body">
 
-            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center py-3">
+                        <div className="fw-bold mb-1 small text-center d-flex justify-content-center align-items-center">
+                            <span
+                                className=""
+                                style={{
+                                    cursor: 'pointer',
+                                    marginRight: '0.25rem'
+                                }}
+                                onClick={() => {
+                                    if (window.confirm("Are you sure you want to reset your local high score?")) {
+                                        setHighScore(0);
+                                    }
+                                }}
+                            >
+                                <i className="action fas fa-eraser"></i>
+                            </span>
+                            Local High Score: {+highScore?.toFixed(0)}
+                        </div>
 
-                <div
-                    style={{ "width": "20rem" }}
-                >
+                        {userToken &&
+                            <>
+                                {userHighScoreLoading ?
+                                    <div className="fw-bold mb-0 small text-center">
+                                        Loading user high score...
+                                    </div>
+                                    :
+                                    <div
+                                        className="fw-bold mb-0 small text-center"
+                                    >
+                                        <span
+                                            className=""
+                                            style={{
+                                                cursor: 'pointer',
+                                                marginRight: '0.25rem'
+                                            }}
+                                            onClick={() => {
+                                                userHighScoreMutate()
+                                            }}
+                                        >
+                                            <i className="action fas fa-redo"></i>
+                                        </span>
+                                        User High Score: {userHighScore?.score || 0}
+                                    </div>
+                                }
+                            </>
+                        }
 
+                        {/* <div className="fw-bold mb-3 small text-center">
+                                    Global User High Score: 0
+                                </div> */}
+
+                        {process.env.NEXT_PUBLIC_ENABLE_ARTICLES === 'true' &&
+                            <>
+                                <hr />
+
+                                <div className="fw-bold mb-1 small text-center">
+                                    {lobbyDetails.players.length || 0} player{(lobbyDetails.players.length !== 1) && 's'} in the school.
+                                </div>
+                            </>
+                        }
+
+                        {/* <div className='small fw-bold'>Public Servers</div> */}
+
+                        <Link
+                            prefetch={false}
+                            className={``}
+                            href={{
+                                pathname: `/play`
+                            }}
+                        >
+                            <ArticlesButton
+                                className="px-5 w-100 mb-2"
+                            >
+                                Play
+                            </ArticlesButton>
+                        </Link>
+
+                    </div>
+                </>}
+                // disableHero
+                heroOverride={<>
                     <div className='branding-backpack py-3'>
                         <img
                             src={"img/school-bag.png"}
@@ -165,108 +185,45 @@ export default function SchoolRunGameLandingPage() {
                         </h1>
 
                     </div>
+                </>}
+                backgroundImage={background_link}
+                singlePlayerConfig={{
 
-                    <div className="card card-articles mb-3">
+                }}
+                NicknameInputConfig={{
+                    // PreComponent: <div className='flex-shrink-0 me-2'>
 
-                        <div className="card-header">
+                    //     <div style={{ width: '50px', height: '50px' }} >
+                    //         <div
+                    //             className="ratio ratio-1x1 mb-1"
+                    //         >
+                    //             <div>
+                    //                 <Viewer scale={13} model={character.model} />
+                    //             </div>
+                    //         </div>
+                    //     </div>
 
-                            <NicknameInput
-                                useStore={useStore}
-                            />
+                    //     <ArticlesButton
+                    //         small
+                    //         className="w-100"
+                    //         onClick={() => {
+                    //             setCharacterEdit(true)
+                    //         }}
+                    //     >
+                    //         Edit
+                    //     </ArticlesButton>
 
-                        </div>
-
-                        <div className="card-body">
-
-                            <div className="fw-bold mb-1 small text-center d-flex justify-content-center align-items-center">
-                                <span
-                                    className=""
-                                    style={{
-                                        cursor: 'pointer',
-                                        marginRight: '0.25rem'
-                                    }}
-                                    onClick={() => {
-                                        if (window.confirm("Are you sure you want to reset your local high score?")) {
-                                            setHighScore(0);
-                                        }
-                                    }}
-                                >
-                                    <i className="action fas fa-eraser"></i>
-                                </span>
-                                Local High Score: {+highScore?.toFixed(0)}
-                            </div>
-
-                            <div
-                                className="fw-bold mb-0 small text-center"
-                            >
-                                <span
-                                    className=""
-                                    style={{
-                                        cursor: 'pointer',
-                                        marginRight: '0.25rem'
-                                    }}
-                                    onClick={() => {
-                                        userHighScoreMutate()
-                                    }}
-                                >
-                                    <i className="action fas fa-redo"></i>
-                                </span>
-                                User High Score: {userHighScore?.score || 0}
-                            </div>
-
-                            {/* <div className="fw-bold mb-3 small text-center">
-                                Global User High Score: 0
-                            </div> */}
-
-                            <hr />
-
-                            <div className="fw-bold mb-1 small text-center">
-                                {lobbyDetails.players.length || 0} player{(lobbyDetails.players.length !== 1) && 's'} in the school.
-                            </div>
-
-                            {/* <div className='small fw-bold'>Public Servers</div> */}
-
-                            <Link
-                                className={``}
-                                href={{
-                                    pathname: `/play`
-                                }}
-                            >
-                                <ArticlesButton
-                                    className="px-5 w-100 mb-2"
-                                >
-                                    Play
-                                </ArticlesButton>
-                            </Link>
-
-                        </div>
-
-                        <div className="card-footer d-flex flex-wrap justify-content-center">
-
-                            <GameMenuPrimaryButtonGroup
-                                useStore={useStore}
-                                type="Landing"
-                            />
-
-                        </div>
-
-                    </div>
-
-                    <SessionButton
-                        port={process.env.NEXT_PUBLIC_GAME_PORT}
-                        friendsButton={true}
-                    />
-
-                    <ReturnToLauncherButton />
-
-                </div>
-
-                <GameScoreboard
-                    game={process.env.NEXT_PUBLIC_GAME_NAME}
-                    style="Default"
-                    darkMode={darkMode ? true : false}
-                    append_score_text="m"
-                    metrics={[
+                    // </div>
+                }}
+                multiplayerConfig={{
+                    // type: "WebSocket",
+                    // comingSoon: true,
+                    // defaultServers: 2,
+                    // privateServerSupport: false,
+                }}
+                gameScoreboardConfig={{
+                    append_score_text: "m",
+                    metrics: [
                         {
                             label: 'Max Distance',
                             key: "score",
@@ -277,33 +234,12 @@ export default function SchoolRunGameLandingPage() {
                             key: "total_distance",
                             format: (value) => `${value} m`
                         }
-                    ]}
-                    prepend={
-                        <div
-                            style={{
-                                width: '100%',
-                                height: '200px',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <RotatingMascot />
-                        </div>
-                    }
-                />
-
-                <Ad
-                    style="Default"
-                    section={"Games"}
-                    section_id={process.env.NEXT_PUBLIC_GAME_NAME}
-                    darkMode={darkMode ? true : false}
-                    user_ad_token={userToken}
-                    userDetails={userDetails}
-                    userDetailsLoading={userDetailsLoading}
-                />
-
-            </div>
-        </div>
+                    ]
+                }}
+                // brandingTextClass="jaro-primary"
+                disableGameScoreboard={process.env.NEXT_PUBLIC_ENABLE_ARTICLES !== 'true'}
+                disableAd={process.env.NEXT_PUBLIC_ENABLE_ARTICLES !== 'true'}
+            />
+        </>
     );
 }

@@ -11,6 +11,8 @@ import DarkModeHandler from "@articles-media/articles-dev-box/DarkModeHandler";
 import GlobalBody from '@articles-media/articles-dev-box/GlobalBody';
 // import ToontownModeHandler from '@articles-media/articles-dev-box/ToontownModeHandler';
 import GlobalClientModals from '@articles-media/articles-dev-box/GlobalClientModals';
+
+import SchoolRunContentWarning from '@/components/ContentWarning';
 import { useGameStore } from '@/hooks/useGameStore';
 import ArticlesButton from '@/components/UI/Button';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -43,6 +45,7 @@ export default function LayoutClient({ children }) {
             />
             <AudioHandler />
             <Suspense>
+                <SchoolRunContentWarning />
                 <GlobalClientModals
                     useStore={useStore}
                     useAudioStore={useAudioStore}
@@ -138,6 +141,12 @@ export default function LayoutClient({ children }) {
                     }}
                     infoModalConfig={{
                         previewImage: darkMode ? "img/preview.webp" : "img/preview.webp",
+                        appendContent: <>
+                            <div className='mb-2'><b>Note:</b> You can jump over the ground obstacles with the jump actions. Roll actions can be used to avoid the flying obstacles, but they have a cooldown. The game gets faster and more obstacles appear the further you go, so good luck!</div>
+                            <div className=''>
+                                View full controls in the settings menu
+                            </div>
+                        </>
                     }}
                 />
             </Suspense>

@@ -27,6 +27,7 @@ export default function DroneObstacle({ obstacle }) {
     // const { freeze, gameOver } = useGameStore();
 
     const [ref, api] = useBox(() => ({
+        type: 'Dynamic',
         isTrigger: true,
         args: [0.8, 0.3, 0.8],
 

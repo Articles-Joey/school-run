@@ -5,8 +5,8 @@ import { useCallback, useEffect, useState } from "react"
 
 function actionByKey(key) {
 	const keyActionMap = {
-		KeyW: 'moveUp',
-		KeyS: 'moveDown',
+		KeyW: 'jump',
+		KeyS: 'roll',
 		KeyA: 'moveLeft',
 		KeyD: 'moveRight',
 		Space: 'jump',
@@ -24,6 +24,7 @@ export const useKeyboard = () => {
 		drop: false,
 		jump: false,
 		shift: false,
+		roll: false,
 	})
 
 	const handleKeyDown = useCallback((e) => {

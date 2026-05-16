@@ -8,8 +8,11 @@ import React, { useEffect } from 'react'
 import { useGraph } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
+import getAssetSource from "@/util/getAssetSource";
 
-const link = `${process.env.NEXT_PUBLIC_CDN}games/Assets/Quaternius/men/Beach-transformed.glb`
+const link = getAssetSource(
+  `models/Beach-transformed.glb`
+);
 
 export function DeadBody(props) {
     const group = React.useRef()

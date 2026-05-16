@@ -6,9 +6,14 @@ Files: Backpack.glb [54.28KB] > F:\My Documents\Sites games\school-run\public\mo
 
 import React from 'react'
 import { useGLTF } from '@react-three/drei'
+import getAssetSource from "@/util/getAssetSource";
+
+const link = getAssetSource(
+  `models/Backpack-transformed.glb`
+);
 
 export function ModelBackpack(props) {
-  const { nodes, materials } = useGLTF('models/Backpack-transformed.glb')
+  const { nodes, materials } = useGLTF(link)
   return (
     <group {...props} dispose={null} position={[0, -2, 0]}>
       <mesh geometry={nodes['Backpack_Cube006-Mesh'].geometry} material={materials.Backpack} />
@@ -18,4 +23,4 @@ export function ModelBackpack(props) {
   )
 }
 
-useGLTF.preload('models/Backpack-transformed.glb')
+useGLTF.preload(link)

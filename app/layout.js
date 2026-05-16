@@ -53,7 +53,9 @@ export default function RootLayout({ children }) {
         <LayoutClient />
 
         <Suspense>
-          <SocketLogicHandler />
+          {process.env.NEXT_PUBLIC_ENABLE_ARTICLES &&
+            <SocketLogicHandler />
+          }
         </Suspense>
 
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>

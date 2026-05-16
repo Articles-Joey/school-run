@@ -6,7 +6,9 @@ Get as far as you can in this endless runner game, dodging obstacles and collect
 
 ## Getting Started
 
-Development server can be run very easily:
+First you will need to setup a .env file from the .env.sample provided.
+
+Then development server can be run:
 
 ```bash
 npm i
@@ -31,5 +33,10 @@ This game contains a opt in graphic mode with depictions of violence, including 
 [Hoodie Player Model - Quaternius](https://poly.pizza/m/gKLBoRsyKe)  
 [Broken Window Model - Justin Randall](https://poly.pizza/m/a_Q2-bs4zu9)  
 [Unbroken Window Model - Justin Randall](https://poly.pizza/m/dwBpM-aSA_t)  
+[Saw Blade Model - Quaternius](https://poly.pizza/m/HLOlecPOVD)
+[Metal Support Model - Quaternius](https://poly.pizza/m/ZyUjmgnTyw)
 [Gun Noise - DennisH18](https://pixabay.com/sound-effects/film-special-effects-machine-gun-129928/)  
 [Suspense Music - AbsoluteSound](https://pixabay.com/music/suspense-suspense-suspense-music-510791/)  
+[Man Scream 010 - Universfield](https://pixabay.com/sound-effects/people-man-scream-010-277572/)  
+[Cartoon Slide Whistle - floraphonic](https://pixabay.com/sound-effects/film-special-effects-cartoon-slide-whistle-down-2-176648/)  
+[Jump Whoosh - mixkit](https://mixkit.co/)  

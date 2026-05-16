@@ -1,18 +1,20 @@
 import React, { useMemo, useRef, useState } from "react"
 
-import { BookcaseClosedDoorsModel } from "@/components/Models/BookcaseClosedDoors";
+// import { BookcaseClosedDoorsModel } from "@/components/Models/BookcaseClosedDoors";
 
-import { ChairModel } from "../Models/Chair";
-import { DeskModel } from "../Models/Desk";
-import { ComputerScreenModel } from "../Models/ComputerScreen";
-import { ComputerKeyboardModel } from "../Models/ComputerKeyboard";
-import Witch from "../PlayerModels/Witch";
-import Duck from "../PlayerModels/Duck";
-import Dog from "../PlayerModels/Dog";
-import Bear from "../PlayerModels/Bear";
-import { PearModel } from "../Models/Pear";
-import { TelevisionVintageModel } from "../Models/TelevisionVintage";
+// import { ChairModel } from "../Models/Chair";
+import { ModelChair } from "../Models/Chair";
+import { ModelDesk } from "../Models/Desk";
+import { ModelComputerScreen } from "../Models/ComputerScreen";
+import { ModelComputerKeyboard } from "../Models/ComputerKeyboard";
+import { ModelTelevisionVintage } from "../Models/TelevisionVintage";
 import { InstancedBookcases } from "../Models/InstancedBookcases";
+
+import { ModelDuck } from "../Models/Duck";
+import { ModelDog } from "../Models/Dog";
+import { ModelWitch } from "../Models/Witch";
+import { ModelBear } from "../Models/Bear";
+import { ModelPear } from "../Models/Pear";
 
 export default function WallScene({ side }) {
 
@@ -65,13 +67,13 @@ export default function WallScene({ side }) {
                     ]}
                 >
 
-                    <ChairModel
+                    <ModelChair
                         scale={2}
                         position={[1, 0, 0.5]}
                         rotation={[0, -Math.PI, 0]}
                     />
 
-                    <DeskModel
+                    <ModelDesk
                         scale={2}
                     />
 
@@ -79,28 +81,29 @@ export default function WallScene({ side }) {
                         scale={0.1}
                         position={[0.1, 0.77, -0.4]}
                     >
-                        <Witch
+
+                        <ModelWitch
                             rotation={[0, 20 * Math.PI / 180, 0]}
                         />
-                        <Duck
+                        <ModelDuck
                             position={[1.5, 0, 0]}
                             rotation={[0, 20 * Math.PI / 180, 0]}
                         />
-                        <Dog
+                        <ModelDog
                             position={[3, 0, 0]}
                             rotation={[0, 20 * Math.PI / 180, 0]}
                         />
-                        <Bear
+                        <ModelBear
                             position={[4.5, 0, 0]}
                             rotation={[0, 20 * Math.PI / 180, 0]}
                         />
-                        <PearModel
+                        <ModelPear
                             position={[6, 0, 0]}
                             rotation={[0, 20 * Math.PI / 180, 0]}
                             scale={6}
                         />
                         
-                        <TelevisionVintageModel
+                        <ModelTelevisionVintage
                             position={
                                 isLeft ? 
                                 [-1, 14, 0] 
@@ -137,27 +140,27 @@ export default function WallScene({ side }) {
                     ]}
                 >
 
-                    <ChairModel
+                    <ModelChair
                         scale={2}
                         position={[1, 0, 0.5]}
                         rotation={[0, -Math.PI, 0]}
                     />
 
-                    <DeskModel
+                    <ModelDesk
                         scale={2}
                     />
 
-                    <ComputerScreenModel
+                    <ModelComputerScreen
                         position={[0, 0.77, -0.4]}
                         rotation={[0, 20 * Math.PI / 180, 0]}
                     />
 
-                    <ComputerScreenModel
+                    <ModelComputerScreen
                         position={[0.4, 0.77, -0.55]}
                         rotation={[0, 0 * Math.PI / 180, 0]}
                     />
 
-                    <ComputerKeyboardModel
+                    <ModelComputerKeyboard
                         position={[0.2, 0.77, -0.2]}
                         rotation={[0, 20 * Math.PI / 180, 0]}
                     />

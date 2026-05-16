@@ -1,7 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber"
-import { useBox, useCompoundBody, useSphere } from "@react-three/cannon"
+import { useBox, useCompoundBody, useSphere, useCylinder } from "@react-three/cannon"
 import { useGLTF, useAnimations, Text } from '@react-three/drei'
-import { memo, useEffect, useRef, useState } from "react"
+import { memo, useEffect, useMemo, useRef, useState } from "react"
 import { Vector3 } from "three"
 import * as THREE from 'three';
 import { useKeyboard } from "@/hooks/useKeyboard"
@@ -9,9 +9,7 @@ import { useKeyboard } from "@/hooks/useKeyboard"
 import { useControllerStore } from '@/hooks/useControllerStore';
 import { useGameStore } from "@/hooks/useGameStore";
 
-import { HoodiePlayerModel } from "@/components/PlayerModels/HoodiePlayer"
-import { BloodSplatModel } from "@/components/Models/BloodSplat"
-import { FpsRigAkmModel } from "@/components/Models/FpsRigAkm"
+import { ModelFpsRigAkm } from "@/components/Models/FpsRigAkm"
 import useTouchControlsStore from "@/hooks/useTouchControlsStore"
 import { ModelHand } from "@/components/Models/Human hand"
 import { degToRad } from "three/src/math/MathUtils.js"
@@ -20,6 +18,10 @@ import { useAudioStore } from "@/hooks/useAudioStore"
 
 import useUserToken from '@articles-media/articles-dev-box/useUserToken';
 import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
+import { ModelHoodieCharacter } from "../Models/HoodieCharacter"
+import { ModelBloodSplat } from "../Models/BloodSplat"
+import RollManager from "./RollManager"
+import getAssetSource from "@/util/getAssetSource"
 
 const JUMP_FORCE = 6;
 const SPEED = 4;
@@ -32,16 +34,19 @@ function myToFixed(i, digits) {
     return Math.floor(i * pow) / pow;
 }
 
-function playSound() {
-    const safeMode = useStore.getState().safeMode;
+function playSound(audioFile, modifier = 0.5) {
+    // REMOVED: if (safeMode) return 
+    // Reason: Safe mode should change the sound type (handled in playDeathSound), 
+    // not mute the game entirely. If you want a global mute, use a separate 'isMuted' state.
 
-    if (safeMode) return
+    const game_volume = useAudioStore.getState().audioSettings.game_volume;
+    const audio = new Audio(
+        getAssetSource(audioFile)
+    );
+    audio.volume = (game_volume / 100) * modifier;
 
-    const game_volume = useAudioStore.getState().audioSettings.game_volume
-    const audio = new Audio('audio/dennish18-machine-gun-129929.mp3');
-    audio.volume = (game_volume / 100) * 0.5; // Adjust the multiplier as needed to balance with other game sounds
-    audio.play();
-
+    // Return the promise so calling functions can use .catch()
+    return audio.play();
 }
 
 function GunFlickerForJump() {
@@ -82,10 +87,7 @@ function GunFlickerForJump() {
 
 function PlayerBase(props) {
 
-    // const { setPlayerData, teleportPlayer, setTeleportPlayer } = props;
-
-    // const userReduxState = useSelector((state) => state.auth.user_details)
-    const userReduxState = false
+    const debug = useStore((state) => state.debug)
 
     const {
         cameraMode, setCameraMode,
@@ -98,8 +100,8 @@ function PlayerBase(props) {
         setGameOver,
         setHighScore,
         freeze,
-        debug
     } = useGameStore()
+    const isRolling = useGameStore(state => state.isRolling);
 
     const {
         data: userToken,
@@ -205,6 +207,25 @@ function PlayerBase(props) {
 
     }, [teleport]);
 
+    function playDeathSound() {
+        const safeMode = useStore.getState().safeMode;
+        console.log("Playing death sound, safe mode is", safeMode);
+
+        let soundPath = safeMode
+            ? 'audio/floraphonic-cartoon-slide-whistle-down-2-176648.mp3'
+            : 'audio/universfield-man-scream-010-277572.mp3';
+
+        if (!safeMode) {
+            playSound('audio/dennish18-machine-gun-129929.mp3')
+        }
+
+        // Catch the autoplay restriction error smoothly
+        playSound(soundPath)
+            ?.catch(error => {
+                console.warn("Audio autoplay blocked. Waiting for user interaction.", error);
+            });
+    };
+
     const { moveBackward, moveForward, moveRight, moveLeft, jump, shift: isShifting } = useKeyboard()
 
     const { camera, size } = useThree()
@@ -224,6 +245,7 @@ function PlayerBase(props) {
         }
     }
 
+    // Actual Player Sphere
     const [ref, api] = useCompoundBody(() => ({
         mass: 1,
         position: [0, 2, 0],
@@ -233,16 +255,16 @@ function PlayerBase(props) {
         },
         // Define the shapes that make up the capsule
         shapes: [
-            {
-                type: 'Cylinder',
-                args: [0.2, 0.2, cylinderHeight, 5], // [radiusTop, radiusBottom, height, segments]
-                position: [0, 0, 0]
-            },
-            {
-                type: 'Sphere',
-                args: [0.2],
-                position: [0, cylinderHeight / 2 - 0.125, 0] // Offset to the top (height/2)
-            },
+            // {
+            //     type: 'Cylinder',
+            //     args: [0.2, 0.2, cylinderHeight, 5], // [radiusTop, radiusBottom, height, segments]
+            //     position: [0, 0, 0]
+            // },
+            // {
+            //     type: 'Sphere',
+            //     args: [0.2],
+            //     position: [0, cylinderHeight / 2 - 0.125, 0] // Offset to the top (height/2)
+            // },
             {
                 type: 'Sphere',
                 args: [0.2],
@@ -257,6 +279,41 @@ function PlayerBase(props) {
                 if (!useStore.getState().disableDeath) {
                     setGameOver(true);
                     saveHighScore();
+                    playDeathSound();
+                }
+            }
+        },
+    }));
+
+    // External hitbox for when not rolling
+    const rollRef = useRef(isRolling);
+    useEffect(() => {
+        if (isRolling) {
+            rollRef.current = true;
+        } else {
+            rollRef.current = false;
+        }
+    }, [isRolling])
+    const [hitboxRef, hitboxApi] = useCylinder(() => ({
+        args: [0.25, 0.25, cylinderHeight, 8],
+        position: [0, 2, 0],
+        type: 'Kinematic',
+        // type: 'Static',
+        isTrigger: true,
+        onCollide: (e) => {
+            if (
+                !rollRef.current &&
+                e.body.userData.isObstacle
+                //  && 
+                //  e.body.userData.id !== lastObstacleRef.current
+            ) {
+                console.log("Player hit an obstacle (upper hitbox)", e?.body.userData, isRolling);
+                lastObstacleRef.current = e?.body.userData.id;
+
+                if (!useStore.getState().disableDeath) {
+                    setGameOver(true);
+                    saveHighScore();
+                    playDeathSound();
                 }
             }
         },
@@ -275,26 +332,24 @@ function PlayerBase(props) {
 
     const pos = useRef([0, 0, 0])
     useEffect(() => {
-
         api.position.subscribe((p) => pos.current = p)
-
     }, [api.position])
 
-    useEffect(() => {
-        console.log("Shift", isShifting)
-        setShift(isShifting)
-    }, [isShifting])
+    // useEffect(() => {
+    //     console.log("Shift", isShifting)
+    //     setShift(isShifting)
+    // }, [isShifting])
 
-    useEffect(() => {
-        console.log("Shift", isShifting)
-        if (isShifting) {
-            // Scale the whole body down
-            api?.scale?.set(1, 0.5, 1)
-        } else {
-            // Reset to normal scale
-            api?.scale?.set(1, 1, 1)
-        }
-    }, [isShifting, api])
+    // useEffect(() => {
+    //     console.log("Shift", isShifting)
+    //     if (isShifting) {
+    //         // Scale the whole body down
+    //         api?.scale?.set(1, 0.5, 1)
+    //     } else {
+    //         // Reset to normal scale
+    //         api?.scale?.set(1, 1, 1)
+    //     }
+    // }, [isShifting, api])
 
     useEffect(() => {
         if (gameOver) {
@@ -383,7 +438,7 @@ function PlayerBase(props) {
         direction
             .subVectors(frontVector, sideVector)
             .normalize()
-            .multiplyScalar(SPEED * (shift ? 2 : 1))
+            .multiplyScalar((rollRef.current ? SPEED / 2 : SPEED) * (shift ? 2 : 1))
             .applyEuler(camera.rotation)
 
         // Limit movement to between -3 and 3 on the x-axis
@@ -399,12 +454,27 @@ function PlayerBase(props) {
         // }
 
         api.velocity.set(direction.x, vel.current[1], 0)
+        hitboxApi.position.set(pos.current[0], pos.current[1], pos.current[2])
 
-        if ((jump || touchControls.jump) && Math.abs(vel.current[1]) < 0.05) {
+        if (
+            (jump || touchControls.jump)
+            &&
+            Math.abs(vel.current[1]) < 0.05
+        ) {
 
-            console.log("Jump understood")
+            console.log("Jump understood", pos.current[1])
 
-            playSound()
+            if (pos.current[1] > 1) {
+                // Still in air, don't allow jump
+                return
+            }
+
+            const safeMode = useStore.getState().safeMode;
+            if (!safeMode) {
+                playSound('audio/dennish18-machine-gun-129929.mp3')
+            } else {
+                playSound('audio/mixkit-arrow-whoosh-1491.mp3', 1)
+            }
 
             api.velocity.set(vel.current[0], JUMP_FORCE, vel.current[2])
 
@@ -429,6 +499,17 @@ function PlayerBase(props) {
     return (
         <group>
 
+            <RollManager />
+
+            <mesh ref={hitboxRef}>
+                {debug &&
+                    <>
+                        <cylinderGeometry args={[0.25, 0.25, cylinderHeight, 8]} />
+                        <meshStandardMaterial color="red" transparent opacity={0.5} />
+                    </>
+                }
+            </mesh>
+
             <mesh
                 ref={ref}
                 // {...props}
@@ -439,13 +520,13 @@ function PlayerBase(props) {
                     args={[1, 1]}
                 /> */}
 
-                <HoodiePlayerModel
+                <ModelHoodieCharacter
                     position={[0, -cylinderHeight / 2 - 0.075, 0]}
                     rotation={[0, -Math.PI, 0]}
                 />
 
                 {(showBlood && !safeMode) && (
-                    <BloodSplatModel
+                    <ModelBloodSplat
                         position={[-0.1, (-cylinderHeight / 2) - 0.08, 1.5]}
                         rotation={[0, -140 * Math.PI / 180, 0]}
                         scale={[bloodScale, 1, bloodScale]}
@@ -476,7 +557,7 @@ function PlayerBase(props) {
                         </>
                         :
                         <>
-                            <FpsRigAkmModel
+                            <ModelFpsRigAkm
                                 position={[-0.18, 0.3, 3.5]}
                                 rotation={[0, Math.PI / 2, 0]}
                                 scale={0.1}

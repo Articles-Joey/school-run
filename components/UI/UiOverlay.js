@@ -4,6 +4,7 @@ export default function UiOverlay() {
 
     const distance = useGameStore(state => state.distance);
     const highScore = useGameStore(state => state.highScore);
+    const isRolling = useGameStore(state => state.isRolling);
 
     return (
         <div 
@@ -30,6 +31,13 @@ export default function UiOverlay() {
             </div>
             <div className='high-score'>
                 {`High Score: ${highScore.toFixed(0)} ft`}
+            </div>
+            <div>
+                {isRolling && 
+                    <span style={{ marginLeft: '1rem', color: 'cyan' }}>
+                        Rolling
+                    </span>
+                }
             </div>
         </div>
     )

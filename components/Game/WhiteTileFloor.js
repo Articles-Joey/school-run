@@ -1,12 +1,15 @@
 import { useTexture } from "@react-three/drei";
 import { RepeatWrapping } from "three";
+import getAssetSource from "@/util/getAssetSource";
+
+const link = getAssetSource(
+  `textures/FloorTile/`
+);
 
 export default function WhiteTileFloor(props) {
 
-    const base_link = `${process.env.NEXT_PUBLIC_CDN}games/US Tycoon/Textures/Tiles107_1K-JPG/`
-
     const texture = useTexture({
-        map: `${base_link}Tiles107_1K-JPG_Color.jpg`,
+        map: `${link}Color.jpg`,
         // displacementMap: `${base_link}GroundSand005_DISP_1K.jpg`,
         // normalMap: `${base_link}GroundSand005_NRM_1K.jpg`,
         // roughnessMap: `${base_link}GroundSand005_BUMP_1K.jpg`,

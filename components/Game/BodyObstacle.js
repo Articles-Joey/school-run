@@ -1,9 +1,9 @@
 import { useBox, useCylinder } from "@react-three/cannon";
 import { useEffect } from "react"
-import { BloodSplatModel } from "../Models/BloodSplat";
 import { useStore } from "@/hooks/useStore";
 import { DeadBody } from "../Models/DeadBody";
-import { WetFloorSign } from "../Models/WetFloorSign";
+import { ModelWetFloorSign } from "../Models/WetFloorSign";
+import { ModelBloodSplat } from "../Models/BloodSplat";
 
 export default function BodyObstacle({ obstacle }) {
 
@@ -47,10 +47,10 @@ export default function BodyObstacle({ obstacle }) {
                         <DeadBody action="Death" />
                     ) : (
                         <>
-                            <WetFloorSign
+                            <ModelWetFloorSign
                                 position={[0, 0, -0.15]}
                             />
-                            <WetFloorSign
+                            <ModelWetFloorSign
                                 position={[0, 0, -0.85]}
                             />
                         </>
@@ -58,7 +58,7 @@ export default function BodyObstacle({ obstacle }) {
                 </group>
 
                 {/* {!safeMode && ( */}
-                <BloodSplatModel
+                <ModelBloodSplat
                     position={[-0.1, 0, -0.3]}
                     rotation={[0, -140 * Math.PI / 180, 0]}
                 />

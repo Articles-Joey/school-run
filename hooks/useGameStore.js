@@ -9,7 +9,18 @@ import generateRandomInteger from "@/util/generateRandomInteger"
 export const OBSTACLE_TYPES = [
     { name: "Body", weight: 55 },
     { name: "Drone", weight: 30 },
-    { name: "FireLine", weight: 15 },
+    { name: "FireLine", weight: 10 },
+    { name: "Horizontal", weight: 5 },
+]
+
+// TODO - Add a "difficulty" setting that affects the obstacle spawn rate and types (e.g., more Drones and FireLines on higher difficulties).
+export const OBSTACLE_TYPE_ZONES = [
+    [
+        { name: "Body", weight: 55 },
+        { name: "Drone", weight: 30 },
+        { name: "FireLine", weight: 10 },
+        { name: "Horizontal", weight: 5 },
+    ]
 ]
 
 const SPAWN_RANGE = 2.5
@@ -69,6 +80,19 @@ export const useGameStore = create((set, get, store) => ({
     setFreeze: (newValue) => {
         set((prev) => ({
             freeze: newValue
+        }))
+    },
+
+    isRolling: false,
+    setIsRolling: (newValue) => {
+        set((prev) => ({
+            isRolling: newValue
+        }))
+    },
+    rollCooldown: false,
+    setRollCooldown: (newValue) => {
+        set((prev) => ({
+            rollCooldown: newValue
         }))
     },
 
