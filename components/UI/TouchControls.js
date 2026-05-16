@@ -16,7 +16,7 @@ function ActionButtons() {
     const setTouchControls = useTouchControlsStore(state => state.setTouchControls);
 
     return (
-        <div className="action-buttons d-flex flex-column g-3">
+        <div className="action-buttons g-3">
 
             <ArticlesButton
                 className="jump-button"
