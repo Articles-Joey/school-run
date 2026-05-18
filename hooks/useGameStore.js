@@ -6,26 +6,110 @@ import { useStore } from './useStore';
 
 import generateRandomInteger from "@/util/generateRandomInteger"
 
-export const OBSTACLE_TYPES = [
-    { name: "Body", weight: 55 },
-    { name: "Drone", weight: 30 },
-    { name: "FireLine", weight: 10 },
-    { name: "Horizontal", weight: 5 },
-]
+// TODO - Add spawnRange logic that affects the obstacle spawn rate per section at higher distances.
 
-// TODO - Add a "difficulty" setting that affects the obstacle spawn rate and types (e.g., more Drones and FireLines on higher difficulties).
+// Normal way right now, everything is default spawnRange of 1
+// { name: "Body", weight: 10, spawnRange: [1] },
+// For example this would allow 1 to 3 bodies to spawn per section
+// { name: "Body", weight: 10, spawnRange: [1, 3] },
+
 export const OBSTACLE_TYPE_ZONES = [
-    [
-        { name: "Body", weight: 55 },
-        { name: "Drone", weight: 30 },
-        { name: "FireLine", weight: 10 },
-        { name: "Horizontal", weight: 5 },
-    ]
+    {
+        range: [0, 99],
+        types: [
+            { name: "Body", weight: 100 },
+            // { name: "Drone", weight: 30 },
+            // { name: "FireLine", weight: 10 },
+            // { name: "Horizontal", weight: 5 },
+        ]
+    },
+    {
+        range: [100, 299],
+        types: [
+            { name: "Body", weight: 50 },
+            { name: "Drone", weight: 50 },
+            // { name: "FireLine", weight: 10 },
+            // { name: "Horizontal", weight: 5 },
+        ]
+    },
+    {
+        range: [300, 499],
+        types: [
+            { name: "Body", weight: 55 },
+            { name: "Drone", weight: 30 },
+            { name: "FireLine", weight: 10 },
+            { name: "Horizontal", weight: 5 },
+        ]
+    },
+    {
+        range: [500, 749],
+        speedMultiplier: 1.25,
+        types: [
+            { name: "Body", weight: 55 },
+            { name: "Drone", weight: 30 },
+            { name: "FireLine", weight: 10 },
+            { name: "Horizontal", weight: 5 },
+        ]
+    },
+    {
+        range: [750, 999],
+        speedMultiplier: 1.5,
+        types: [
+            { name: "Body", weight: 55 },
+            { name: "Drone", weight: 30 },
+            { name: "FireLine", weight: 10 },
+            { name: "Horizontal", weight: 5 },
+        ]
+    },
+    {
+        range: [1000, 1249],
+        speedMultiplier: 1.75,
+        types: [
+            { name: "Body", weight: 55 },
+            { name: "Drone", weight: 30 },
+            { name: "FireLine", weight: 10 },
+            { name: "Horizontal", weight: 5 },
+        ]
+    },
+    {
+        range: [1250, 1499],
+        speedMultiplier: 2,
+        types: [
+            { name: "Body", weight: 55 },
+            { name: "Drone", weight: 30 },
+            { name: "FireLine", weight: 10 },
+            { name: "Horizontal", weight: 5 },
+        ]
+    },
+    {
+        range: [1500, 1999],
+        speedMultiplier: 2.25,
+        types: [
+            { name: "Body", weight: 55 },
+            { name: "Drone", weight: 30 },
+            { name: "FireLine", weight: 10 },
+            { name: "Horizontal", weight: 5 },
+        ]
+    },
 ]
 
 const SPAWN_RANGE = 2.5
 
-export function pickObstacleType(types) {
+export function getActiveZone(distance) {
+    const lastIndex = OBSTACLE_TYPE_ZONES.length - 1;
+    for (let i = 0; i <= lastIndex; i++) {
+        const zone = OBSTACLE_TYPE_ZONES[i];
+        const inRange = i === lastIndex
+            ? distance >= zone.range[0]
+            : distance >= zone.range[0] && distance <= zone.range[1];
+        if (inRange) return zone;
+    }
+    return OBSTACLE_TYPE_ZONES[0];
+}
+
+export function pickObstacleType(distance) {
+    const zone = getActiveZone(distance);
+    const types = zone.types;
     const total = types.reduce((sum, t) => sum + t.weight, 0);
     let rand = Math.random() * total;
     for (const type of types) {
@@ -168,7 +252,7 @@ export const useGameStore = create((set, get, store) => ({
 
         for (let i = 0; i < obstacleCount; i++) {
 
-            const pickedObstacle = pickObstacleType(OBSTACLE_TYPES)
+            const pickedObstacle = pickObstacleType(0)
 
             initialObstacles.push({
                 position: [

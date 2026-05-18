@@ -1,6 +1,6 @@
 import { Dropdown, DropdownButton } from "react-bootstrap";
 
-import { useGameStore } from "@/hooks/useGameStore";
+import { OBSTACLE_TYPE_ZONES, useGameStore } from "@/hooks/useGameStore";
 import ArticlesButton from "@/components/UI/Button";
 import { useStore } from "@/hooks/useStore";
 import { useState } from "react";
@@ -24,6 +24,7 @@ export function DebugPanel() {
 
     const freeze = useGameStore(state => state.freeze);
     const setFreeze = useGameStore(state => state.setFreeze);
+    const setDistance = useGameStore(state => state.setDistance);
 
     const [showObstacles, setShowObstacles] = useState(false);
 
@@ -206,6 +207,7 @@ export function DebugPanel() {
                             {freeze ? 'Unfreeze' : 'Freeze'}
                         </ArticlesButton>
 
+                        {/* Animation Override */}
                         <div className='w-50'>
                             <DropdownButton
                                 variant="articles w-100"
@@ -279,6 +281,7 @@ export function DebugPanel() {
                             </DropdownButton>
                         </div>
 
+                        {/* Debug */}
                         <div className='w-50'>
                             <DropdownButton
                                 variant="articles w-100"
@@ -310,6 +313,46 @@ export function DebugPanel() {
                                                 className="d-flex justify-content-between"
                                             >
                                                 {location ? 'True' : 'False'}
+                                            </Dropdown.Item>
+                                        )}
+
+                                </div>
+
+                            </DropdownButton>
+                        </div>
+
+                        {/* Teleport */}
+                        <div className='w-50'>
+                            <DropdownButton
+                                variant="articles w-100"
+                                size='sm'
+                                id="dropdown-basic-button"
+                                className="dropdown-articles"
+                                title={
+                                    <span>
+                                        <i className="fad fa-bug"></i>
+                                        <span>Teleport </span>
+                                    </span>
+                                }
+                            >
+
+                                <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
+
+                                    {[
+                                        ...OBSTACLE_TYPE_ZONES.map(
+                                            zone => zone.range[0]
+                                        )
+                                    ]
+                                        .map(location =>
+                                            <Dropdown.Item
+                                                key={location}
+                                                active={characterAnimation == location}
+                                                onClick={() => {
+                                                    setDistance(location)
+                                                }}
+                                                className="d-flex justify-content-between"
+                                            >
+                                                {location}
                                             </Dropdown.Item>
                                         )}
 

@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { useKeyboard } from "@/hooks/useKeyboard"
 
 import { useControllerStore } from '@/hooks/useControllerStore';
-import { useGameStore } from "@/hooks/useGameStore";
+import { useGameStore, getActiveZone } from "@/hooks/useGameStore";
 
 import { ModelFpsRigAkm } from "@/components/Models/FpsRigAkm"
 import useTouchControlsStore from "@/hooks/useTouchControlsStore"
@@ -368,7 +368,9 @@ function PlayerBase(props) {
         // setDistance((prevDistance) => prevDistance + 1 * delta)
 
         if (!gameOver && !freeze) {
-            addDistance(0.1)
+            const currentDistance = useGameStore.getState().distance;
+            const speedMultiplier = getActiveZone(currentDistance).speedMultiplier ?? 1;
+            addDistance(0.1 * speedMultiplier)
         }
 
         if (showBlood && bloodScale < 1) {

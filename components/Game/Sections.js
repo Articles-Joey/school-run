@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { memo, useEffect, useMemo, useRef, useState } from "react"
 
-import { useGameStore, OBSTACLE_TYPES, pickObstacleType } from "@/hooks/useGameStore";
+import { useGameStore, pickObstacleType, getActiveZone } from "@/hooks/useGameStore";
 import Walls from "./Walls";
 
 import { useStore } from "@/hooks/useStore";
@@ -33,9 +33,15 @@ function GameSections(props) {
 
         if (gameOver || freeze) return
 
+        const speedMultiplier = getActiveZone(distance).speedMultiplier ?? 1;
+
         let newObstacles = obstacles.map((obstacle) => ({
             ...obstacle,
-            position: [obstacle.position[0], obstacle.position[1], obstacle.position[2] + 0.1], // Move toward the player
+            position: [
+                obstacle.position[0], 
+                obstacle.position[1], 
+                obstacle.position[2] + (0.1 * speedMultiplier)
+            ], // Move toward the player
         }))
 
         // Filter out obstacles that went past the player
@@ -49,7 +55,7 @@ function GameSections(props) {
             newObstacles.push({
                 position: [Math.random() * 2 - 1, 0, newPositionZ],
                 id: Date.now(), // Ensure unique ID,
-                obstacleType: pickObstacleType(OBSTACLE_TYPES),
+                obstacleType: pickObstacleType(distance),
             });
         }
 

@@ -9,6 +9,7 @@ import Sections from './Sections';
 import Floor from './Floor';
 import { useStore } from '@/hooks/useStore';
 import AnimatedPointLights from './AnimatedPointLights';
+import { useGameStore } from '@/hooks/useGameStore';
 
 const BackWalls = memo(function BackWalls(props) {
 
@@ -50,6 +51,8 @@ function GameCanvas({
 
     const debug = useStore(state => state.debug)
     const darkMode = useStore(state => state.darkMode)
+
+    const cameraMode = useGameStore(state => state.cameraMode)
 
     function Scene() {
         const { camera } = useThree()
@@ -148,16 +151,20 @@ function GameCanvas({
                     </Suspense>
 
                     {!landingAnimationMode &&
-                        <Suspense><Player position={[0, 1, 0]} /></Suspense>
+                        <Suspense>
+                            <Player position={[0, 1, 0]} />
+                        </Suspense>
                     }
 
                 </Debug>
 
             </Physics>
 
-            <OrbitControls
-                target={[0, 1, 0]}
-            />
+            {cameraMode === 'Free' &&
+                <OrbitControls
+                    target={[0, 1, 0]}
+                />
+            }
 
         </Canvas>
     )

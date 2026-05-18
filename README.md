@@ -18,6 +18,10 @@ npm i
 npm run dev
 ```
 
+## Scripts
+
+In the scripts folder is reset_public and sync_to_s3. This is only for Articles Media usage. Allows for putting public folder to CloudFront to lower Vercel charges for the public facing site.
+
 ## Content Warning
 
 This game contains a opt in graphic mode with depictions of violence, including school shooting scenarios, which some players may find deeply disturbing. It features themes of gun violence, psychological trauma, and mature language. Viewer and player discretion is strongly advised.
@@ -40,3 +44,4 @@ This game contains a opt in graphic mode with depictions of violence, including 
 [Man Scream 010 - Universfield](https://pixabay.com/sound-effects/people-man-scream-010-277572/)  
 [Cartoon Slide Whistle - floraphonic](https://pixabay.com/sound-effects/film-special-effects-cartoon-slide-whistle-down-2-176648/)  
 [Jump Whoosh - mixkit](https://mixkit.co/)  
+[Hero Font - Google Fonts](https://fonts.google.com/specimen/Playwrite+AR+Guides?specimen.preview.text=School+Run&preview.script=Latn)  
