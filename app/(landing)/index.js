@@ -137,7 +137,7 @@ export default function SchoolRunGameLandingPage() {
                                 <hr />
 
                                 <div className="fw-bold mb-1 small text-center">
-                                    {lobbyDetails.online_player_count || 0} player{(lobbyDetails.online_player_count !== 1) && 's'} in the school.
+                                    {lobbyDetails?.online_player_count || 0} player{(lobbyDetails?.online_player_count !== 1) && 's'} in the school.
                                 </div>
                             </>
                         }

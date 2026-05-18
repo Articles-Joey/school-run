@@ -51,7 +51,7 @@ function GameCanvas({
 
     const debug = useStore(state => state.debug)
     const darkMode = useStore(state => state.darkMode)
-
+    const showStats = useStore((state) => state?.debugConfig?.showStats);
     const cameraMode = useGameStore(state => state.cameraMode)
 
     function Scene() {
@@ -72,7 +72,7 @@ function GameCanvas({
 
             <Scene />
 
-            {process.env.NODE_ENV === 'development' && <>
+            {showStats && <>
                 <Stats className="stats-overlay" />
             </>}
 

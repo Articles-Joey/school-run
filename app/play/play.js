@@ -13,6 +13,7 @@ import DeathScreen from '@/components/UI/DeathScreen';
 import classNames from "classnames";
 import GameMenu from '@articles-media/articles-dev-box/GameMenu';
 import UiOverlay from '@/components/UI/UiOverlay';
+// import GameOverModal from '@/components/UI/GameOverModal';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
@@ -39,7 +40,7 @@ export default function GamePage() {
                 }
             )}
             id={`${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`}
-        >
+        >            
 
             <GameMenu
                 useStore={useStore}
@@ -51,7 +52,7 @@ export default function GamePage() {
                 sidebarConfig={{
                     style: "Static Panel",
                 }}
-            />                      
+            />
 
             <div className='canvas-wrap'>
 
