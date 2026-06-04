@@ -10,7 +10,9 @@ import { useGLTF, useAnimations } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 import { useGameStore } from '@/hooks/useGameStore'
 import * as THREE from 'three';
-import getAssetSource from "@/util/getAssetSource";
+
+// import getAssetSource from "@/util/getAssetSource";
+import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
 
 const link = getAssetSource(
     'models/HoodieCharacter-transformed.glb'

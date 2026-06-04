@@ -6,7 +6,9 @@ Files: .\computerScreen.glb [6.4KB] > F:\My Documents\Sites games\school-run\pub
 
 import React from 'react'
 import { useGLTF } from '@react-three/drei'
-import getAssetSource from "@/util/getAssetSource";
+
+// import getAssetSource from "@/util/getAssetSource";
+import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
 
 const link = getAssetSource(
   `models/computerScreen-transformed.glb`

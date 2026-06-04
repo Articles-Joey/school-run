@@ -113,6 +113,12 @@ export default function LayoutClient({ children }) {
                             'Other': {
                                 toontownMode: true,
                                 children: <>
+
+                                </>,
+                            },
+                            'Debug': {
+                                // Debug settings can be added here
+                                children: <>
                                     <div>Disable Death</div>
                                     <div className="mb-3">
                                         <ArticlesButton
@@ -132,7 +138,7 @@ export default function LayoutClient({ children }) {
                                             Enabled
                                         </ArticlesButton>
                                     </div>
-                                </>,
+                                </>
                             }
                         },
                         reset: () => {

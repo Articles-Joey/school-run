@@ -6,7 +6,9 @@ Files: Backpack.glb [54.28KB] > F:\My Documents\Sites games\school-run\public\mo
 
 import React from 'react'
 import { useGLTF } from '@react-three/drei'
-import getAssetSource from "@/util/getAssetSource";
+
+// import getAssetSource from "@/util/getAssetSource";
+import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
 
 const link = getAssetSource(
   `models/Backpack-transformed.glb`

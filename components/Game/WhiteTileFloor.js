@@ -1,6 +1,8 @@
 import { useTexture } from "@react-three/drei";
 import { RepeatWrapping } from "three";
-import getAssetSource from "@/util/getAssetSource";
+
+// import getAssetSource from "@/util/getAssetSource";
+import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
 
 const link = getAssetSource(
   `textures/FloorTile/`

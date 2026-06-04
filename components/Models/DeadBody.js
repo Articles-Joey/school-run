@@ -8,7 +8,9 @@ import React, { useEffect } from 'react'
 import { useGraph } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
-import getAssetSource from "@/util/getAssetSource";
+
+// import getAssetSource from "@/util/getAssetSource";
+import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
 
 const link = getAssetSource(
   `models/Beach-transformed.glb`

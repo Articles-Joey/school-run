@@ -7,7 +7,9 @@ Files: .\SawBlade.glb [38.9KB] > F:\My Documents\Sites games\school-run\public\m
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
-import getAssetSource from '@/util/getAssetSource';
+
+// import getAssetSource from "@/util/getAssetSource";
+import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
 
 const link = getAssetSource('models/SawBlade-transformed.glb');
 

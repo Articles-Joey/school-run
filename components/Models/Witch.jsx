@@ -6,7 +6,9 @@ Files: .\witch.gltf [212.04KB] > F:\My Documents\Sites games\school-run\public\m
 
 import React from 'react'
 import { useGLTF } from '@react-three/drei'
-import getAssetSource from '@/util/getAssetSource';
+
+// import getAssetSource from "@/util/getAssetSource";
+import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
 
 const link = getAssetSource(
   `models/witch-transformed.glb`,

@@ -11,7 +11,11 @@ import useUserGameScore from '@/hooks/useUserGameScore';
 import { useStore } from '@/hooks/useStore';
 import RotatingMascot from '@/components/UI/RotatingMascot';
 import LandingBackgroundAnimation from '@/components/Game/LandingBackgroundAnimation';
-import getAssetSource from "@/util/getAssetSource";
+
+// import getAssetSource from "@/util/getAssetSource";
+import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+
+// import useAssetSource from '@articles-media/articles-dev-box/useAssetSource';
 
 import useUserToken from '@articles-media/articles-dev-box/useUserToken';
 import PageTemplateLandingPage from '@articles-media/articles-dev-box/PageTemplateLandingPage';
@@ -22,7 +26,13 @@ const background_link = getAssetSource(
 
 export default function SchoolRunGameLandingPage() {
 
-    const connected = useSocketStore(state => state.connected);
+    // const connected = useSocketStore(state => state.connected);
+
+    // Needs more testing but works
+    // const background_link = useAssetSource(
+    //     `img/preview.webp`,
+    //     useStore
+    // );
 
     const {
         data: userToken,
