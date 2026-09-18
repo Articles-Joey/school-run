@@ -1,46 +1,48 @@
-import generateRandomNickname from '@/util/generateRandomNickname';
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import generateRandomNickname from "@/util/generateRandomNickname";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-import typicalZustandStoreExcludes from '@articles-media/articles-dev-box/typicalZustandStoreExcludes';
-import typicalZustandStoreStateSlice from '@articles-media/articles-dev-box/typicalZustandStoreStateSlice';
+import typicalZustandStoreExcludes from "@articles-media/articles-dev-box/typicalZustandStoreExcludes";
+import typicalZustandStoreStateSlice from "@articles-media/articles-dev-box/typicalZustandStoreStateSlice";
 
 export const useStore = create()(
-  persist(
-    (set, get) => ({
+    persist(
+        (set, get) => ({
+            ...typicalZustandStoreStateSlice(set, get, generateRandomNickname),
 
-      ...typicalZustandStoreStateSlice(set, get, generateRandomNickname),
+            safeMode: true,
+            toggleSafeMode: () => set({ safeMode: !get().safeMode }),
+            setSafeMode: (newValue) => {
+                set((prev) => ({
+                    safeMode: newValue,
+                }));
+            },
 
-      safeMode: true,
-      toggleSafeMode: () => set({ safeMode: !get().safeMode }),
-      setSafeMode: (newValue) => {
-        set((prev) => ({
-          safeMode: newValue
-        }))
-      },
-
-      disableDeath: false,
-      toggleDisableDeath: () => set({ disableDeath: !get().disableDeath }),
-      setDisableDeath: (newValue) => {
-        set((prev) => ({
-          disableDeath: newValue
-        }))
-       },
-
-    }),
-    {
-      name: 'game-storage',
-      version: 1,
-      partialize: (state) =>
-        Object.fromEntries(
-          Object.entries(state).filter(([key]) => ![
-            // Exclude list of keys to not persist
-            ...typicalZustandStoreExcludes,
-          ].includes(key))
-        ),
-      onRehydrateStorage: () => (state) => {
-        state.setHasHydrated(true)
-      },
-    },
-  ),
-)
+            disableDeath: false,
+            toggleDisableDeath: () =>
+                set({ disableDeath: !get().disableDeath }),
+            setDisableDeath: (newValue) => {
+                set((prev) => ({
+                    disableDeath: newValue,
+                }));
+            },
+        }),
+        {
+            name: "game-storage",
+            version: 1,
+            partialize: (state) =>
+                Object.fromEntries(
+                    Object.entries(state).filter(
+                        ([key]) =>
+                            ![
+                                // Exclude list of keys to not persist
+                                ...typicalZustandStoreExcludes,
+                            ].includes(key),
+                    ),
+                ),
+            onRehydrateStorage: () => (state) => {
+                state.setHasHydrated(true);
+            },
+        },
+    ),
+);

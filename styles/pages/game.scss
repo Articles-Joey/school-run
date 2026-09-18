@@ -165,7 +165,6 @@
                 animation: fadeInBackground 5s ease-in-out;
 
                 @keyframes fadeInBackground {
-
                     from {
                         background-color: rgba(255, 0, 0, 0);
                     }
@@ -174,7 +173,6 @@
                         // opacity: 1;
                         background-color: rgba(255, 0, 0, 0.75);
                     }
-
                 }
             }
         }

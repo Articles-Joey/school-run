@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react"
+import React, { useMemo, useRef, useState } from "react";
 
 import { ModelDoorway } from "@/components/Models/doorway";
 import { degToRad } from "three/src/math/MathUtils.js";
@@ -10,12 +10,13 @@ import WhiteTileFloor from "./WhiteTileFloor";
 import Ceiling from "./Ceiling";
 
 export default function Walls({ position }) {
-
     const ref = useRef();
 
     return (
-        <group ref={ref} position={[0, 0, position[2]]}>
-
+        <group
+            ref={ref}
+            position={[0, 0, position[2]]}
+        >
             <StoneBrickWall
                 rotation={[0, -Math.PI / 2, 0]}
                 position={[4.5, 1.5, 0]}
@@ -32,7 +33,7 @@ export default function Walls({ position }) {
             <WhiteTileFloor
                 args={[10, 10]}
                 position={[0, 0, 0]}
-                rotation={[-90 * Math.PI / 180, 0, 0]}
+                rotation={[(-90 * Math.PI) / 180, 0, 0]}
             />
 
             <ModelDoorway
@@ -57,7 +58,6 @@ export default function Walls({ position }) {
 
             <WallScene side="left" />
             <WallScene side="right" />
-
         </group>
-    )
+    );
 }

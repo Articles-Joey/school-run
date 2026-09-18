@@ -1,8 +1,8 @@
-import * as THREE from 'three'
-import React, { useRef, useMemo, useEffect } from 'react'
-import { useFrame } from '@react-three/fiber'
-import { useBox } from '@react-three/cannon'
-import { useStore } from '@/hooks/useStore'
+import * as THREE from "three";
+import React, { useRef, useMemo, useEffect } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useBox } from "@react-three/cannon";
+import { useStore } from "@/hooks/useStore";
 
 // basic fire vertex shader
 const vertexShader = `
@@ -48,7 +48,7 @@ const vertexShader = `
     // Perspective sizing (farther particles are smaller)
     gl_PointSize *= (1.0 / - viewPosition.z);
   }
-`
+`;
 
 // basic fire fragment shader
 const fragmentShader = `
@@ -80,7 +80,7 @@ const fragmentShader = `
     
     gl_FragColor = vec4(color, alpha);
   }
-`
+`;
 
 // safe mode/blue fire fragment shader
 const blueFragmentShader = `
@@ -111,155 +111,165 @@ const blueFragmentShader = `
     
     gl_FragColor = vec4(color, alpha);
   }
-`
+`;
 
 export function FireLine({
-  obstacle,
-  count = 5000,    // Number of particles
-  length = 3,     // How long the line is
-  spread = 0.1,   // How wide/thick the line base is
-  size = 100,      // Base particle size
-  ...props
+    obstacle,
+    count = 5000, // Number of particles
+    length = 3, // How long the line is
+    spread = 0.1, // How wide/thick the line base is
+    size = 100, // Base particle size
+    ...props
 }) {
+    const safeMode = useStore((state) => state.safeMode);
 
-  const safeMode = useStore((state) => state.safeMode);
+    // const obstaclePosition = obstacle.position
 
-  // const obstaclePosition = obstacle.position
+    const pointsRef = useRef();
 
-  const pointsRef = useRef()
+    const [ref, api] = useBox(() => ({
+        isTrigger: true,
+        args: [3, 3, 0.2],
+        position: obstacle?.position,
+        // rotation: randomRotation, // Syncs physics body with visual rotation
+        userData: {
+            isObstacle: true,
+            id: obstacle?.id,
+        },
+    }));
 
-  const [ref, api] = useBox(() => ({
-    isTrigger: true,
-    args: [3, 3, 0.2],
-    position: obstacle?.position,
-    // rotation: randomRotation, // Syncs physics body with visual rotation
-    userData: {
-      isObstacle: true,
-      id: obstacle?.id
-    }
-  }));
+    // 1. Generate geometry attributes once (positions, speeds, random numbers)
+    const [positions, speeds, randoms] = useMemo(() => {
+        const positions = new Float32Array(count * 3); // x, y, z
+        const speeds = new Float32Array(count);
+        const randoms = new Float32Array(count);
 
-  // 1. Generate geometry attributes once (positions, speeds, random numbers)
-  const [positions, speeds, randoms] = useMemo(() => {
-    const positions = new Float32Array(count * 3) // x, y, z
-    const speeds = new Float32Array(count)
-    const randoms = new Float32Array(count)
+        for (let i = 0; i < count; i++) {
+            const i3 = i * 3;
 
-    for (let i = 0; i < count; i++) {
-      const i3 = i * 3
+            // -- Define starting Positions --
 
-      // -- Define starting Positions --
+            // X: Randomly along the length of the line (centered)
+            positions[i3 + 0] = (Math.random() - 0.5) * length;
 
-      // X: Randomly along the length of the line (centered)
-      positions[i3 + 0] = (Math.random() - 0.5) * length
+            // Y: Start close to the ground (with slight random variance)
+            positions[i3 + 1] = Math.random() * 0.1;
 
-      // Y: Start close to the ground (with slight random variance)
-      positions[i3 + 1] = Math.random() * 0.1
+            // Z: Randomly along the width (spread)
+            positions[i3 + 2] = (Math.random() - 0.5) * spread;
 
-      // Z: Randomly along the width (spread)
-      positions[i3 + 2] = (Math.random() - 0.5) * spread
+            // -- Define animation attributes --
 
-      // -- Define animation attributes --
+            // How fast the particle rises (randomized for variance)
+            speeds[i] = 0.2 + Math.random() * 0.5;
 
-      // How fast the particle rises (randomized for variance)
-      speeds[i] = 0.2 + Math.random() * 0.5
-
-      // Used to randomize the respawn time so they don't all pop at once
-      randoms[i] = Math.random()
-    }
-
-    return [positions, speeds, randoms]
-  }, [count, length, spread])
-
-  // 2. Create the shader material configuration
-  const uniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uSize: { value: size }
-  }), [size])
-
-  // 3. Update time uniform every frame for animation
-  useFrame((state) => {
-    if (obstacle.position[2] < -50) return;
-
-    if (pointsRef.current) {
-      pointsRef.current.material.uniforms.uTime.value = state.clock.elapsedTime
-
-      // Dynamically adjust particle count (draw range) based on distance
-      // Drops to 0 at z=-50, increases in percentages every 10 units
-      const z = obstacle.position[2];
-      let visiblePercent = 0;
-
-      if (z > -10) {
-        visiblePercent = 1.0; // 100%
-      } else if (z > -20) {
-        visiblePercent = 0.8; // 80%
-      } else if (z > -30) {
-        visiblePercent = 0.6; // 60%
-      } else if (z > -40) {
-        visiblePercent = 0.4; // 40%
-      } else if (z > -50) {
-        visiblePercent = 0.2; // 20%
-      } else {
-        visiblePercent = 0.0; // 0%
-      }
-
-      pointsRef.current.geometry.setDrawRange(0, Math.floor(count * visiblePercent));
-    }
-  })
-
-  useEffect(() => {
-    api.position.set(...obstacle.position);
-  }, [obstacle.position, api]);
-
-  return (
-    <group ref={ref}>
-      <points ref={pointsRef} {...props} frustumCulled={false}>
-        <bufferGeometry>
-          {/* Core position data */}
-          <bufferAttribute
-            attach="attributes-position"
-            count={positions.length / 3}
-            array={positions}
-            itemSize={3}
-          />
-          {/* Custom attributes for the shader */}
-          <bufferAttribute
-            attach="attributes-aSpeed"
-            count={speeds.length}
-            array={speeds}
-            itemSize={1}
-          />
-          <bufferAttribute
-            attach="attributes-aRandomOffset"
-            count={randoms.length}
-            array={randoms}
-            itemSize={1}
-          />
-        </bufferGeometry>
-
-
-        {!safeMode && <shaderMaterial
-          blending={THREE.AdditiveBlending} // CRITICAL for "glow" look
-          depthWrite={false}               // Prevents ugly black squares behind particles
-          transparent                      // Required for alpha blending
-          vertexColors                     // Useful if passing colors directly
-          uniforms={uniforms}
-          vertexShader={vertexShader}
-          fragmentShader={fragmentShader}
-        />}
-        {safeMode &&
-          <shaderMaterial
-            blending={THREE.AdditiveBlending} // CRITICAL for "glow" look
-            depthWrite={false}               // Prevents ugly black squares behind particles
-            transparent                      // Required for alpha blending
-            vertexColors                     // Useful if passing colors directly
-            uniforms={uniforms}
-            vertexShader={vertexShader}
-            fragmentShader={blueFragmentShader}
-          />
+            // Used to randomize the respawn time so they don't all pop at once
+            randoms[i] = Math.random();
         }
 
-      </points>
-    </group>
-  )
+        return [positions, speeds, randoms];
+    }, [count, length, spread]);
+
+    // 2. Create the shader material configuration
+    const uniforms = useMemo(
+        () => ({
+            uTime: { value: 0 },
+            uSize: { value: size },
+        }),
+        [size],
+    );
+
+    // 3. Update time uniform every frame for animation
+    useFrame((state) => {
+        if (obstacle.position[2] < -50) return;
+
+        if (pointsRef.current) {
+            pointsRef.current.material.uniforms.uTime.value =
+                state.clock.elapsedTime;
+
+            // Dynamically adjust particle count (draw range) based on distance
+            // Drops to 0 at z=-50, increases in percentages every 10 units
+            const z = obstacle.position[2];
+            let visiblePercent = 0;
+
+            if (z > -10) {
+                visiblePercent = 1.0; // 100%
+            } else if (z > -20) {
+                visiblePercent = 0.8; // 80%
+            } else if (z > -30) {
+                visiblePercent = 0.6; // 60%
+            } else if (z > -40) {
+                visiblePercent = 0.4; // 40%
+            } else if (z > -50) {
+                visiblePercent = 0.2; // 20%
+            } else {
+                visiblePercent = 0.0; // 0%
+            }
+
+            pointsRef.current.geometry.setDrawRange(
+                0,
+                Math.floor(count * visiblePercent),
+            );
+        }
+    });
+
+    useEffect(() => {
+        api.position.set(...obstacle.position);
+    }, [obstacle.position, api]);
+
+    return (
+        <group ref={ref}>
+            <points
+                ref={pointsRef}
+                {...props}
+                frustumCulled={false}
+            >
+                <bufferGeometry>
+                    {/* Core position data */}
+                    <bufferAttribute
+                        attach="attributes-position"
+                        count={positions.length / 3}
+                        array={positions}
+                        itemSize={3}
+                    />
+                    {/* Custom attributes for the shader */}
+                    <bufferAttribute
+                        attach="attributes-aSpeed"
+                        count={speeds.length}
+                        array={speeds}
+                        itemSize={1}
+                    />
+                    <bufferAttribute
+                        attach="attributes-aRandomOffset"
+                        count={randoms.length}
+                        array={randoms}
+                        itemSize={1}
+                    />
+                </bufferGeometry>
+
+                {!safeMode && (
+                    <shaderMaterial
+                        blending={THREE.AdditiveBlending} // CRITICAL for "glow" look
+                        depthWrite={false} // Prevents ugly black squares behind particles
+                        transparent // Required for alpha blending
+                        vertexColors // Useful if passing colors directly
+                        uniforms={uniforms}
+                        vertexShader={vertexShader}
+                        fragmentShader={fragmentShader}
+                    />
+                )}
+                {safeMode && (
+                    <shaderMaterial
+                        blending={THREE.AdditiveBlending} // CRITICAL for "glow" look
+                        depthWrite={false} // Prevents ugly black squares behind particles
+                        transparent // Required for alpha blending
+                        vertexColors // Useful if passing colors directly
+                        uniforms={uniforms}
+                        vertexShader={vertexShader}
+                        fragmentShader={blueFragmentShader}
+                    />
+                )}
+            </points>
+        </group>
+    );
 }

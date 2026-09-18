@@ -4,23 +4,27 @@ Command: npx gltfjsx@6.5.3 Human hand.glb -T
 Files: Human hand.glb [29.98KB] > F:\My Documents\Sites games\school-run\public\models\Human hand-transformed.glb [4.74KB] (84%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/Human hand-transformed.glb`
-);
+const link = getAssetSource(`models/Human hand-transformed.glb`);
 
 export function ModelHand(props) {
-  const { nodes, materials } = useGLTF(link)
-  return (
-    <group {...props} dispose={null}>
-      <mesh geometry={nodes.pasted__Arm_pasted__Body_LowRes_group.geometry} material={materials.lambert2SG} />
-    </group>
-  )
+    const { nodes, materials } = useGLTF(link);
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                geometry={nodes.pasted__Arm_pasted__Body_LowRes_group.geometry}
+                material={materials.lambert2SG}
+            />
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

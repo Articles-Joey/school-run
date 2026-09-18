@@ -26,11 +26,11 @@ In the scripts folder is reset_public and sync_to_s3. This is only for Articles 
 
 This game contains a opt in graphic mode with depictions of violence, including school shooting scenarios, which some players may find deeply disturbing. It features themes of gun violence, psychological trauma, and mature language. Viewer and player discretion is strongly advised.
 
-## Attributions 
+## Attributions
 
 [School Bag Icon - Flaticon](https://www.flaticon.com/free-icon/school-bag_3429142?term=school&page=1&position=15&origin=tag&related_id=3429142)  
 [Green Chalkboard Texture - textures4photoshop.com](https://www.textures4photoshop.com/tex/glass/green-chalkboard-texture-free-download.aspx#google_vignette)  
-[Wet Floor Sign Model - louis-muir](https://sketchfab.com/3d-models/wet-floor-sign-d340f904c4684645a4e5282b5fbe963b)   
+[Wet Floor Sign Model - louis-muir](https://sketchfab.com/3d-models/wet-floor-sign-d340f904c4684645a4e5282b5fbe963b)  
 [Hand Model - Nouri Mohamed](https://poly.pizza/m/eMSuJKMz6vx)  
 [Backpack Model - J-Toastie](https://poly.pizza/m/uRRsiIZKHG)  
 [FPS Rig AKM - J-Toastie](https://poly.pizza/m/U6l6wjxFhC)  
@@ -44,4 +44,4 @@ This game contains a opt in graphic mode with depictions of violence, including 
 [Man Scream 010 - Universfield](https://pixabay.com/sound-effects/people-man-scream-010-277572/)  
 [Cartoon Slide Whistle - floraphonic](https://pixabay.com/sound-effects/film-special-effects-cartoon-slide-whistle-down-2-176648/)  
 [Jump Whoosh - mixkit](https://mixkit.co/)  
-[Hero Font - Google Fonts](https://fonts.google.com/specimen/Playwrite+AR+Guides?specimen.preview.text=School+Run&preview.script=Latn)  
+[Hero Font - Google Fonts](https://fonts.google.com/specimen/Playwrite+AR+Guides?specimen.preview.text=School+Run&preview.script=Latn)

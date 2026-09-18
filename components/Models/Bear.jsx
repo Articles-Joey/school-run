@@ -4,24 +4,34 @@ Command: npx gltfjsx@6.5.3 .\bear.gltf -T
 Files: .\bear.gltf [110.44KB] > F:\My Documents\Sites games\school-run\public\models\bear-transformed.glb [11.01KB] (90%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/bear-transformed.glb`
-);
+const link = getAssetSource(`models/bear-transformed.glb`);
 
 export function ModelBear(props) {
-  const { nodes, materials } = useGLTF(link)
-  return (
-    <group {...props} dispose={null}>
-      <mesh geometry={nodes.character_bear.geometry} material={materials['BrownDark.036']} rotation={[Math.PI / 2, 0, 0]} />
-      <mesh geometry={nodes.character_bearHead.geometry} material={materials['Black.025']} position={[0, 0.704, 0]} rotation={[Math.PI / 2, 0, 0]} />
-    </group>
-  )
+    const { nodes, materials } = useGLTF(link);
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                geometry={nodes.character_bear.geometry}
+                material={materials["BrownDark.036"]}
+                rotation={[Math.PI / 2, 0, 0]}
+            />
+            <mesh
+                geometry={nodes.character_bearHead.geometry}
+                material={materials["Black.025"]}
+                position={[0, 0.704, 0]}
+                rotation={[Math.PI / 2, 0, 0]}
+            />
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

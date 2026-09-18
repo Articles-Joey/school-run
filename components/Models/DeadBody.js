@@ -4,29 +4,26 @@ Command: npx gltfjsx@6.5.0 models\Beach.gltf --output output\Beach.js --transfor
 Files: models\Beach.gltf [3.17MB] > E:\Downloads\men\output\Beach-transformed.glb [760.22KB] (76%)
 */
 
-import React, { useEffect } from 'react'
-import { useGraph } from '@react-three/fiber'
-import { useGLTF, useAnimations } from '@react-three/drei'
-import { SkeletonUtils } from 'three-stdlib'
+import React, { useEffect } from "react";
+import { useGraph } from "@react-three/fiber";
+import { useGLTF, useAnimations } from "@react-three/drei";
+import { SkeletonUtils } from "three-stdlib";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/Beach-transformed.glb`
-);
+const link = getAssetSource(`models/Beach-transformed.glb`);
 
 export function DeadBody(props) {
-    const group = React.useRef()
-    const { scene, animations } = useGLTF(link)
-    const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
-    const { nodes, materials } = useGraph(clone)
-    const { actions } = useAnimations(animations, group)
+    const group = React.useRef();
+    const { scene, animations } = useGLTF(link);
+    const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+    const { nodes, materials } = useGraph(clone);
+    const { actions } = useAnimations(animations, group);
 
-    const { previewConfig } = props
+    const { previewConfig } = props;
 
     useEffect(() => {
-
         const action = actions["Death"];
 
         if (action) {
@@ -37,38 +34,100 @@ export function DeadBody(props) {
             action.time = specificFrame; // Move playback to this time
             action.paused = true; // Ensure animation is playing
         }
-
     }, [actions]);
 
     return (
-        <group ref={group} dispose={null}>
+        <group
+            ref={group}
+            dispose={null}
+        >
             <group name="Scene">
                 <group name="CharacterArmature">
                     <primitive object={nodes.Root} />
                 </group>
                 <group name="Beach_Body">
-                    <skinnedMesh name="Cube070" geometry={nodes.Cube070.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube070.skeleton} />
-                    <skinnedMesh name="Cube070_1" geometry={nodes.Cube070_1.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube070_1.skeleton} />
+                    <skinnedMesh
+                        name="Cube070"
+                        geometry={nodes.Cube070.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube070.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Cube070_1"
+                        geometry={nodes.Cube070_1.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube070_1.skeleton}
+                    />
                 </group>
                 <group name="Beach_Feet">
-                    <skinnedMesh name="Cube017" geometry={nodes.Cube017.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube017.skeleton} />
-                    <skinnedMesh name="Cube017_1" geometry={nodes.Cube017_1.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube017_1.skeleton} />
+                    <skinnedMesh
+                        name="Cube017"
+                        geometry={nodes.Cube017.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube017.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Cube017_1"
+                        geometry={nodes.Cube017_1.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube017_1.skeleton}
+                    />
                 </group>
                 <group name="Beach_Head">
-                    <skinnedMesh name="Cube016" geometry={nodes.Cube016.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube016.skeleton} />
-                    <skinnedMesh name="Cube016_1" geometry={nodes.Cube016_1.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube016_1.skeleton} />
-                    <skinnedMesh name="Cube016_2" geometry={nodes.Cube016_2.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube016_2.skeleton} />
-                    <skinnedMesh name="Cube016_3" geometry={nodes.Cube016_3.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube016_3.skeleton} />
-                    <skinnedMesh name="Cube016_4" geometry={nodes.Cube016_4.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube016_4.skeleton} />
+                    <skinnedMesh
+                        name="Cube016"
+                        geometry={nodes.Cube016.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube016.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Cube016_1"
+                        geometry={nodes.Cube016_1.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube016_1.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Cube016_2"
+                        geometry={nodes.Cube016_2.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube016_2.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Cube016_3"
+                        geometry={nodes.Cube016_3.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube016_3.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Cube016_4"
+                        geometry={nodes.Cube016_4.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube016_4.skeleton}
+                    />
                 </group>
                 <group name="Beach_Legs">
-                    <skinnedMesh name="Cube022" geometry={nodes.Cube022.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube022.skeleton} />
-                    <skinnedMesh name="Cube022_1" geometry={nodes.Cube022_1.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube022_1.skeleton} />
-                    <skinnedMesh name="Cube022_2" geometry={nodes.Cube022_2.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Cube022_2.skeleton} />
+                    <skinnedMesh
+                        name="Cube022"
+                        geometry={nodes.Cube022.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube022.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Cube022_1"
+                        geometry={nodes.Cube022_1.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube022_1.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Cube022_2"
+                        geometry={nodes.Cube022_2.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Cube022_2.skeleton}
+                    />
                 </group>
             </group>
         </group>
-    )
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

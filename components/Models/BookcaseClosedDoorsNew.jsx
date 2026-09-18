@@ -4,24 +4,32 @@ Command: npx gltfjsx@6.5.3 bookcaseClosedDoors.glb -T
 Files: bookcaseClosedDoors.glb [22.64KB] > F:\My Documents\Sites games\school-run\public\models\bookcaseClosedDoors-transformed.glb [2.85KB] (87%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/bookcaseClosedDoors-transformed.glb`
-);
+const link = getAssetSource(`models/bookcaseClosedDoors-transformed.glb`);
 
 export function ModelBookcaseClosedDoorsNew(props) {
-  const { nodes, materials } = useGLTF(link)
-  return (
-    <group {...props} dispose={null}>
-      <mesh geometry={nodes['bookcaseClosedDoors(Clone)'].geometry} material={materials.wood} />
-      <mesh geometry={nodes.doorLeft.geometry} material={materials.metal} position={[0.04, 0.115, -0.02]} />
-    </group>
-  )
+    const { nodes, materials } = useGLTF(link);
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                geometry={nodes["bookcaseClosedDoors(Clone)"].geometry}
+                material={materials.wood}
+            />
+            <mesh
+                geometry={nodes.doorLeft.geometry}
+                material={materials.metal}
+                position={[0.04, 0.115, -0.02]}
+            />
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

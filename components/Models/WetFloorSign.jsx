@@ -8,30 +8,31 @@ Source: https://sketchfab.com/3d-models/wet-floor-sign-d340f904c4684645a4e5282b5
 Title: Wet Floor Sign
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/WetFloorSign-transformed.glb`
-);
+const link = getAssetSource(`models/WetFloorSign-transformed.glb`);
 
 export function ModelWetFloorSign(props) {
-  const { nodes, materials } = useGLTF(link)
-  return (
-    <group {...props} dispose={null}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Wet_floor_sign_lambert1_0.geometry}
-        material={materials.lambert1}
-        position={[0, 0, 0]}
-        scale={0.015}
-      />
-    </group>
-  )
+    const { nodes, materials } = useGLTF(link);
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                castShadow
+                receiveShadow
+                geometry={nodes.Wet_floor_sign_lambert1_0.geometry}
+                material={materials.lambert1}
+                position={[0, 0, 0]}
+                scale={0.015}
+            />
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

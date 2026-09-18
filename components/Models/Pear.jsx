@@ -4,17 +4,26 @@ Command: npx gltfjsx@6.5.3 .\Pear.glb -T
 Files: .\Pear.glb [12.17KB] > F:\My Documents\Sites games\school-run\public\models\Pear-transformed.glb [2.6KB] (79%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 export function ModelPear(props) {
-  const { nodes, materials } = useGLTF('models/Pear-transformed.glb')
-  return (
-    <group {...props} dispose={null}>
-      <mesh geometry={nodes.pear_1.geometry} material={materials.green} />
-      <mesh geometry={nodes.pear_1_1.geometry} material={materials.brown} />
-    </group>
-  )
+    const { nodes, materials } = useGLTF("models/Pear-transformed.glb");
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                geometry={nodes.pear_1.geometry}
+                material={materials.green}
+            />
+            <mesh
+                geometry={nodes.pear_1_1.geometry}
+                material={materials.brown}
+            />
+        </group>
+    );
 }
 
-useGLTF.preload('models/Pear-transformed.glb')
+useGLTF.preload("models/Pear-transformed.glb");

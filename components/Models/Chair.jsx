@@ -4,23 +4,27 @@ Command: npx gltfjsx@6.5.3 .\chair.glb -T
 Files: .\chair.glb [10.76KB] > F:\My Documents\Sites games\school-run\public\models\chair-transformed.glb [1.62KB] (85%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/chair-transformed.glb`
-);
+const link = getAssetSource(`models/chair-transformed.glb`);
 
 export function ModelChair(props) {
-  const { nodes, materials } = useGLTF(link)
-  return (
-    <group {...props} dispose={null}>
-      <mesh geometry={nodes['chair(Clone)'].geometry} material={materials.wood} />
-    </group>
-  )
+    const { nodes, materials } = useGLTF(link);
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                geometry={nodes["chair(Clone)"].geometry}
+                material={materials.wood}
+            />
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

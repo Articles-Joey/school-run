@@ -5,18 +5,23 @@ import { useKeyboard } from "@/hooks/useKeyboard";
 import useTouchControlsStore from "@/hooks/useTouchControlsStore";
 
 const RollManager = memo(function RollManager() {
-
     const { roll } = useKeyboard();
-    const touchRoll = useTouchControlsStore(state => state.touchControls.roll);
-    const setTouchControls = useTouchControlsStore(state => state.setTouchControls);
+    const touchRoll = useTouchControlsStore(
+        (state) => state.touchControls.roll,
+    );
+    const setTouchControls = useTouchControlsStore(
+        (state) => state.setTouchControls,
+    );
 
-    const setCharacterAnimation = useGameStore(state => state.setCharacterAnimation);
-    const setIsRolling = useGameStore(state => state.setIsRolling);
-    const setRollCooldown = useGameStore(state => state.setRollCooldown);
+    const setCharacterAnimation = useGameStore(
+        (state) => state.setCharacterAnimation,
+    );
+    const setIsRolling = useGameStore((state) => state.setIsRolling);
+    const setRollCooldown = useGameStore((state) => state.setRollCooldown);
 
     // We don't necessarily need to read these if we aren't using them in the effect
-    const isRolling = useGameStore(state => state.isRolling);
-    const rollCooldown = useGameStore(state => state.rollCooldown);
+    const isRolling = useGameStore((state) => state.isRolling);
+    const rollCooldown = useGameStore((state) => state.rollCooldown);
 
     // 1. Use refs to store the timeout IDs so they persist across renders
     const rollingTimeoutRef = useRef(null);
@@ -26,7 +31,7 @@ const RollManager = memo(function RollManager() {
         console.log("Handle touch roll change:", touchRoll);
         setTouchControls({
             ...useTouchControlsStore.getState().touchControls,
-            roll: false
+            roll: false,
         });
     }, [touchRoll]);
 
@@ -53,11 +58,10 @@ const RollManager = memo(function RollManager() {
                 cooldownTimeoutRef.current = setTimeout(() => {
                     setRollCooldown(false);
                 }, 500);
-
             }, 1500);
         }
 
-        // NO CLEANUP HERE. 
+        // NO CLEANUP HERE.
         // If we put clearTimeout here, it will kill the timer when `roll` changes back to false.
     }, [roll, touchRoll, setIsRolling, setRollCooldown]);
 

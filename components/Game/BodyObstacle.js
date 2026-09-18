@@ -1,12 +1,11 @@
 import { useBox, useCylinder } from "@react-three/cannon";
-import { useEffect } from "react"
+import { useEffect } from "react";
 import { useStore } from "@/hooks/useStore";
 import { DeadBody } from "../Models/DeadBody";
 import { ModelWetFloorSign } from "../Models/WetFloorSign";
 import { ModelBloodSplat } from "../Models/BloodSplat";
 
 export default function BodyObstacle({ obstacle }) {
-
     const safeMode = useStore((state) => state.safeMode);
 
     const randomRotation = useMemo(() => {
@@ -20,8 +19,8 @@ export default function BodyObstacle({ obstacle }) {
         rotation: randomRotation, // Syncs physics body with visual rotation
         userData: {
             isObstacle: true,
-            id: obstacle.id
-        }
+            id: obstacle.id,
+        },
     }));
 
     // Update position if the obstacle prop changes
@@ -31,15 +30,16 @@ export default function BodyObstacle({ obstacle }) {
 
     return (
         <group>
-
             {/* <group>{leftSideMemo}</group>
             <group>{rightSideMemo}</group> */}
 
             {/* The physics ref is on this mesh; it will now use randomRotation */}
             <mesh ref={ref}>
-
                 <boxGeometry args={[1, 1, 1]} />
-                <meshStandardMaterial transparent opacity={0} />
+                <meshStandardMaterial
+                    transparent
+                    opacity={0}
+                />
 
                 {/* Models are children, they will inherit the rotation from 'ref' */}
                 <group position={[0, 0, 0.5]}>
@@ -47,12 +47,8 @@ export default function BodyObstacle({ obstacle }) {
                         <DeadBody action="Death" />
                     ) : (
                         <>
-                            <ModelWetFloorSign
-                                position={[0, 0, -0.15]}
-                            />
-                            <ModelWetFloorSign
-                                position={[0, 0, -0.85]}
-                            />
+                            <ModelWetFloorSign position={[0, 0, -0.15]} />
+                            <ModelWetFloorSign position={[0, 0, -0.85]} />
                         </>
                     )}
                 </group>
@@ -60,12 +56,10 @@ export default function BodyObstacle({ obstacle }) {
                 {/* {!safeMode && ( */}
                 <ModelBloodSplat
                     position={[-0.1, 0, -0.3]}
-                    rotation={[0, -140 * Math.PI / 180, 0]}
+                    rotation={[0, (-140 * Math.PI) / 180, 0]}
                 />
                 {/* )} */}
-
             </mesh>
-
         </group>
     );
 }

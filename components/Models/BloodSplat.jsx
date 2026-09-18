@@ -4,37 +4,36 @@ Command: npx gltfjsx@6.5.3 .\BloodSplat.glb -T
 Files: .\BloodSplat.glb [10.79KB] > F:\My Documents\Sites games\school-run\public\models\BloodSplat-transformed.glb [4.18KB] (61%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
-import { useStore } from '@/hooks/useStore';
+import React from "react";
+import { useGLTF } from "@react-three/drei";
+import { useStore } from "@/hooks/useStore";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/BloodSplat-transformed.glb`
-);
+const link = getAssetSource(`models/BloodSplat-transformed.glb`);
 
 export function ModelBloodSplat(props) {
-  const { nodes, materials } = useGLTF(link)
+    const { nodes, materials } = useGLTF(link);
 
-  const safeMode = useStore((state) => state.safeMode);
+    const safeMode = useStore((state) => state.safeMode);
 
-  return (
-    <group {...props} dispose={null}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Blood_2.geometry}
-        material={materials['Atlas.039']}
-        scale={100}
-      >
-        {safeMode && (
-          <meshStandardMaterial color="blue" />
-        )}
-      </mesh>
-    </group>
-  )
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                castShadow
+                receiveShadow
+                geometry={nodes.Blood_2.geometry}
+                material={materials["Atlas.039"]}
+                scale={100}
+            >
+                {safeMode && <meshStandardMaterial color="blue" />}
+            </mesh>
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

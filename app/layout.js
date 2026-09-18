@@ -1,11 +1,11 @@
 // import { Geist, Geist_Mono } from "next/font/google";
 
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from '@/theme';
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "@/theme";
 
-import packageInfo from '@/package.json';
+import packageInfo from "@/package.json";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -17,8 +17,8 @@ import "@articles-media/articles-dev-box/dist/style.css";
 import "@articles-media/articles-gamepad-helper/dist/articles-gamepad-helper.css";
 
 import SocketLogicHandler from "@/components/SocketLogicHandler";
-import { Suspense } from 'react';
-import LayoutClient from './layout-client';
+import { Suspense } from "react";
+import LayoutClient from "./layout-client";
 // import GlobalClientModals from '@/components/UI/GlobalClientModals';
 
 // const geistSans = Geist({
@@ -32,40 +32,48 @@ import LayoutClient from './layout-client';
 // });
 
 export const metadata = {
-  title: process.env.NEXT_PUBLIC_GAME_NAME,
-  description: packageInfo.description,
+    title: process.env.NEXT_PUBLIC_GAME_NAME,
+    description: packageInfo.description,
 };
 
 export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
+    return (
+        <html lang="en">
+            <head>
+                <link
+                    rel="preconnect"
+                    href="https://fonts.googleapis.com"
+                />
+                <link
+                    rel="preconnect"
+                    href="https://fonts.gstatic.com"
+                    crossOrigin="true"
+                />
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Playwrite+AR+Guides&display=swap"
+                    rel="stylesheet"
+                ></link>
+            </head>
 
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <link href="https://fonts.googleapis.com/css2?family=Playwrite+AR+Guides&display=swap" rel="stylesheet"></link>
-      </head>
+            <body
+            // className={`${geistSans.variable} ${geistMono.variable}`}
+            >
+                <LayoutClient />
 
-      <body
-      // className={`${geistSans.variable} ${geistMono.variable}`}
-      >
+                <Suspense>
+                    {process.env.NEXT_PUBLIC_ENABLE_ARTICLES && (
+                        <SocketLogicHandler />
+                    )}
+                </Suspense>
 
-        <LayoutClient />
-
-        <Suspense>
-          {process.env.NEXT_PUBLIC_ENABLE_ARTICLES &&
-            <SocketLogicHandler />
-          }
-        </Suspense>
-
-        <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-          <ThemeProvider theme={theme}>
-            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-            <CssBaseline />
-            {children}
-          </ThemeProvider>
-        </AppRouterCacheProvider>
-      </body>
-    </html>
-  );
+                <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+                    <ThemeProvider theme={theme}>
+                        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                        <CssBaseline />
+                        {children}
+                    </ThemeProvider>
+                </AppRouterCacheProvider>
+            </body>
+        </html>
+    );
 }

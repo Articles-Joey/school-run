@@ -1,11 +1,10 @@
-import { useRef, useState } from 'react'
+import { useRef, useState } from "react";
 
-import { useBox } from '@react-three/cannon';
+import { useBox } from "@react-three/cannon";
 
-const floor_size = [10, 0.25, 2.5]
+const floor_size = [10, 0.25, 2.5];
 
 export default function Floor(props) {
-
     const [ref, api] = useBox(() => ({
         mass: 0,
         // friction: 0,
@@ -17,10 +16,5 @@ export default function Floor(props) {
     }));
 
     // Return the view, these are regular Threejs elements expressed in JSX
-    return (
-        <group
-            ref={ref}
-        >
-        </group>
-    )
+    return <group ref={ref}></group>;
 }

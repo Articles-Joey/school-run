@@ -4,23 +4,28 @@ Command: npx gltfjsx@6.5.3 .\Metal Support.glb -T
 Files: .\Metal Support.glb [29.03KB] > F:\My Documents\Sites games\school-run\public\models\Metal Support-transformed.glb [5.44KB] (81%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/Metal Support-transformed.glb`
-);
+const link = getAssetSource(`models/Metal Support-transformed.glb`);
 
 export function ModelMetalSupport(props) {
-  const { nodes, materials } = useGLTF(link)
-  return (
-    <group {...props} dispose={null}>
-      <mesh geometry={nodes.MetalSupport.geometry} material={materials.Atlas} scale={100} />
-    </group>
-  )
+    const { nodes, materials } = useGLTF(link);
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                geometry={nodes.MetalSupport.geometry}
+                material={materials.Atlas}
+                scale={100}
+            />
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

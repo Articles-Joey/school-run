@@ -4,27 +4,41 @@ Command: npx gltfjsx@6.5.3 duck.gltf -T
 Files: duck.gltf [115.83KB] > F:\My Documents\Sites games\school-run\public\models\duck-transformed.glb [12.76KB] (89%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/duck-transformed.glb`
-);
+const link = getAssetSource(`models/duck-transformed.glb`);
 
 export function ModelDuck(props) {
-  const { nodes, materials } = useGLTF(link)
-  return (
-    <group {...props} dispose={null}>
-      <mesh geometry={nodes.character_duck.geometry} material={materials['White.026']} rotation={[Math.PI / 2, 0, 0]} />
-      <group position={[0, 0.704, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <mesh geometry={nodes.Cube1338.geometry} material={materials['Yellow.043']} />
-        <mesh geometry={nodes.Cube1338_1.geometry} material={materials['Black.027']} />
-      </group>
-    </group>
-  )
+    const { nodes, materials } = useGLTF(link);
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                geometry={nodes.character_duck.geometry}
+                material={materials["White.026"]}
+                rotation={[Math.PI / 2, 0, 0]}
+            />
+            <group
+                position={[0, 0.704, 0]}
+                rotation={[Math.PI / 2, 0, 0]}
+            >
+                <mesh
+                    geometry={nodes.Cube1338.geometry}
+                    material={materials["Yellow.043"]}
+                />
+                <mesh
+                    geometry={nodes.Cube1338_1.geometry}
+                    material={materials["Black.027"]}
+                />
+            </group>
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

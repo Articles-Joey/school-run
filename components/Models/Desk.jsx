@@ -4,24 +4,32 @@ Command: npx gltfjsx@6.5.3 .\desk.glb -T
 Files: .\desk.glb [15.05KB] > F:\My Documents\Sites games\school-run\public\models\desk-transformed.glb [2.62KB] (83%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/desk-transformed.glb`
-);
+const link = getAssetSource(`models/desk-transformed.glb`);
 
 export function ModelDesk(props) {
-  const { nodes, materials } = useGLTF(link)
-  return (
-    <group {...props} dispose={null}>
-      <mesh geometry={nodes['desk(Clone)'].geometry} material={materials.wood} />
-      <mesh geometry={nodes.drawer.geometry} material={materials.metal} position={[0.04, 0.274, -0.164]} />
-    </group>
-  )
+    const { nodes, materials } = useGLTF(link);
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                geometry={nodes["desk(Clone)"].geometry}
+                material={materials.wood}
+            />
+            <mesh
+                geometry={nodes.drawer.geometry}
+                material={materials.metal}
+                position={[0.04, 0.274, -0.164]}
+            />
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

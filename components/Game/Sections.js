@@ -1,7 +1,11 @@
 import { useFrame } from "@react-three/fiber";
-import { memo, useEffect, useMemo, useRef, useState } from "react"
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 
-import { useGameStore, pickObstacleType, getActiveZone } from "@/hooks/useGameStore";
+import {
+    useGameStore,
+    pickObstacleType,
+    getActiveZone,
+} from "@/hooks/useGameStore";
 import Walls from "./Walls";
 
 import { useStore } from "@/hooks/useStore";
@@ -11,7 +15,6 @@ import BodyObstacle from "./BodyObstacle";
 import HorizontalObstacle from "./HorizontalObstacle";
 
 function GameSections(props) {
-
     const ref = useRef();
 
     const {
@@ -20,37 +23,40 @@ function GameSections(props) {
         setObstacles,
         gameOver,
         freeze,
-        generateInitialObstacles
+        generateInitialObstacles,
     } = useGameStore();
 
     const graphicsQuality = useStore((state) => state.graphicsQuality);
 
     useEffect(() => {
-        generateInitialObstacles()
-    }, [graphicsQuality])
+        generateInitialObstacles();
+    }, [graphicsQuality]);
 
     useFrame(() => {
-
-        if (gameOver || freeze) return
+        if (gameOver || freeze) return;
 
         const speedMultiplier = getActiveZone(distance).speedMultiplier ?? 1;
 
         let newObstacles = obstacles.map((obstacle) => ({
             ...obstacle,
             position: [
-                obstacle.position[0], 
-                obstacle.position[1], 
-                obstacle.position[2] + (0.1 * speedMultiplier)
+                obstacle.position[0],
+                obstacle.position[1],
+                obstacle.position[2] + 0.1 * speedMultiplier,
             ], // Move toward the player
-        }))
+        }));
 
         // Filter out obstacles that went past the player
-        newObstacles = newObstacles.filter((obstacle) => obstacle.position[2] <= 15);
+        newObstacles = newObstacles.filter(
+            (obstacle) => obstacle.position[2] <= 15,
+        );
 
         // Add new obstacles to maintain the array length
         while (newObstacles.length < obstacles.length) {
             const lastObstacle = newObstacles[newObstacles.length - 1];
-            const newPositionZ = lastObstacle ? lastObstacle.position[2] - 10 : -10;
+            const newPositionZ = lastObstacle
+                ? lastObstacle.position[2] - 10
+                : -10;
 
             newObstacles.push({
                 position: [Math.random() * 2 - 1, 0, newPositionZ],
@@ -60,12 +66,13 @@ function GameSections(props) {
         }
 
         setObstacles(newObstacles);
-
     });
 
     return (
-        <group ref={ref} position={[0, 0, 0]}>
-
+        <group
+            ref={ref}
+            position={[0, 0, 0]}
+        >
             {/* Render Obstacles */}
             {obstacles?.map((obstacle) => (
                 <Section
@@ -73,18 +80,15 @@ function GameSections(props) {
                     obstacle={obstacle}
                 />
             ))}
-
         </group>
-    )
+    );
 }
 
-export default GameSections
+export default GameSections;
 
 function Section({ obstacle }) {
-
     return (
         <>
-
             <Walls position={obstacle.position} />
 
             {obstacle.obstacleType === "FireLine" && (
@@ -94,21 +98,14 @@ function Section({ obstacle }) {
                 />
             )}
             {obstacle.obstacleType === "Body" && (
-                <BodyObstacle
-                    obstacle={obstacle}
-                />
+                <BodyObstacle obstacle={obstacle} />
             )}
             {obstacle.obstacleType === "Drone" && (
-                <DroneObstacle
-                    obstacle={obstacle}
-                />
+                <DroneObstacle obstacle={obstacle} />
             )}
             {obstacle.obstacleType === "Horizontal" && (
-                <HorizontalObstacle
-                    obstacle={obstacle}
-                />
+                <HorizontalObstacle obstacle={obstacle} />
             )}
-
         </>
     );
 }

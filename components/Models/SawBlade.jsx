@@ -4,33 +4,42 @@ Command: npx gltfjsx@6.5.3 .\SawBlade.glb -T
 Files: .\SawBlade.glb [38.9KB] > F:\My Documents\Sites games\school-run\public\models\SawBlade-transformed.glb [6.74KB] (83%)
 */
 
-import React, { useRef } from 'react'
-import { useGLTF } from '@react-three/drei'
-import { useFrame } from '@react-three/fiber'
+import React, { useRef } from "react";
+import { useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource('models/SawBlade-transformed.glb');
+const link = getAssetSource("models/SawBlade-transformed.glb");
 
 export function ModelSawBlade(props) {
-  const { nodes, materials } = useGLTF(link)
-  const meshRef = useRef()
+    const { nodes, materials } = useGLTF(link);
+    const meshRef = useRef();
 
-  useFrame((state, delta) => {
-    if (meshRef.current) {
-      // Rotate around the Z axis (which is the local up axis for this mesh due to the initial -PI/2 X rotation)
-      // or we can just spin the whole group if preferred. 
-      // Given the mesh has rotation={[-Math.PI / 2, 0, 0]}, spinning it on Z will look like a saw spinning.
-      meshRef.current.rotation.y += delta * 10
-    }
-  })
+    useFrame((state, delta) => {
+        if (meshRef.current) {
+            // Rotate around the Z axis (which is the local up axis for this mesh due to the initial -PI/2 X rotation)
+            // or we can just spin the whole group if preferred.
+            // Given the mesh has rotation={[-Math.PI / 2, 0, 0]}, spinning it on Z will look like a saw spinning.
+            meshRef.current.rotation.y += delta * 10;
+        }
+    });
 
-  return (
-    <group {...props} dispose={null}>
-      <mesh ref={meshRef} geometry={nodes.Hazard_Saw.geometry} material={materials.Metal} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
-    </group>
-  )
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                ref={meshRef}
+                geometry={nodes.Hazard_Saw.geometry}
+                material={materials.Metal}
+                rotation={[-Math.PI / 2, 0, 0]}
+                scale={100}
+            />
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

@@ -4,25 +4,36 @@ Command: npx gltfjsx@6.5.3 Backpack.glb -T
 Files: Backpack.glb [54.28KB] > F:\My Documents\Sites games\school-run\public\models\Backpack-transformed.glb [6.54KB] (88%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/Backpack-transformed.glb`
-);
+const link = getAssetSource(`models/Backpack-transformed.glb`);
 
 export function ModelBackpack(props) {
-  const { nodes, materials } = useGLTF(link)
-  return (
-    <group {...props} dispose={null} position={[0, -2, 0]}>
-      <mesh geometry={nodes['Backpack_Cube006-Mesh'].geometry} material={materials.Backpack} />
-      <mesh geometry={nodes['Backpack_Cube006-Mesh_1'].geometry} material={materials.Silver} />
-      <mesh geometry={nodes['Backpack_Cube006-Mesh_2'].geometry} material={materials.Brown2} />
-    </group>
-  )
+    const { nodes, materials } = useGLTF(link);
+    return (
+        <group
+            {...props}
+            dispose={null}
+            position={[0, -2, 0]}
+        >
+            <mesh
+                geometry={nodes["Backpack_Cube006-Mesh"].geometry}
+                material={materials.Backpack}
+            />
+            <mesh
+                geometry={nodes["Backpack_Cube006-Mesh_1"].geometry}
+                material={materials.Silver}
+            />
+            <mesh
+                geometry={nodes["Backpack_Cube006-Mesh_2"].geometry}
+                material={materials.Brown2}
+            />
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

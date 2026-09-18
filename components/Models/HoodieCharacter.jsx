@@ -4,50 +4,49 @@ Command: npx gltfjsx@6.5.3 HoodieCharacter.glb -T
 Files: HoodieCharacter.glb [1.46MB] > F:\My Documents\Sites games\school-run\public\models\HoodieCharacter-transformed.glb [430KB] (70%)
 */
 
-import React, { useEffect } from 'react'
-import { useGraph } from '@react-three/fiber'
-import { useGLTF, useAnimations } from '@react-three/drei'
-import { SkeletonUtils } from 'three-stdlib'
-import { useGameStore } from '@/hooks/useGameStore'
-import * as THREE from 'three';
+import React, { useEffect } from "react";
+import { useGraph } from "@react-three/fiber";
+import { useGLTF, useAnimations } from "@react-three/drei";
+import { SkeletonUtils } from "three-stdlib";
+import { useGameStore } from "@/hooks/useGameStore";
+import * as THREE from "three";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-    'models/HoodieCharacter-transformed.glb'
-);
+const link = getAssetSource("models/HoodieCharacter-transformed.glb");
 
 export function ModelHoodieCharacter(props) {
-
     // const { roll } = props;
 
-    const group = React.useRef()
-    const { scene, animations } = useGLTF(link)
-    const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
-    const { nodes, materials } = useGraph(clone)
-    const { actions } = useAnimations(animations, group)
+    const group = React.useRef();
+    const { scene, animations } = useGLTF(link);
+    const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+    const { nodes, materials } = useGraph(clone);
+    const { actions } = useAnimations(animations, group);
 
-    const characterAnimation = useGameStore(state => state.characterAnimation);
-    const gameOver = useGameStore(state => state.gameOver);
-    const freeze = useGameStore(state => state.freeze);
-    const isRolling = useGameStore(state => state.isRolling);
+    const characterAnimation = useGameStore(
+        (state) => state.characterAnimation,
+    );
+    const gameOver = useGameStore((state) => state.gameOver);
+    const freeze = useGameStore((state) => state.freeze);
+    const isRolling = useGameStore((state) => state.isRolling);
 
     // 1. Dedicated useEffect for rolling logic (Highest Priority Override)
     useEffect(() => {
-        const rollAction = actions['CharacterArmature|Roll'];
+        const rollAction = actions["CharacterArmature|Roll"];
         if (!rollAction) return;
 
         if (isRolling) {
             // Stop everything else immediately to ensure total override
-            Object.values(actions).forEach(action => action?.stop());
+            Object.values(actions).forEach((action) => action?.stop());
 
             // Reset timeScale to normal before scaling duration
             rollAction.timeScale = 1;
 
             rollAction
                 .reset()
-                .setDuration(1.5)          // Forces the animation to span exactly 2 seconds
+                .setDuration(1.5) // Forces the animation to span exactly 2 seconds
                 .setLoop(THREE.LoopOnce) // Play one time
                 .play();
 
@@ -66,15 +65,17 @@ export function ModelHoodieCharacter(props) {
         // Guard clause: If rolling is active, do not run any normal animation logic
         if (isRolling) return;
 
-        let animationToPlay = gameOver ? 'CharacterArmature|Death' : characterAnimation;
+        let animationToPlay = gameOver
+            ? "CharacterArmature|Death"
+            : characterAnimation;
         if (!actions[animationToPlay]) return;
 
-        Object.values(actions).forEach(action => action?.stop());
+        Object.values(actions).forEach((action) => action?.stop());
 
-        const action = freeze ?
-            actions['CharacterArmature|Idel'] || actions[Object.keys(actions)[0]]
-            :
-            actions[animationToPlay];
+        const action = freeze
+            ? actions["CharacterArmature|Idel"] ||
+              actions[Object.keys(actions)[0]]
+            : actions[animationToPlay];
 
         if (action) {
             action.reset().fadeIn(0.2).play();
@@ -89,34 +90,104 @@ export function ModelHoodieCharacter(props) {
             const action = actions[animationToPlay];
             if (action) action.fadeOut(0.2);
         };
-
     }, [characterAnimation, gameOver, freeze, isRolling, actions]);
 
     return (
-        <group ref={group} {...props} dispose={null}>
+        <group
+            ref={group}
+            {...props}
+            dispose={null}
+        >
             <group name="Root_Scene">
                 <primitive object={nodes.Root} />
-                <group name="Casual_Feet" rotation={[-Math.PI / 2, 0, 0]} scale={100}>
-                    <skinnedMesh name="Casual_Feet_1" geometry={nodes.Casual_Feet_1.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Casual_Feet_1.skeleton} />
-                    <skinnedMesh name="Casual_Feet_2" geometry={nodes.Casual_Feet_2.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Casual_Feet_2.skeleton} />
+                <group
+                    name="Casual_Feet"
+                    rotation={[-Math.PI / 2, 0, 0]}
+                    scale={100}
+                >
+                    <skinnedMesh
+                        name="Casual_Feet_1"
+                        geometry={nodes.Casual_Feet_1.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Casual_Feet_1.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Casual_Feet_2"
+                        geometry={nodes.Casual_Feet_2.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Casual_Feet_2.skeleton}
+                    />
                 </group>
-                <group name="Casual_Legs" rotation={[-Math.PI / 2, 0, 0]} scale={100}>
-                    <skinnedMesh name="Casual_Legs_1" geometry={nodes.Casual_Legs_1.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Casual_Legs_1.skeleton} />
-                    <skinnedMesh name="Casual_Legs_2" geometry={nodes.Casual_Legs_2.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Casual_Legs_2.skeleton} />
+                <group
+                    name="Casual_Legs"
+                    rotation={[-Math.PI / 2, 0, 0]}
+                    scale={100}
+                >
+                    <skinnedMesh
+                        name="Casual_Legs_1"
+                        geometry={nodes.Casual_Legs_1.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Casual_Legs_1.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Casual_Legs_2"
+                        geometry={nodes.Casual_Legs_2.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Casual_Legs_2.skeleton}
+                    />
                 </group>
-                <group name="Casual_Head" rotation={[-Math.PI / 2, 0, 0]} scale={100}>
-                    <skinnedMesh name="Casual_Head_1" geometry={nodes.Casual_Head_1.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Casual_Head_1.skeleton} />
-                    <skinnedMesh name="Casual_Head_2" geometry={nodes.Casual_Head_2.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Casual_Head_2.skeleton} />
-                    <skinnedMesh name="Casual_Head_3" geometry={nodes.Casual_Head_3.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Casual_Head_3.skeleton} />
-                    <skinnedMesh name="Casual_Head_4" geometry={nodes.Casual_Head_4.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Casual_Head_4.skeleton} />
+                <group
+                    name="Casual_Head"
+                    rotation={[-Math.PI / 2, 0, 0]}
+                    scale={100}
+                >
+                    <skinnedMesh
+                        name="Casual_Head_1"
+                        geometry={nodes.Casual_Head_1.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Casual_Head_1.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Casual_Head_2"
+                        geometry={nodes.Casual_Head_2.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Casual_Head_2.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Casual_Head_3"
+                        geometry={nodes.Casual_Head_3.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Casual_Head_3.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Casual_Head_4"
+                        geometry={nodes.Casual_Head_4.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Casual_Head_4.skeleton}
+                    />
                 </group>
-                <group name="Casual_Body" position={[0, 0.007, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={100}>
-                    <skinnedMesh name="Casual_Body_1" geometry={nodes.Casual_Body_1.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Casual_Body_1.skeleton} />
-                    <skinnedMesh name="Casual_Body_2" geometry={nodes.Casual_Body_2.geometry} material={materials.PaletteMaterial001} skeleton={nodes.Casual_Body_2.skeleton} />
+                <group
+                    name="Casual_Body"
+                    position={[0, 0.007, 0]}
+                    rotation={[-Math.PI / 2, 0, 0]}
+                    scale={100}
+                >
+                    <skinnedMesh
+                        name="Casual_Body_1"
+                        geometry={nodes.Casual_Body_1.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Casual_Body_1.skeleton}
+                    />
+                    <skinnedMesh
+                        name="Casual_Body_2"
+                        geometry={nodes.Casual_Body_2.geometry}
+                        material={materials.PaletteMaterial001}
+                        skeleton={nodes.Casual_Body_2.skeleton}
+                    />
                 </group>
             </group>
         </group>
-    )
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);

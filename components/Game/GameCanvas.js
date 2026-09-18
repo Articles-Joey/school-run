@@ -1,18 +1,26 @@
-import { Canvas, useThree } from '@react-three/fiber';
-import { Debug, Physics } from '@react-three/cannon';
-import { Center, Image, OrbitControls, Plane, Sky, Stats, Text, Text3D } from '@react-three/drei'
+import { Canvas, useThree } from "@react-three/fiber";
+import { Debug, Physics } from "@react-three/cannon";
+import {
+    Center,
+    Image,
+    OrbitControls,
+    Plane,
+    Sky,
+    Stats,
+    Text,
+    Text3D,
+} from "@react-three/drei";
 
-import Player from './Player';
-import { memo, Suspense, useLayoutEffect, useMemo } from 'react';
-import getRandomHexColor from '@/util/getRandomHexColor';
-import Sections from './Sections';
-import Floor from './Floor';
-import { useStore } from '@/hooks/useStore';
-import AnimatedPointLights from './AnimatedPointLights';
-import { useGameStore } from '@/hooks/useGameStore';
+import Player from "./Player";
+import { memo, Suspense, useLayoutEffect, useMemo } from "react";
+import getRandomHexColor from "@/util/getRandomHexColor";
+import Sections from "./Sections";
+import Floor from "./Floor";
+import { useStore } from "@/hooks/useStore";
+import AnimatedPointLights from "./AnimatedPointLights";
+import { useGameStore } from "@/hooks/useGameStore";
 
 const BackWalls = memo(function BackWalls(props) {
-
     // const { numberOfPlatforms, start } = props
 
     // const generateRandomPlatforms = useMemo(() => {
@@ -31,67 +39,71 @@ const BackWalls = memo(function BackWalls(props) {
         <>
             {[...Array(60)].map((item, i) => {
                 return (
-                    <mesh key={i} position={[0, 5, -(i * 20)]}>
-                        <planeGeometry attach="geometry" args={[20, 10]} />
+                    <mesh
+                        key={i}
+                        position={[0, 5, -(i * 20)]}
+                    >
+                        <planeGeometry
+                            attach="geometry"
+                            args={[20, 10]}
+                        />
                         <meshStandardMaterial
                             transparent={true}
                             opacity={0.1}
                             color={getRandomHexColor()}
                         />
                     </mesh>
-                )
+                );
             })}
         </>
-    )
-})
+    );
+});
 
-function GameCanvas({
-    landingAnimationMode
-}) {
-
-    const debug = useStore(state => state.debug)
-    const darkMode = useStore(state => state.darkMode)
+function GameCanvas({ landingAnimationMode }) {
+    const debug = useStore((state) => state.debug);
+    const darkMode = useStore((state) => state.darkMode);
     const showStats = useStore((state) => state?.debugConfig?.showStats);
-    const cameraMode = useGameStore(state => state.cameraMode)
+    const cameraMode = useGameStore((state) => state.cameraMode);
 
     function Scene() {
-        const { camera } = useThree()
+        const { camera } = useThree();
 
         useLayoutEffect(() => {
             if (landingAnimationMode) {
-                camera.position.set(2, 2.5, 3.5)
-                camera.lookAt(0, 1.5, 0)
+                camera.position.set(2, 2.5, 3.5);
+                camera.lookAt(0, 1.5, 0);
             }
-        }, [landingAnimationMode, camera])
+        }, [landingAnimationMode, camera]);
 
-        return null
+        return null;
     }
 
     return (
         <Canvas camera={{ fov: 45, position: [0, 5, 20] }}>
-
             <Scene />
 
-            {showStats && <>
-                <Stats className="stats-overlay" />
-            </>}
+            {showStats && (
+                <>
+                    <Stats className="stats-overlay" />
+                </>
+            )}
 
             {/* <color
                 attach="background"
                 args={[0, 0, 0]}
             /> */}
 
-            {darkMode ?
+            {darkMode ? (
                 <>
                     <ambientLight intensity={0.1} />
                     <Sky sunPosition={[100, -1, 20]} />
                 </>
-                :
+            ) : (
                 <>
                     <ambientLight intensity={0.5} />
                     <Sky sunPosition={[100, 10, 20]} />
                 </>
-            }
+            )}
 
             {/* <color attach="background" args={['#215776']} /> */}
 
@@ -142,32 +154,26 @@ function GameCanvas({
                 gravity={[0, -15, 0]}
                 contactMaterial={{ friction: 0.5 }}
             >
-
-                <Debug color="black" scale={debug ? 1 : 0}>
-
+                <Debug
+                    color="black"
+                    scale={debug ? 1 : 0}
+                >
                     <Suspense>
                         <Sections />
                         <Floor position={[0, -0.125, 0]} />
                     </Suspense>
 
-                    {!landingAnimationMode &&
+                    {!landingAnimationMode && (
                         <Suspense>
                             <Player position={[0, 1, 0]} />
                         </Suspense>
-                    }
-
+                    )}
                 </Debug>
-
             </Physics>
 
-            {cameraMode === 'Free' &&
-                <OrbitControls
-                    target={[0, 1, 0]}
-                />
-            }
-
+            {cameraMode === "Free" && <OrbitControls target={[0, 1, 0]} />}
         </Canvas>
-    )
+    );
 }
 
-export default memo(GameCanvas)
+export default memo(GameCanvas);

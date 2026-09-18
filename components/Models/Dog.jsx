@@ -4,27 +4,41 @@ Command: npx gltfjsx@6.5.3 .\dog.gltf -T
 Files: .\dog.gltf [116.42KB] > F:\My Documents\Sites games\school-run\public\models\dog-transformed.glb [12.2KB] (90%)
 */
 
-import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import React from "react";
+import { useGLTF } from "@react-three/drei";
 
 // import getAssetSource from "@/util/getAssetSource";
-import getAssetSource from '@articles-media/articles-dev-box/getAssetSource';
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = getAssetSource(
-  `models/dog-transformed.glb`
-);
+const link = getAssetSource(`models/dog-transformed.glb`);
 
 export function ModelDog(props) {
-  const { nodes, materials } = useGLTF(link)
-  return (
-    <group {...props} dispose={null}>
-      <mesh geometry={nodes.character_dog.geometry} material={materials['Beige.017']} rotation={[Math.PI / 2, 0, 0]} />
-      <group position={[0, 0.704, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <mesh geometry={nodes.Cube1339.geometry} material={materials['Red.034']} />
-        <mesh geometry={nodes.Cube1339_1.geometry} material={materials['Black.026']} />
-      </group>
-    </group>
-  )
+    const { nodes, materials } = useGLTF(link);
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <mesh
+                geometry={nodes.character_dog.geometry}
+                material={materials["Beige.017"]}
+                rotation={[Math.PI / 2, 0, 0]}
+            />
+            <group
+                position={[0, 0.704, 0]}
+                rotation={[Math.PI / 2, 0, 0]}
+            >
+                <mesh
+                    geometry={nodes.Cube1339.geometry}
+                    material={materials["Red.034"]}
+                />
+                <mesh
+                    geometry={nodes.Cube1339_1.geometry}
+                    material={materials["Black.026"]}
+                />
+            </group>
+        </group>
+    );
 }
 
-useGLTF.preload(link)
+useGLTF.preload(link);
