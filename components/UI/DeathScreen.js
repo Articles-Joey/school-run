@@ -1,6 +1,7 @@
 import { useGameStore } from "@/hooks/useGameStore";
 import { useStore } from "@/hooks/useStore";
 import Link from "next/link";
+import Box from "@mui/material/Box";
 import ArticlesButton from "./Button";
 
 export default function DeathScreen() {
@@ -20,29 +21,73 @@ export default function DeathScreen() {
 
     return (
         <>
-            <div className="death-screen">
+            <Box
+                className="death-screen"
+                sx={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    left: 0,
+                    top: 0,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    zIndex: 1,
+                }}
+            >
                 {!safeMode && (
-                    <img
+                    <Box
+                        component="img"
                         className="background"
                         src={`img/blood-splat.png`}
+                        sx={{
+                            position: "absolute",
+                            width: "100%",
+                            height: "100%",
+                            left: 0,
+                            top: 0,
+                            backgroundColor: "rgba(255, 0, 0, 0.75)",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            zIndex: 1,
+                            objectFit: "cover",
+                            animation: "fadeInBackground 5s ease-in-out",
+                            "@keyframes fadeInBackground": {
+                                from: {
+                                    backgroundColor: "rgba(255, 0, 0, 0)",
+                                },
+                                to: {
+                                    backgroundColor: "rgba(255, 0, 0, 0.75)",
+                                },
+                            },
+                        }}
                     />
                 )}
 
                 {safeMode && (
-                    <div
+                    <Box
                         className="gradient"
-                        style={{
-                            ...(!safeMode && {
-                                backgroundColor: "rgba(255, 0, 0, 0.25)",
-                            }),
+                        sx={{
+                            position: "absolute",
+                            width: "100%",
+                            height: "100%",
+                            left: 0,
+                            top: 0,
+                            backgroundColor: "rgba(255, 150, 0, 0.5)",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            zIndex: 2,
                         }}
-                    ></div>
+                    />
                 )}
 
-                <div
+                <Box
                     className="card card-articles"
-                    style={{
-                        width: "300px",
+                    sx={{
+                        width: 300,
+                        zIndex: 3,
                     }}
                 >
                     <div className="card-header text-center">
@@ -81,8 +126,8 @@ export default function DeathScreen() {
                             Restart Game
                         </ArticlesButton>
                     </div>
-                </div>
-            </div>
+                </Box>
+            </Box>
         </>
     );
 }

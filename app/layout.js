@@ -7,12 +7,11 @@ import theme from "@/theme";
 
 import packageInfo from "@/package.json";
 
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 
 // import "./globals.css";
-import "@/styles/index.scss";
 
-import "@articles-media/articles-dev-box/dist/style.css";
+// import "@articles-media/articles-dev-box/dist/style.css";
 
 import "@articles-media/articles-gamepad-helper/dist/articles-gamepad-helper.css";
 

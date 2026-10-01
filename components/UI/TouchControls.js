@@ -1,4 +1,5 @@
-import { memo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import Box from "@mui/material/Box";
 
 import ArticlesButton from "@/components/UI/Button";
 // import { useControlsStore, useGameStore } from "@/hooks/useGameStore"
@@ -17,9 +18,35 @@ function ActionButtons() {
     );
 
     return (
-        <div className="action-buttons g-3">
+        <Box
+            className="action-buttons"
+            sx={{
+                position: "fixed",
+                right: "1rem",
+                bottom: 50,
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+                zIndex: 2,
+            }}
+        >
             <ArticlesButton
                 className="jump-button"
+                sx={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: "50%",
+                    opacity: 0.75,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    transitionDuration: "200ms",
+                    "&:hover": {
+                        opacity: 1,
+                    },
+                }}
                 onClick={() => {
                     const touchControls =
                         useTouchControlsStore.getState().touchControls;
@@ -35,6 +62,21 @@ function ActionButtons() {
 
             <ArticlesButton
                 className="roll-button"
+                sx={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: "50%",
+                    opacity: 0.75,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    transitionDuration: "200ms",
+                    "&:hover": {
+                        opacity: 1,
+                    },
+                }}
                 onClick={() => {
                     const touchControls =
                         useTouchControlsStore.getState().touchControls;
@@ -46,11 +88,11 @@ function ActionButtons() {
             >
                 Roll
             </ArticlesButton>
-        </div>
+        </Box>
     );
 }
 
-export default function TouchControls(props) {
+export default function TouchControls() {
     // const {
     //     touchControlsEnabled,
     // } = props;
@@ -65,8 +107,6 @@ export default function TouchControls(props) {
     const touchControlsEnabled = useTouchControlsStore(
         (state) => state.enabled,
     );
-
-    const [nippleCreated, setNippleCreated] = useState(false);
 
     const [nStart, setnStart] = useState(false);
     const [nDirection, setnDirection] = useState(false);
@@ -88,8 +128,6 @@ export default function TouchControls(props) {
 
         // var manager = nipplejs.create(options);
         var manager = require("nipplejs").create(options);
-
-        setNippleCreated(true);
 
         let dragDistance;
         let dragDirection;
@@ -198,23 +236,32 @@ export default function TouchControls(props) {
     if (cameraMode == "Free") return null;
 
     return (
-        <div
-            className={`touch-controls-area ${!touchControlsEnabled && "d-none"}`}
+        <Box
+            className="touch-controls-area"
+            sx={{
+                position: "absolute",
+                right: 0,
+                width: "100%",
+                height: "100%",
+                zIndex: 1,
+                display: touchControlsEnabled ? "flex" : "none",
+                justifyContent: "space-between",
+                alignItems: "center",
+            }}
         >
-            <div className="w-100 h-100">
-                <div
-                    style={{
+            <Box sx={{ width: "100%", height: "100%" }}>
+                <Box
+                    sx={{
                         position: "absolute",
                         width: "100%",
                         height: "100%",
-                        // backgroundColor: 'black',
                         zIndex: 1,
                     }}
                     id="zone_joystick"
-                ></div>
-            </div>
+                />
+            </Box>
 
-            <div className="d-flex d-none">
+            <Box sx={{ display: "none" }}>
                 <div>
                     {/* <ArticlesButton
                     onClick={() => {
@@ -241,9 +288,9 @@ export default function TouchControls(props) {
                     <div>Direction: {nDirection ? nDirection : "None"}</div>
                     <div>Touch: {JSON.stringify(touchControls)}</div>
                 </div>
-            </div>
+            </Box>
 
             <ActionButtons />
-        </div>
+        </Box>
     );
 }

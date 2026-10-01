@@ -219,6 +219,30 @@ export function FireLine({
 
     return (
         <group ref={ref}>
+            <group
+                position={[0, 0.015, 0]}
+                rotation={[-Math.PI / 2, 0, 0]}
+                scale={[length / 1.4, 0.45, 1]}
+            >
+                <mesh>
+                    <circleGeometry args={[0.7, 32]} />
+                    <meshBasicMaterial
+                        color="#111"
+                        transparent
+                        opacity={0.16}
+                        depthWrite={false}
+                    />
+                </mesh>
+                <mesh position={[0, 0, 0.003]}>
+                    <circleGeometry args={[0.48, 32]} />
+                    <meshBasicMaterial
+                        color="#111"
+                        transparent
+                        opacity={0.24}
+                        depthWrite={false}
+                    />
+                </mesh>
+            </group>
             <points
                 ref={pointsRef}
                 {...props}

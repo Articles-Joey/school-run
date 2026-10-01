@@ -135,7 +135,7 @@ export default function LayoutClient({ children }) {
                                 // children: <>Test</>
                             },
                             Other: {
-                                toontownMode: true,
+                                // toontownMode: true,
                                 children: <></>,
                             },
                             Debug: {

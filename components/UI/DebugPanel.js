@@ -1,9 +1,83 @@
-import { Dropdown, DropdownButton } from "react-bootstrap";
+import BugReportIcon from "@mui/icons-material/BugReport";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import MovieIcon from "@mui/icons-material/Movie";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import { Menu, MenuItem } from "@mui/material";
 
 import { OBSTACLE_TYPE_ZONES, useGameStore } from "@/hooks/useGameStore";
 import ArticlesButton from "@/components/UI/Button";
 import { useStore } from "@/hooks/useStore";
 import { useState } from "react";
+
+function DebugDropdown({ id, label, Icon, children }) {
+    const [anchorElement, setAnchorElement] = useState(null);
+    const isOpen = Boolean(anchorElement);
+
+    const closeMenu = () => {
+        setAnchorElement(null);
+    };
+
+    return (
+        <>
+            <ArticlesButton
+                aria-controls={isOpen ? id : undefined}
+                aria-expanded={isOpen ? "true" : undefined}
+                aria-haspopup="menu"
+                endIcon={<KeyboardArrowDownIcon />}
+                fullWidth
+                id={`${id}-button`}
+                onClick={(event) => {
+                    setAnchorElement(event.currentTarget);
+                }}
+                size="small"
+                startIcon={<Icon fontSize="small" />}
+                sx={{
+                    justifyContent: "flex-start",
+                    "& .MuiButton-endIcon": {
+                        marginLeft: "auto",
+                    },
+                }}
+                variant="contained"
+            >
+                {label}
+            </ArticlesButton>
+            <Menu
+                anchorEl={anchorElement}
+                anchorOrigin={{
+                    horizontal: "left",
+                    vertical: "bottom",
+                }}
+                id={id}
+                marginThreshold={0}
+                onClose={closeMenu}
+                open={isOpen}
+                slotProps={{
+                    list: {
+                        "aria-labelledby": `${id}-button`,
+                        style: {
+                            margin: 0,
+                            padding: 0,
+                        },
+                    },
+                    paper: {
+                        sx: {
+                            maxHeight: 600,
+                            margin: 0,
+                            width: 200,
+                        },
+                    },
+                }}
+                transformOrigin={{
+                    horizontal: "left",
+                    vertical: "top",
+                }}
+            >
+                {children(closeMenu)}
+            </Menu>
+        </>
+    );
+}
 
 export function DebugPanel() {
     const setSceneKey = useStore((state) => state.setSceneKey);
@@ -13,8 +87,6 @@ export function DebugPanel() {
 
     const cameraMode = useGameStore((state) => state.cameraMode);
     const setCameraMode = useGameStore((state) => state.setCameraMode);
-    const setTeleport = useGameStore((state) => state.setTeleport);
-    const maxHeight = useGameStore((state) => state.maxHeight);
     const characterAnimation = useGameStore(
         (state) => state.characterAnimation,
     );
@@ -27,6 +99,7 @@ export function DebugPanel() {
 
     const freeze = useGameStore((state) => state.freeze);
     const setFreeze = useGameStore((state) => state.setFreeze);
+    const distance = useGameStore((state) => state.distance);
     const setDistance = useGameStore((state) => state.setDistance);
 
     const [showObstacles, setShowObstacles] = useState(false);
@@ -87,113 +160,31 @@ export function DebugPanel() {
                         </ArticlesButton>
 
                         <div className="w-50">
-                            <DropdownButton
-                                variant="articles w-100"
-                                size="sm"
-                                disabled={true}
-                                id="dropdown-basic-button"
-                                className="dropdown-articles"
-                                title={
-                                    <span>
-                                        <i className="fad fa-ufo"></i>
-                                        <span>Teleport</span>
-                                    </span>
-                                }
+                            <DebugDropdown
+                                Icon={CameraAltIcon}
+                                id="camera-menu"
+                                label="Camera"
                             >
-                                <div
-                                    style={{
-                                        maxHeight: "600px",
-                                        overflowY: "auto",
-                                        width: "200px",
-                                    }}
-                                >
-                                    {[
-                                        {
-                                            name: "20",
-                                            position: [-4, 20, 0],
-                                        },
-                                        {
-                                            name: "30",
-                                            position: [-4, 31, 0],
-                                        },
-                                        {
-                                            name: "100",
-                                            position: [-4, 101, 0],
-                                        },
-                                        {
-                                            name: "Sprint 1 116",
-                                            position: [-28, 116.5, 0],
-                                        },
-                                        {
-                                            name: "Sprint 2 132",
-                                            position: [27, 131, 0],
-                                        },
-                                    ].map((location) => (
-                                        <Dropdown.Item
-                                            key={location.name}
+                                {(closeMenu) =>
+                                    ["Free", "Player"].map((location) => (
+                                        <MenuItem
+                                            key={location}
                                             onClick={() => {
-                                                setTeleport(location.position);
+                                                setCameraMode(location);
                                                 setShowMenu(false);
+                                                closeMenu();
                                             }}
-                                            className="d-flex justify-content-between"
+                                            selected={cameraMode === location}
                                         >
-                                            {maxHeight >
-                                            location.position[1] ? (
-                                                <i className="fad fa-unlock"></i>
-                                            ) : (
-                                                <i className="fad fa-lock"></i>
-                                            )}
-
-                                            {location.name}
-                                        </Dropdown.Item>
-                                    ))}
-                                </div>
-                            </DropdownButton>
-                        </div>
-
-                        <div className="w-50">
-                            <DropdownButton
-                                variant="articles w-100"
-                                size="sm"
-                                id="dropdown-basic-button"
-                                className="dropdown-articles"
-                                title={
-                                    <span>
-                                        <i className="fad fa-camera"></i>
-                                        <span>Camera</span>
-                                    </span>
+                                            <CameraAltIcon
+                                                fontSize="small"
+                                                sx={{ marginRight: 1 }}
+                                            />
+                                            {location}
+                                        </MenuItem>
+                                    ))
                                 }
-                            >
-                                <div
-                                    style={{
-                                        maxHeight: "600px",
-                                        overflowY: "auto",
-                                        width: "200px",
-                                    }}
-                                >
-                                    {[
-                                        {
-                                            name: "Free",
-                                        },
-                                        {
-                                            name: "Player",
-                                        },
-                                    ].map((location) => (
-                                        <Dropdown.Item
-                                            key={location.name}
-                                            active={cameraMode == location.name}
-                                            onClick={() => {
-                                                setCameraMode(location.name);
-                                                setShowMenu(false);
-                                            }}
-                                            className="d-flex justify-content-between"
-                                        >
-                                            <i className="fad fa-camera"></i>
-                                            {location.name}
-                                        </Dropdown.Item>
-                                    ))}
-                                </div>
-                            </DropdownButton>
+                            </DebugDropdown>
                         </div>
 
                         <ArticlesButton
@@ -210,26 +201,13 @@ export function DebugPanel() {
 
                         {/* Animation Override */}
                         <div className="w-50">
-                            <DropdownButton
-                                variant="articles w-100"
-                                size="sm"
-                                id="dropdown-basic-button"
-                                className="dropdown-articles"
-                                title={
-                                    <span>
-                                        <i className="fad fa-film"></i>
-                                        <span>Animation</span>
-                                    </span>
-                                }
+                            <DebugDropdown
+                                Icon={MovieIcon}
+                                id="animation-menu"
+                                label="Animation"
                             >
-                                <div
-                                    style={{
-                                        maxHeight: "600px",
-                                        overflowY: "auto",
-                                        width: "200px",
-                                    }}
-                                >
-                                    {[
+                                {(closeMenu) =>
+                                    [
                                         {
                                             name: "Running",
                                             key: "CharacterArmature|Run",
@@ -254,120 +232,93 @@ export function DebugPanel() {
                                             name: "Wave",
                                             key: "CharacterArmature|Wave",
                                         },
-                                        // {
-                                        //     name: "HitRecieve",
-                                        //     key: 'CharacterArmature|HitRecieve'
-                                        // }
                                     ].map((location) => (
-                                        <Dropdown.Item
+                                        <MenuItem
                                             key={location.name}
-                                            active={
-                                                characterAnimation ==
-                                                location.key
-                                            }
                                             onClick={() => {
-                                                // setTeleport(location.position)
-                                                // setShowMenu(false)
                                                 setCharacterAnimation(
                                                     location.key,
                                                 );
+                                                closeMenu();
                                             }}
-                                            className="d-flex justify-content-between"
+                                            selected={
+                                                characterAnimation ===
+                                                location.key
+                                            }
                                         >
-                                            {/* {maxHeight > location.position[1] ?
-                                                        <i className="fad fa-unlock"></i>
-                                                        :
-                                                        <i className="fad fa-lock"></i>
-                                                    } */}
-
+                                            <MovieIcon
+                                                fontSize="small"
+                                                sx={{ marginRight: 1 }}
+                                            />
                                             {location.name}
-                                        </Dropdown.Item>
-                                    ))}
-                                </div>
-                            </DropdownButton>
+                                        </MenuItem>
+                                    ))
+                                }
+                            </DebugDropdown>
                         </div>
 
                         {/* Debug */}
                         <div className="w-50">
-                            <DropdownButton
-                                variant="articles w-100"
-                                size="sm"
-                                id="dropdown-basic-button"
-                                className="dropdown-articles"
-                                title={
-                                    <span>
-                                        <i className="fad fa-bug"></i>
-                                        <span>Debug </span>
-                                        <span>{debug ? "On" : "Off"}</span>
-                                    </span>
-                                }
+                            <DebugDropdown
+                                Icon={BugReportIcon}
+                                id="debug-menu"
+                                label={`Debug ${debug ? "On" : "Off"}`}
                             >
-                                <div
-                                    style={{
-                                        maxHeight: "600px",
-                                        overflowY: "auto",
-                                        width: "200px",
-                                    }}
-                                >
-                                    {[false, true].map((location) => (
-                                        <Dropdown.Item
-                                            key={location}
-                                            active={
-                                                characterAnimation == location
-                                            }
+                                {(closeMenu) =>
+                                    [false, true].map((location) => (
+                                        <MenuItem
+                                            key={String(location)}
                                             onClick={() => {
                                                 setDebug(location);
+                                                closeMenu();
                                             }}
-                                            className="d-flex justify-content-between"
+                                            selected={debug === location}
                                         >
+                                            <BugReportIcon
+                                                fontSize="small"
+                                                sx={{ marginRight: 1 }}
+                                            />
                                             {location ? "True" : "False"}
-                                        </Dropdown.Item>
-                                    ))}
-                                </div>
-                            </DropdownButton>
+                                        </MenuItem>
+                                    ))
+                                }
+                            </DebugDropdown>
                         </div>
 
                         {/* Teleport */}
                         <div className="w-50">
-                            <DropdownButton
-                                variant="articles w-100"
-                                size="sm"
-                                id="dropdown-basic-button"
-                                className="dropdown-articles"
-                                title={
-                                    <span>
-                                        <i className="fad fa-bug"></i>
-                                        <span>Teleport </span>
-                                    </span>
-                                }
+                            <DebugDropdown
+                                Icon={RocketLaunchIcon}
+                                id="teleport-menu"
+                                label="Teleport"
                             >
-                                <div
-                                    style={{
-                                        maxHeight: "600px",
-                                        overflowY: "auto",
-                                        width: "200px",
-                                    }}
-                                >
-                                    {[
-                                        ...OBSTACLE_TYPE_ZONES.map(
-                                            (zone) => zone.range[0],
-                                        ),
-                                    ].map((location) => (
-                                        <Dropdown.Item
-                                            key={location}
-                                            active={
-                                                characterAnimation == location
-                                            }
-                                            onClick={() => {
-                                                setDistance(location);
-                                            }}
-                                            className="d-flex justify-content-between"
-                                        >
-                                            {location}
-                                        </Dropdown.Item>
-                                    ))}
-                                </div>
-                            </DropdownButton>
+                                {(closeMenu) =>
+                                    OBSTACLE_TYPE_ZONES.map((zone) => {
+                                        const location = zone.range[0];
+                                        const isActiveZone =
+                                            distance >= location &&
+                                            (distance <= zone.range[1] ||
+                                                location === 1500);
+
+                                        return (
+                                            <MenuItem
+                                                key={location}
+                                                onClick={() => {
+                                                    setDistance(location);
+                                                    closeMenu();
+                                                }}
+                                                selected={isActiveZone}
+                                            >
+                                                <RocketLaunchIcon
+                                                    fontSize="small"
+                                                    sx={{ marginRight: 1 }}
+                                                />
+                                                {location} ft
+                                            </MenuItem>
+                                        );
+                                    })
+                                }
+                            </DebugDropdown>
                         </div>
                     </div>
                 </div>

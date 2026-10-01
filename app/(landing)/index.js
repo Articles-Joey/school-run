@@ -3,6 +3,7 @@ import { useEffect, useContext, useState } from "react";
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import Box from "@mui/material/Box";
 
 import ArticlesButton from "@/components/UI/Button";
 import { useSocketStore } from "@/hooks/useSocketStore";
@@ -11,6 +12,7 @@ import useUserGameScore from "@/hooks/useUserGameScore";
 import { useStore } from "@/hooks/useStore";
 import RotatingMascot from "@/components/UI/RotatingMascot";
 import LandingBackgroundAnimation from "@/components/Game/LandingBackgroundAnimation";
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 
 // import getAssetSource from "@/util/getAssetSource";
 import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
@@ -78,7 +80,14 @@ export default function SchoolRunGameLandingPage() {
                 LandingBackgroundAnimation={<LandingBackgroundAnimation />}
                 CardBodyOverride={
                     <>
-                        <div className="card-body">
+                        <Box 
+                            className="card-body"
+                            sx={{ 
+                                p: 2,
+                                textAlign: "center",
+                            }}
+                        >
+                            
                             <div className="fw-bold mb-1 small text-center d-flex justify-content-center align-items-center">
                                 <span
                                     className=""
@@ -157,38 +166,73 @@ export default function SchoolRunGameLandingPage() {
                                 }}
                             >
                                 <ArticlesButton className="px-5 w-100 mb-2">
+                                    <PlayCircleIcon sx={{ mr: 1 }} />
                                     Play
                                 </ArticlesButton>
                             </Link>
-                        </div>
+                        </Box>
                     </>
                 }
                 // disableHero
                 heroOverride={
                     <>
-                        <div className="branding-backpack py-3">
-                            <img
+                        <Box
+                            className="branding-backpack"
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                mb: "-5rem",
+                                py: "1rem",
+                            }}
+                        >
+                            <Box
+                                component="img"
                                 src={"img/school-bag.png"}
                                 width={200}
-                                style={
-                                    {
-                                        // objectFit: "contain"
-                                    }
-                                }
-                            ></img>
-                        </div>
+                                alt="School backpack"
+                            />
+                        </Box>
 
-                        <div className="branding-chalkboard">
-                            <img
+                        <Box
+                            className="branding-chalkboard"
+                            sx={{
+                                position: "relative",
+                                width: "20rem",
+                                height: "10rem",
+                                mb: "1rem",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                border: "5px solid rgb(68, 28, 5)",
+                                color: "white"
+                            }}
+                        >
+                            <Box
+                                component="img"
                                 src={"img/green-chalkboard.webp"}
                                 width={200}
-                                className="background"
-                            ></img>
+                                alt=""
+                                sx={{
+                                    position: "absolute",
+                                    left: 0,
+                                    width: 1,
+                                    height: 1,
+                                }}
+                            />
 
-                            <h1 className="playwrite-ar-guides-regular text-center">
+                            <Box
+                                component="h1"
+                                className="playwrite-ar-guides-regular"
+                                sx={{
+                                    position: "relative",
+                                    zIndex: 1,
+                                    color: "#fff",
+                                    textAlign: "center",
+                                }}
+                            >
                                 {process.env.NEXT_PUBLIC_GAME_NAME}
-                            </h1>
-                        </div>
+                            </Box>
+                        </Box>
                     </>
                 }
                 backgroundImage={background_link}
