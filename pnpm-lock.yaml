@@ -105,16 +105,13 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@articles-media/articles-dev-box': link:../../Sites/Articles Media/articles-dev-box
-
 importers:
 
   .:
     dependencies:
       '@articles-media/articles-dev-box':
-        specifier: link:../../Sites/Articles Media/articles-dev-box
-        version: link:../../Sites/Articles Media/articles-dev-box
+        specifier: ^2.0.0-beta.3
+        version: 2.0.0-beta.3(3c8fb6227a43623ee3aea3627d2fd981)
       '@articles-media/articles-gamepad-helper':
         specifier: ^0.0.13
         version: 0.0.13(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zustand@5.0.15(@types/react@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0(react@19.3.0)))
@@ -208,6 +205,20 @@ importers:
         version: 3.9.9
 
 packages:
+
+  '@articles-media/articles-dev-box@2.0.0-beta.3':
+    resolution: {integrity: sha512-iS3Gaacg/+IyIQjn3k6ENFug4KlPPmTi+hD72APTkGKZazn4UJH3eymFWnuW1j4S5zoW8xt7rDTlX/n0lfKc/g==}
+    peerDependencies:
+      '@emotion/cache': ^11.14.0
+      '@emotion/react': ^11.14.0
+      '@emotion/styled': ^11.14.1
+      '@mui/icons-material': ^9.4.0
+      '@mui/material': ^9.4.0
+      date-fns: ^4.4.0
+      react: '>=19.3.0'
+      react-dom: '>=19.3.0'
+      react-intersection-observer: ^10.0.0
+      swr: ^2.5.1
 
   '@articles-media/articles-gamepad-helper@0.0.13':
     resolution: {integrity: sha512-5BDAi9XCir2kkHKHWorOUu1DHTk8kvGHlngJ+HvqY+KBnKB75Hh49Fs/OPHk5DeD6IPFovJLl16Ccd1vmSBVFw==}
@@ -2233,6 +2244,15 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
+  react-intersection-observer@10.1.0:
+    resolution: {integrity: sha512-V8HDu3+Llg6OEhOxx8LnUSS0t4VS+1Xk9ZatkI8Jct/H0CwKnqFTCu8NT3q7ghJTghTdIrEMPSWr2dkKPG+gdQ==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -2679,6 +2699,19 @@ packages:
         optional: true
 
 snapshots:
+
+  '@articles-media/articles-dev-box@2.0.0-beta.3(3c8fb6227a43623ee3aea3627d2fd981)':
+    dependencies:
+      '@emotion/cache': 11.14.0
+      '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0)
+      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0)
+      '@mui/icons-material': 9.4.0(@mui/material@9.4.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@types/react@19.3.0)(react@19.3.0)
+      '@mui/material': 9.4.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      date-fns: 4.4.0
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+      react-intersection-observer: 10.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      swr: 2.5.1(react@19.3.0)
 
   '@articles-media/articles-gamepad-helper@0.0.13(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zustand@5.0.15(@types/react@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0(react@19.3.0)))':
     dependencies:
@@ -4831,6 +4864,12 @@ snapshots:
   react-hotkeys-hook@5.3.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
       react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+
+  react-intersection-observer@10.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+    dependencies:
+      react: 19.3.0
+    optionalDependencies:
       react-dom: 19.3.0(react@19.3.0)
 
   react-is@16.13.1: {}
