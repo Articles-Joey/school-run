@@ -1,7 +1,8 @@
 import * as THREE from "three";
-import React, { useRef, useMemo, useEffect } from "react";
+import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useBox } from "@react-three/cannon";
+import { CuboidCollider } from "@react-three/rapier";
+import ScrollingBody from "./ScrollingPhysics";
 import { useStore } from "@/hooks/useStore";
 
 // basic fire vertex shader
@@ -144,17 +145,6 @@ export function FireLine({
 
     const pointsRef = useRef();
 
-    const [ref, api] = useBox(() => ({
-        isTrigger: true,
-        args: [3, 3, 0.2],
-        position: obstacle?.position,
-        // rotation: randomRotation, // Syncs physics body with visual rotation
-        userData: {
-            isObstacle: true,
-            id: obstacle?.id,
-        },
-    }));
-
     // 1. Generate geometry attributes once (positions, speeds, random numbers)
     const [positions, speeds, randoms] = useMemo(
         () => createParticleAttributes(count, length, spread),
@@ -172,12 +162,6 @@ export function FireLine({
 
     // 3. Update time uniform every frame for animation
     useFrame((state) => {
-        if (ref.current) {
-            ref.current.position.set(...obstacle.position);
-            ref.current.updateMatrix();
-        }
-        api.position.set(...obstacle.position);
-
         if (obstacle.position[2] < -50) return;
 
         if (pointsRef.current) {
@@ -211,7 +195,11 @@ export function FireLine({
     });
 
     return (
-        <group ref={ref}>
+        <ScrollingBody obstacle={obstacle}>
+            <CuboidCollider
+                args={[1.5, 1.5, 0.1]}
+                sensor
+            />
             <group
                 position={[0, 0.015, 0]}
                 rotation={[-Math.PI / 2, 0, 0]}
@@ -287,6 +275,6 @@ export function FireLine({
                     />
                 )}
             </points>
-        </group>
+        </ScrollingBody>
     );
 }

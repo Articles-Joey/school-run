@@ -1,8 +1,5 @@
-import { useGameStore } from "@/hooks/useGameStore";
-import { useBox } from "@react-three/cannon";
-import { useFrame } from "@react-three/fiber";
-
-const MOVE_RANGE = 2.5;
+import { CuboidCollider } from "@react-three/rapier";
+import ScrollingBody from "./ScrollingPhysics";
 
 function Rotor({ position }) {
     return (
@@ -24,50 +21,16 @@ function Rotor({ position }) {
 
 export default function DroneObstacle({ obstacle }) {
     const droneY = 1.5;
-    const initialX = obstacle.position[0];
-
-    // const { freeze, gameOver } = useGameStore();
-
-    const [ref, api] = useBox(() => ({
-        type: "Dynamic",
-        isTrigger: true,
-        args: [0.8, 0.3, 0.8],
-
-        // position: [obstacle.position[0], droneY, obstacle.position[2]],
-        position: [0, droneY, obstacle.position[2]],
-
-        userData: {
-            isObstacle: true,
-            id: obstacle.id,
-        },
-    }));
-
-    useFrame((state) => {
-        if (useGameStore.getState().freeze || useGameStore.getState().gameOver)
-            return;
-
-        // if (obstacle.position[2] < -30) return;
-
-        const t = state.clock.getElapsedTime();
-        const xOffset = Math.sin(t * 2) * MOVE_RANGE;
-        const x = initialX + xOffset;
-        if (ref.current) {
-            ref.current.position.set(x, droneY, obstacle.position[2]);
-            ref.current.updateMatrix();
-        }
-        api.position.set(x, droneY, obstacle.position[2]);
-    });
-
-    // useEffect(() => {
-    //     api.position.set(obstacle.position[0], droneY, obstacle.position[2]);
-    // }, [obstacle.position, api]);
 
     return (
-        <mesh ref={ref}>
-            <boxGeometry args={[0.8, 0.3, 0.8]} />
-            <meshStandardMaterial
-                transparent
-                opacity={0}
+        <ScrollingBody
+            obstacle={obstacle}
+            y={droneY}
+            sway
+        >
+            <CuboidCollider
+                args={[0.4, 0.15, 0.4]}
+                sensor
             />
             {/* Keep the fake shadow just above the floor as the drone moves. */}
             <group
@@ -126,6 +89,6 @@ export default function DroneObstacle({ obstacle }) {
                     />
                 </mesh>
             </group>
-        </mesh>
+        </ScrollingBody>
     );
 }

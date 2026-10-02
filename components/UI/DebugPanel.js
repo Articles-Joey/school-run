@@ -3,6 +3,7 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MovieIcon from "@mui/icons-material/Movie";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import ShieldIcon from "@mui/icons-material/Shield";
 import { Menu, MenuItem } from "@mui/material";
 
 import { OBSTACLE_TYPE_ZONES, useGameStore } from "@/hooks/useGameStore";
@@ -95,6 +96,8 @@ export function DebugPanel() {
     );
     const debug = useStore((state) => state.debug);
     const setDebug = useStore((state) => state.setDebug);
+    const disableDeath = useStore((state) => state.disableDeath);
+    const toggleDisableDeath = useStore((state) => state.toggleDisableDeath);
     const obstacles = useGameStore((state) => state.obstacles);
 
     const freeze = useGameStore((state) => state.freeze);
@@ -320,6 +323,17 @@ export function DebugPanel() {
                                 }
                             </DebugDropdown>
                         </div>
+
+                        <ArticlesButton
+                            size="sm"
+                            className="w-50"
+                            active={disableDeath}
+                            aria-pressed={disableDeath}
+                            onClick={toggleDisableDeath}
+                            startIcon={<ShieldIcon fontSize="small" />}
+                        >
+                            Disable Death
+                        </ArticlesButton>
                     </div>
                 </div>
             </div>

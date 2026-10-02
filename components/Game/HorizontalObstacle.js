@@ -1,61 +1,23 @@
-import { useGameStore } from "@/hooks/useGameStore";
-import { useBox, useCylinder } from "@react-three/cannon";
-import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { CuboidCollider } from "@react-three/rapier";
+import ScrollingBody from "./ScrollingPhysics";
 import { ModelSawBlade } from "../Models/SawBlade";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { useStore } from "@/hooks/useStore";
 import { ModelMetalSupport } from "../Models/Metal Support";
 
-const MOVE_RANGE = 2.5;
-
 export default function HorizontalObstacle({ obstacle }) {
     const obstacleY = 1.5;
-    const initialX = obstacle.position[0];
-
-    // const { freeze, gameOver } = useGameStore();
-
     const safeMode = useStore((state) => state.safeMode);
 
-    const [ref, api] = useBox(() => ({
-        type: "Dynamic",
-        isTrigger: true,
-        args: [5, 0.3, 0.8],
-
-        // position: [obstacle.position[0], droneY, obstacle.position[2]],
-        position: [0, obstacleY, obstacle.position[2]],
-
-        userData: {
-            isObstacle: true,
-            id: obstacle.id,
-        },
-    }));
-
-    useFrame((state) => {
-        if (useGameStore.getState().freeze || useGameStore.getState().gameOver)
-            return;
-
-        // if (obstacle.position[2] < -30) return;
-
-        // const t = state.clock.getElapsedTime();
-        // const xOffset = Math.sin(t * 2) * MOVE_RANGE;
-        if (ref.current) {
-            ref.current.position.set(0, obstacleY, obstacle.position[2]);
-            ref.current.updateMatrix();
-        }
-        api.position.set(0, obstacleY, obstacle.position[2]);
-    });
-
-    // useEffect(() => {
-    //     api.position.set(obstacle.position[0], obstacleY, obstacle.position[2]);
-    // }, [obstacle.position, api]);
-
     return (
-        <mesh ref={ref}>
-            <boxGeometry args={[0.8, 0.3, 0.8]} />
-            <meshStandardMaterial
-                transparent
-                opacity={0}
+        <ScrollingBody
+            obstacle={obstacle}
+            x={0}
+            y={obstacleY}
+        >
+            <CuboidCollider
+                args={[2.5, 0.15, 0.4]}
+                sensor
             />
             <group
                 position={[0, -obstacleY + 0.015, 0]}
@@ -133,6 +95,6 @@ export default function HorizontalObstacle({ obstacle }) {
                     </>
                 )}
             </group>
-        </mesh>
+        </ScrollingBody>
     );
 }

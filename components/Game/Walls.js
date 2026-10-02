@@ -1,5 +1,5 @@
-import React, { memo, useMemo, useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
+import { memo } from "react";
+import ScrollingBody from "./ScrollingPhysics";
 
 import { ModelDoorway } from "@/components/Models/doorway";
 import { degToRad } from "three/src/math/MathUtils.js";
@@ -59,19 +59,15 @@ const WallsContent = memo(function WallsContent() {
     );
 });
 
-export default function Walls({ position }) {
-    const ref = useRef();
-
-    useFrame(() => {
-        if (ref.current) ref.current.position.z = position[2];
-    });
-
+export default function Walls({ obstacle }) {
     return (
-        <group
-            ref={ref}
-            position={[0, 0, position[2]]}
+        <ScrollingBody
+            obstacle={obstacle}
+            x={0}
+            y={0}
+            isObstacle={false}
         >
             <WallsContent />
-        </group>
+        </ScrollingBody>
     );
 }

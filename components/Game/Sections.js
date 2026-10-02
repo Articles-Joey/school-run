@@ -1,11 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 
-import {
-    useGameStore,
-    pickObstacleType,
-    getRunStep,
-} from "@/hooks/useGameStore";
+import { useGameStore, pickObstacleType } from "@/hooks/useGameStore";
 import Walls from "./Walls";
 
 import { useStore } from "@/hooks/useStore";
@@ -28,19 +24,12 @@ function GameSections() {
         generateInitialObstacles();
     }, [graphicsQuality, generateInitialObstacles]);
 
-    useFrame((_, delta) => {
+    useFrame(() => {
         const { gameOver, freeze, distance, obstacles, setObstacles } =
             useGameStore.getState();
         if (gameOver || freeze) return;
 
-        const step = getRunStep(distance, delta);
-        // Run before Player advances the score, and before visual/physics callbacks.
-
-        // Positions are mutated in place; obstacle components read them in their own useFrame, so no per-frame React render
-        for (const obstacle of obstacles) {
-            obstacle.position[2] += step;
-        }
-
+        // Physics advances positions; React only handles section replacement.
         if (!obstacles.some((obstacle) => obstacle.position[2] > 15)) return;
         const kept = obstacles.filter((obstacle) => obstacle.position[2] <= 15);
 
@@ -58,7 +47,7 @@ function GameSections() {
         }
 
         setObstacles(kept);
-    }, -1);
+    }, -0.5);
 
     return (
         <group
@@ -81,7 +70,7 @@ export default GameSections;
 function Section({ obstacle }) {
     return (
         <>
-            <Walls position={obstacle.position} />
+            <Walls obstacle={obstacle} />
 
             {obstacle.obstacleType === "FireLine" && (
                 <FireLine

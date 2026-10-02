@@ -1,5 +1,4 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
-import { recordKeyboardTransition } from "@/util/movementDiagnostics";
 import useTouchControlsStore from "@/hooks/useTouchControlsStore";
 
 // Key Guide
@@ -53,8 +52,6 @@ function publishAction(action, pressed) {
             { left: direction < 0, right: direction > 0 },
             "keyboard",
         );
-        if (process.env.NODE_ENV === "development")
-            recordKeyboardTransition(action);
         return;
     }
     if (actions[action] === pressed) return;
@@ -79,16 +76,14 @@ function onKeyDown(event) {
     )
         return;
 
-    // Consume repeats in capture phase, before unrelated document hotkey handlers.
-    // A held key remains true; movement is advanced by useFrame, not repeat events.
-    if (pressedCodes.has(event.code)) {
+    // Consume repeats at window capture before document/React hotkey handlers.
+    // A held key remains true; physics reads it without another event or write.
+    // Also reject orphan repeats after a blur/remount until a fresh press occurs.
+    if (event.repeat || pressedCodes.has(event.code)) {
         event.preventDefault();
         event.stopImmediatePropagation();
         return;
     }
-    // After blur/remount, do not re-activate keys without a fresh physical press.
-    if (event.repeat) return;
-
     event.preventDefault();
     pressedCodes.add(event.code);
     publishAction(action, true);
@@ -107,24 +102,30 @@ function onKeyUp(event) {
 function onBlur() {
     pressedCodes.clear();
     publishAction("moveLeft", false);
-    if (actions === initialActions) return;
+    if (!Object.values(actions).some(Boolean)) return;
     actions = initialActions;
     subscribers.forEach((notify) => notify());
 }
 
+function onVisibilityChange() {
+    if (document.hidden) onBlur();
+}
+
 function subscribeKeyboard(notify) {
     if (subscribers.size === 0) {
-        document.addEventListener("keydown", onKeyDown, true);
-        document.addEventListener("keyup", onKeyUp, true);
+        window.addEventListener("keydown", onKeyDown, true);
+        window.addEventListener("keyup", onKeyUp, true);
         window.addEventListener("blur", onBlur);
+        document.addEventListener("visibilitychange", onVisibilityChange);
     }
     subscribers.add(notify);
     return () => {
         subscribers.delete(notify);
         if (subscribers.size !== 0) return;
-        document.removeEventListener("keydown", onKeyDown, true);
-        document.removeEventListener("keyup", onKeyUp, true);
+        window.removeEventListener("keydown", onKeyDown, true);
+        window.removeEventListener("keyup", onKeyUp, true);
         window.removeEventListener("blur", onBlur);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
         onBlur();
     };
 }

@@ -1,5 +1,5 @@
 import { Canvas, useThree } from "@react-three/fiber";
-import { Debug, Physics } from "@react-three/cannon";
+import { Physics } from "@react-three/rapier";
 import {
     Center,
     Image,
@@ -18,6 +18,7 @@ import Floor from "./Floor";
 import { useStore } from "@/hooks/useStore";
 import AnimatedPointLights from "./AnimatedPointLights";
 import { useGameStore } from "@/hooks/useGameStore";
+import { PHYSICS_STEP, ScrollingPhysics } from "./ScrollingPhysics";
 
 const BackWalls = memo(function BackWalls(props) {
     // const { numberOfPlatforms, start } = props
@@ -58,12 +59,6 @@ const BackWalls = memo(function BackWalls(props) {
     );
 });
 
-// Debug mirrors every physics body and updates it each frame, even at scale 0
-function DebugWrapper({ enabled, children }) {
-    if (!enabled) return children;
-    return <Debug color="black">{children}</Debug>;
-}
-
 function Scene({ landingAnimationMode }) {
     const { camera } = useThree();
 
@@ -86,7 +81,11 @@ function GameCanvas({ landingAnimationMode }) {
 
     // Fully fogged before the last loaded section (10 units each) so the hallway end is never visible
     const fogFar =
-        graphicsQuality === "High" ? 70 : graphicsQuality === "Medium" ? 32 : 18;
+        graphicsQuality === "High"
+            ? 70
+            : graphicsQuality === "Medium"
+              ? 32
+              : 18;
     const fogColor = darkMode ? "#020203" : "#101216";
 
     return (
@@ -184,23 +183,29 @@ function GameCanvas({ landingAnimationMode }) {
                 </mesh>
             </group> */}
 
-            <Physics
-                gravity={[0, -15, 0]}
-                contactMaterial={{ friction: 0.5 }}
-            >
-                <DebugWrapper enabled={debug}>
-                    <Suspense>
-                        <Sections />
-                        <Floor position={[0, -0.125, 0]} />
-                    </Suspense>
-
-                    {!landingAnimationMode && (
+            <Suspense fallback={null}>
+                <Physics
+                    gravity={[0, -15, 0]}
+                    timeStep={PHYSICS_STEP}
+                    interpolate
+                    updatePriority={-1}
+                    colliders={false}
+                    debug={debug}
+                >
+                    <ScrollingPhysics>
                         <Suspense>
-                            <Player position={[0, 1, 0]} />
+                            <Sections />
+                            <Floor position={[0, -0.125, 0]} />
                         </Suspense>
-                    )}
-                </DebugWrapper>
-            </Physics>
+
+                        {!landingAnimationMode && (
+                            <Suspense>
+                                <Player />
+                            </Suspense>
+                        )}
+                    </ScrollingPhysics>
+                </Physics>
+            </Suspense>
 
             {cameraMode === "Free" && <OrbitControls target={[0, 1, 0]} />}
         </Canvas>

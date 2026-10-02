@@ -1,64 +1,56 @@
-# Comparing keyboard movement timing
+# Movement and physics
 
-The current player resolves keyboard and touch left/right to the same digital
-axis, then uses the same physics commands and visual smoothing. Full-stick gamepad
-input also reaches the same speed. Partially tilted gamepad input is slower.
-Keyboard repeats are suppressed before React/global hotkey handlers and do not
-publish new input snapshots. A passing simulated-input test cannot establish the
-cause of a browser frame stall.
+The game uses `@react-three/rapier` 2 with a fixed 60 Hz simulation and native
+render interpolation. `GameCanvas` runs physics before the character's camera,
+shadow, and weapon attachments read its displayed position.
 
-## Capture the actual development session
+## Input
 
-After `/play` has loaded on the development server, open the browser console:
+- A/D and the touch joystick share `useTouchControlsStore` and the same movement
+  calculation. Keyboard takes priority while held; releasing it restores any
+  direction still held on touch. A/D overlap uses the most recently pressed key.
+- One shared window capture listener handles keyboard input. Both native repeat
+  events and duplicate keydowns are consumed without publishing to Zustand,
+  React, or the movement loop. The browser still generates repeat events.
+- W and Space share jump; releasing one while the other is held keeps jump active.
+  S starts a roll. Blur, hidden tabs, and final unmount clear held keys.
+- Runtime input bypasses persistence, and the touch setter rejects identical
+  values. Only the on-screen-controls preference goes to local storage.
+- Controller axes retain their existing dead zone (0.3). This checkout reads
+  `controllerState.axes`; it has no mounted caller of `setControllerState`.
+  Controllers mapped to keyboard events continue through the keyboard path.
 
-```js
-schoolRunMovement.start("keyboard");
-```
+## Simulation
 
-Focus the game and move with A/D for ten seconds, reproducing the stutter. Release
-the keys, then repeat with the on-screen controls in the same browser and window:
+`ScrollingPhysics` advances obstacle positions once per fixed step, then supplies
+kinematic targets to the obstacle and hallway bodies together. Rapier interpolates
+both. React only adds/removes sections when they recycle.
 
-```js
-schoolRunMovement.start("touch");
-```
+`Player` reads held input before each physics step and updates lateral velocity
+only when it changes. Jumping sets vertical speed to 6 using current synchronous
+physics state, with floor contacts confirming that the player is grounded.
+Movement speed remains 4 (2 during a roll), the lane limit is ±2.5, and gravity
+is -15. Existing debug speed boost, post-game movement, and world freeze behavior
+are retained.
 
-Optionally record `schoolRunMovement.start("gamepad")` with the stick fully tilted.
-Use the same graphics, camera, viewport and DevTools setup for each capture. Keep
-alternating directions so the character moves instead of sitting at a lane edge.
-Each recording stops and logs a result automatically. To copy all results:
+A radius-0.2 foot sphere at local Y=-0.625 supports the character. A radius-0.25,
+height-1.5 sensor is attached to the same rigid body. Upper-body overlaps are
+ignored during rolls; foot overlaps remain active. Current sensor overlaps are
+checked after every step so ending a roll inside an obstacle still causes death.
+The game-over guard prevents duplicate sound/score submission.
 
-```js
-copy(JSON.stringify(schoolRunMovement.results, null, 2));
-```
+Obstacle dimensions are unchanged; Rapier box arguments are half extents.
+Automatic mesh colliders are disabled. Safe-mode models, death audio, score
+submission, shadows, camera modes, particle effects, and collider debugging remain.
 
-`copy` is a browser DevTools console helper. The recording API is available only
-in development and makes no network requests. It does no per-frame logging or
-React/Zustand updates. Recording is inactive until `start()` is called. Source
-counts include idle time spent returning focus from the console.
+The former worker subscriptions, independently moved upper hitbox, exponential
+visual follower, timing recorder, and obsolete engine-specific test harness have
+been removed. No test scripts are needed to run the game.
 
-## Read the evidence
+## Gameplay review
 
-- `keyRepeats` can be high. `keyboardTransitions` should increase only when A/D
-  changes held state (including clearing held keys on blur); repeats must not
-  increase it. `blurEvents` reveals focus losses. `playerCommits` counts actual
-  Player React commits during the recording (unrelated game state can cause some).
-- `frameTimeMs` and `framesOver25Ms` expose rendering stalls. Compare keyboard
-  and touch using the same display refresh rate; 25 ms is a fixed reporting
-  threshold, not a universal frame budget.
-- `keyboardEventDeliveryMs` measures the event timestamp to the capture listener.
-  `keyboardTransitionToFrameMs` measures an accepted input change to the next
-  player frame. These do not include hardware or display latency.
-- `physicsReplyGapMs` and `physicsSampleAgeAtFrameMs` expose irregular/stale worker
-  feedback. Large gaps with steady render intervals point toward physics/worker
-  timing; gaps in both need a browser Performance trace to establish the cause.
-- `maxVisualErrorX` measures separation between the collider and smoothed character.
-  The exponential follower adds visual delay for all input types; this metric
-  alone cannot explain a keyboard-only difference.
-- `sourceFrames` shows which inputs actually reached Player. This checkout reads
-  `controllerState.axes`, but contains no mounted caller of `setControllerState`.
-  A controller that maps to keyboard keys will appear as keyboard input.
-
-The installed Cannon provider also drops a step request when its transferable
-buffers are still in the worker, while resetting its elapsed-time accumulator.
-This is a shared timing risk under load, not evidence that A/D causes it. A live
-capture is needed before changing physics scheduling again.
+After loading `/play`, check held A/D, reversals, release at either lane edge,
+W/Space jumps, S rolls beneath overhead obstacles, touch controls, controller
+input, death/restart, world freeze, and debug teleport/colliders. Check a roll
+ending while an obstacle still overlaps the upper body. These need a browser
+playthrough; static checks alone cannot establish visual smoothness.
