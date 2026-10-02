@@ -1,14 +1,18 @@
 import { useGameStore } from "@/hooks/useGameStore";
+import Box from "@mui/material/Box";
+import { useStore } from "@/hooks/useStore";
 
 export default function UiOverlay() {
-    const distance = useGameStore((state) => state.distance);
+    const screenshotMode = useStore((state) => state.screenshotMode);
+
+    const distance = useGameStore((state) => Math.round(state.distance));
     const highScore = useGameStore((state) => state.highScore);
     const isRolling = useGameStore((state) => state.isRolling);
 
     return (
-        <div
+        <Box
             className="ui-overlay"
-            style={{
+            sx={{
                 zIndex: 1,
                 position: "absolute",
                 top: "0.5rem",
@@ -18,7 +22,8 @@ export default function UiOverlay() {
                 padding: "0.5rem 1rem",
                 borderRadius: "0.5rem",
                 color: "#fff",
-                display: "flex",
+                display: screenshotMode ? "none" : "flex",
+                // display: "none",
                 fontSize: "0.8rem",
             }}
         >
@@ -36,6 +41,6 @@ export default function UiOverlay() {
                     </span>
                 )}
             </div>
-        </div>
+        </Box>
     );
 }

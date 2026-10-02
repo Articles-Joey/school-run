@@ -1,9 +1,7 @@
 // import { Geist, Geist_Mono } from "next/font/google";
 
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import theme from "@/theme";
+import AppThemeProvider from "@/components/AppThemeProvider";
 
 import packageInfo from "@/package.json";
 
@@ -56,8 +54,7 @@ export default function RootLayout({ children }) {
 
             <body
             // className={`${geistSans.variable} ${geistMono.variable}`}
-            >
-                <LayoutClient />
+            >                
 
                 <Suspense>
                     {process.env.NEXT_PUBLIC_ENABLE_ARTICLES && (
@@ -66,11 +63,10 @@ export default function RootLayout({ children }) {
                 </Suspense>
 
                 <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-                    <ThemeProvider theme={theme}>
-                        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-                        <CssBaseline />
+                    <AppThemeProvider>
+                        <LayoutClient />
                         {children}
-                    </ThemeProvider>
+                    </AppThemeProvider>
                 </AppRouterCacheProvider>
             </body>
         </html>

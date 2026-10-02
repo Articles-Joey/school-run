@@ -20,10 +20,14 @@ export function ModelDesk(props) {
             dispose={null}
         >
             <mesh
+                castShadow
+                receiveShadow
                 geometry={nodes["desk(Clone)"].geometry}
                 material={materials.wood}
             />
             <mesh
+                castShadow
+                receiveShadow
                 geometry={nodes.drawer.geometry}
                 material={materials.metal}
                 position={[0.04, 0.274, -0.164]}

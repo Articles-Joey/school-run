@@ -102,10 +102,17 @@ export function getActiveZone(distance) {
         const inRange =
             i === lastIndex
                 ? distance >= zone.range[0]
-                : distance >= zone.range[0] && distance <= zone.range[1];
+                : distance >= zone.range[0] &&
+                  distance < OBSTACLE_TYPE_ZONES[i + 1].range[0];
         if (inRange) return zone;
     }
     return OBSTACLE_TYPE_ZONES[0];
+}
+
+// Preserve the original 0.1 units/frame speed at 60 Hz. Cap tab-resume gaps.
+export function getRunStep(distance, delta) {
+    const speedMultiplier = getActiveZone(distance).speedMultiplier ?? 1;
+    return 6 * Math.min(delta, 0.1) * speedMultiplier;
 }
 
 export function pickObstacleType(distance) {

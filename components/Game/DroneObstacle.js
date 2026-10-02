@@ -50,7 +50,12 @@ export default function DroneObstacle({ obstacle }) {
 
         const t = state.clock.getElapsedTime();
         const xOffset = Math.sin(t * 2) * MOVE_RANGE;
-        api.position.set(initialX + xOffset, droneY, obstacle.position[2]);
+        const x = initialX + xOffset;
+        if (ref.current) {
+            ref.current.position.set(x, droneY, obstacle.position[2]);
+            ref.current.updateMatrix();
+        }
+        api.position.set(x, droneY, obstacle.position[2]);
     });
 
     // useEffect(() => {

@@ -20,10 +20,14 @@ export function ModelComputerKeyboard(props) {
             dispose={null}
         >
             <mesh
+                castShadow
+                receiveShadow
                 geometry={nodes.Mesh_computerKeyboard.geometry}
                 material={materials.metalDark}
             />
             <mesh
+                castShadow
+                receiveShadow
                 geometry={nodes.Mesh_computerKeyboard_1.geometry}
                 material={materials.metalMedium}
             />

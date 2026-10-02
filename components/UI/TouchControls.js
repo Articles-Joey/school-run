@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 
 import ArticlesButton from "@/components/UI/Button";
@@ -13,6 +13,7 @@ const arePropsEqual = (prevProps, nextProps) => {
 };
 
 function ActionButtons() {
+    const screenshotMode = useStore((state) => state.screenshotMode);
     const setTouchControls = useTouchControlsStore(
         (state) => state.setTouchControls,
     );
@@ -24,7 +25,7 @@ function ActionButtons() {
                 position: "fixed",
                 right: "1rem",
                 bottom: 50,
-                display: "flex",
+                display: screenshotMode ? "none" : "flex",
                 flexDirection: "column",
                 gap: "1rem",
                 zIndex: 2,
@@ -48,13 +49,8 @@ function ActionButtons() {
                     },
                 }}
                 onClick={() => {
-                    const touchControls =
-                        useTouchControlsStore.getState().touchControls;
                     console.log("Jump!");
-                    setTouchControls({
-                        ...touchControls,
-                        jump: true,
-                    });
+                    setTouchControls({ jump: true });
                 }}
             >
                 Jump
@@ -78,12 +74,7 @@ function ActionButtons() {
                     },
                 }}
                 onClick={() => {
-                    const touchControls =
-                        useTouchControlsStore.getState().touchControls;
-                    setTouchControls({
-                        ...touchControls,
-                        roll: true,
-                    });
+                    setTouchControls({ roll: true });
                 }}
             >
                 Roll
@@ -115,7 +106,7 @@ export default function TouchControls() {
     //     touchControls, setTouchControls
     // } = useTouchControlsStore()
 
-    function startNipple() {
+    const startNipple = useCallback(() => {
         // console.log("n", nipplejs)
 
         // return
@@ -146,7 +137,6 @@ export default function TouchControls() {
                     dragDistance = 0;
                     dragDirection = false;
                     setTouchControls({
-                        ...touchControls,
                         left: false,
                         right: false,
                     });
@@ -160,20 +150,17 @@ export default function TouchControls() {
                 if (dragDistance > 15 && dragDirection) {
                     if (dragDirection == "left")
                         setTouchControls({
-                            ...touchControls,
                             left: true,
                             right: false,
                         });
 
                     if (dragDirection == "right")
                         setTouchControls({
-                            ...touchControls,
                             left: false,
                             right: true,
                         });
                 } else {
                     setTouchControls({
-                        ...touchControls,
                         left: false,
                         right: false,
                     });
@@ -219,7 +206,7 @@ export default function TouchControls() {
             });
 
         return manager;
-    }
+    }, [setTouchControls]);
 
     useEffect(() => {
         console.log("Load nipple");
@@ -230,8 +217,9 @@ export default function TouchControls() {
                 console.log("Destroy nipple");
                 manager.destroy();
             }
+            setTouchControls({ left: false, right: false });
         };
-    }, [sceneKey]);
+    }, [sceneKey, setTouchControls, startNipple]);
 
     if (cameraMode == "Free") return null;
 

@@ -20,10 +20,14 @@ export function ModelComputerScreen(props) {
             dispose={null}
         >
             <mesh
+                castShadow
+                receiveShadow
                 geometry={nodes.Mesh_computerScreen.geometry}
                 material={materials.metalDark}
             />
             <mesh
+                castShadow
+                receiveShadow
                 geometry={nodes.Mesh_computerScreen_1.geometry}
                 material={materials.metal}
             />

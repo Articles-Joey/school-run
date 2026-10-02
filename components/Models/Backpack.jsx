@@ -21,14 +21,20 @@ export function ModelBackpack(props) {
             position={[0, -2, 0]}
         >
             <mesh
+                castShadow
+                receiveShadow
                 geometry={nodes["Backpack_Cube006-Mesh"].geometry}
                 material={materials.Backpack}
             />
             <mesh
+                castShadow
+                receiveShadow
                 geometry={nodes["Backpack_Cube006-Mesh_1"].geometry}
                 material={materials.Silver}
             />
             <mesh
+                castShadow
+                receiveShadow
                 geometry={nodes["Backpack_Cube006-Mesh_2"].geometry}
                 material={materials.Brown2}
             />

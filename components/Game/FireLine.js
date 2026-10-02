@@ -113,6 +113,23 @@ const blueFragmentShader = `
   }
 `;
 
+function createParticleAttributes(count, length, spread) {
+    const positions = new Float32Array(count * 3);
+    const speeds = new Float32Array(count);
+    const randoms = new Float32Array(count);
+
+    for (let i = 0; i < count; i++) {
+        const i3 = i * 3;
+        positions[i3] = (Math.random() - 0.5) * length;
+        positions[i3 + 1] = Math.random() * 0.1;
+        positions[i3 + 2] = (Math.random() - 0.5) * spread;
+        speeds[i] = 0.2 + Math.random() * 0.5;
+        randoms[i] = Math.random();
+    }
+
+    return [positions, speeds, randoms];
+}
+
 export function FireLine({
     obstacle,
     count = 5000, // Number of particles
@@ -139,36 +156,10 @@ export function FireLine({
     }));
 
     // 1. Generate geometry attributes once (positions, speeds, random numbers)
-    const [positions, speeds, randoms] = useMemo(() => {
-        const positions = new Float32Array(count * 3); // x, y, z
-        const speeds = new Float32Array(count);
-        const randoms = new Float32Array(count);
-
-        for (let i = 0; i < count; i++) {
-            const i3 = i * 3;
-
-            // -- Define starting Positions --
-
-            // X: Randomly along the length of the line (centered)
-            positions[i3 + 0] = (Math.random() - 0.5) * length;
-
-            // Y: Start close to the ground (with slight random variance)
-            positions[i3 + 1] = Math.random() * 0.1;
-
-            // Z: Randomly along the width (spread)
-            positions[i3 + 2] = (Math.random() - 0.5) * spread;
-
-            // -- Define animation attributes --
-
-            // How fast the particle rises (randomized for variance)
-            speeds[i] = 0.2 + Math.random() * 0.5;
-
-            // Used to randomize the respawn time so they don't all pop at once
-            randoms[i] = Math.random();
-        }
-
-        return [positions, speeds, randoms];
-    }, [count, length, spread]);
+    const [positions, speeds, randoms] = useMemo(
+        () => createParticleAttributes(count, length, spread),
+        [count, length, spread],
+    );
 
     // 2. Create the shader material configuration
     const uniforms = useMemo(
@@ -181,6 +172,12 @@ export function FireLine({
 
     // 3. Update time uniform every frame for animation
     useFrame((state) => {
+        if (ref.current) {
+            ref.current.position.set(...obstacle.position);
+            ref.current.updateMatrix();
+        }
+        api.position.set(...obstacle.position);
+
         if (obstacle.position[2] < -50) return;
 
         if (pointsRef.current) {
@@ -212,10 +209,6 @@ export function FireLine({
             );
         }
     });
-
-    useEffect(() => {
-        api.position.set(...obstacle.position);
-    }, [obstacle.position, api]);
 
     return (
         <group ref={ref}>

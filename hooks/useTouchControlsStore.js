@@ -8,15 +8,52 @@ const initialTouchControls = {
     roll: false,
 };
 
-const useTouchControlsStore = create(
+// Persist the UI preference, but keep live input on the original in-memory set.
+// Zustand persist otherwise writes localStorage even when partialize omits input.
+const useTouchControlsStore = create((set, get, api) =>
     persist(
-        (set, get) => ({
+        (setPreference) => ({
             enabled: false,
-            setEnabled: (newValue) => set({ enabled: newValue }),
-            toggleEnabled: () => set({ enabled: !get().enabled }),
+            setEnabled: (newValue) => setPreference({ enabled: newValue }),
+            toggleEnabled: () => setPreference({ enabled: !get().enabled }),
 
             touchControls: initialTouchControls,
-            setTouchControls: (newValue) => set({ touchControls: newValue }),
+            movementInputs: { keyboard: 0, touch: 0 },
+            setTouchControls: (patch, source = "touch") => {
+                const state = get();
+                let movementInputs = state.movementInputs;
+                if ("left" in patch || "right" in patch) {
+                    const previous = movementInputs[source];
+                    const left = patch.left ?? previous < 0;
+                    const right = patch.right ?? previous > 0;
+                    const direction =
+                        Number(Boolean(right)) - Number(Boolean(left));
+                    if (direction !== previous)
+                        movementInputs = {
+                            ...movementInputs,
+                            [source]: direction,
+                        };
+                }
+
+                // Releasing one device must not cancel a direction held on the other.
+                const direction =
+                    movementInputs.keyboard || movementInputs.touch;
+                const next = {
+                    ...state.touchControls,
+                    ...patch,
+                    left: direction < 0,
+                    right: direction > 0,
+                };
+                const controlsChanged = Object.keys(initialTouchControls).some(
+                    (key) => next[key] !== state.touchControls[key],
+                );
+                if (!controlsChanged && movementInputs === state.movementInputs)
+                    return;
+                set({
+                    movementInputs,
+                    touchControls: controlsChanged ? next : state.touchControls,
+                });
+            },
         }),
         {
             name: "touch-controls-store", // unique name
@@ -25,7 +62,7 @@ const useTouchControlsStore = create(
                 enabled: state.enabled,
             }),
         },
-    ),
+    )(set, get, api),
 );
 
 export default useTouchControlsStore;

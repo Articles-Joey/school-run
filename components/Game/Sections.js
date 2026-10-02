@@ -1,10 +1,10 @@
 import { useFrame } from "@react-three/fiber";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import {
     useGameStore,
     pickObstacleType,
-    getActiveZone,
+    getRunStep,
 } from "@/hooks/useGameStore";
 import Walls from "./Walls";
 
@@ -14,59 +14,51 @@ import DroneObstacle from "./DroneObstacle";
 import BodyObstacle from "./BodyObstacle";
 import HorizontalObstacle from "./HorizontalObstacle";
 
-function GameSections(props) {
+function GameSections() {
     const ref = useRef();
 
-    const {
-        distance,
-        obstacles,
-        setObstacles,
-        gameOver,
-        freeze,
-        generateInitialObstacles,
-    } = useGameStore();
+    const obstacles = useGameStore((state) => state.obstacles);
+    const generateInitialObstacles = useGameStore(
+        (state) => state.generateInitialObstacles,
+    );
 
     const graphicsQuality = useStore((state) => state.graphicsQuality);
 
     useEffect(() => {
         generateInitialObstacles();
-    }, [graphicsQuality]);
+    }, [graphicsQuality, generateInitialObstacles]);
 
-    useFrame(() => {
+    useFrame((_, delta) => {
+        const { gameOver, freeze, distance, obstacles, setObstacles } =
+            useGameStore.getState();
         if (gameOver || freeze) return;
 
-        const speedMultiplier = getActiveZone(distance).speedMultiplier ?? 1;
+        const step = getRunStep(distance, delta);
+        // Run before Player advances the score, and before visual/physics callbacks.
 
-        let newObstacles = obstacles.map((obstacle) => ({
-            ...obstacle,
-            position: [
-                obstacle.position[0],
-                obstacle.position[1],
-                obstacle.position[2] + 0.1 * speedMultiplier,
-            ], // Move toward the player
-        }));
+        // Positions are mutated in place; obstacle components read them in their own useFrame, so no per-frame React render
+        for (const obstacle of obstacles) {
+            obstacle.position[2] += step;
+        }
 
-        // Filter out obstacles that went past the player
-        newObstacles = newObstacles.filter(
-            (obstacle) => obstacle.position[2] <= 15,
-        );
+        if (!obstacles.some((obstacle) => obstacle.position[2] > 15)) return;
+        const kept = obstacles.filter((obstacle) => obstacle.position[2] <= 15);
 
-        // Add new obstacles to maintain the array length
-        while (newObstacles.length < obstacles.length) {
-            const lastObstacle = newObstacles[newObstacles.length - 1];
+        while (kept.length < obstacles.length) {
+            const lastObstacle = kept[kept.length - 1];
             const newPositionZ = lastObstacle
                 ? lastObstacle.position[2] - 10
                 : -10;
 
-            newObstacles.push({
+            kept.push({
                 position: [Math.random() * 2 - 1, 0, newPositionZ],
-                id: Date.now(), // Ensure unique ID,
+                id: Date.now() + kept.length, // Ensure unique ID,
                 obstacleType: pickObstacleType(distance),
             });
         }
 
-        setObstacles(newObstacles);
-    });
+        setObstacles(kept);
+    }, -1);
 
     return (
         <group

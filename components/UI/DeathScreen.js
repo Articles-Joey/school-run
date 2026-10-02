@@ -7,7 +7,9 @@ import ArticlesButton from "./Button";
 export default function DeathScreen() {
     const safeMode = useStore((state) => state.safeMode);
     const gameOver = useGameStore((state) => state.gameOver);
-    const distance = useGameStore((state) => state.distance);
+    const distance = useGameStore((state) =>
+        state.gameOver ? state.distance : 0,
+    );
     const setGameOver = useGameStore((state) => state.setGameOver);
     const setDistance = useGameStore((state) => state.setDistance);
     const generateInitialObstacles = useGameStore(

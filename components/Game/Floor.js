@@ -11,6 +11,8 @@ export default function Floor(props) {
         position: props.position,
         args: floor_size, // Dimensions of the cube
         material: {
+            // Both materials need zero friction for input-controlled lateral motion.
+            friction: 0,
             // restitution: 0, // Adjust this value to control the bouncea
         },
     }));

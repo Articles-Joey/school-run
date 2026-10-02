@@ -16,11 +16,11 @@ const ArticlesModal = dynamic(() => import("@/components/UI/ArticlesModal"), {
 export default function SchoolRunContentWarning() {
     // const [contentWarningAccept, setContentWarningAccept] = useLocalStorageNew("game:school-run:contentWarningAccept", false)
 
-    const { contentWarningAccept, setContentWarningAccept } = useGameStore(
-        (state) => ({
-            contentWarningAccept: state.contentWarningAccept,
-            setContentWarningAccept: state.setContentWarningAccept,
-        }),
+    const contentWarningAccept = useGameStore(
+        (state) => state.contentWarningAccept,
+    );
+    const setContentWarningAccept = useGameStore(
+        (state) => state.setContentWarningAccept,
     );
 
     // const safeMode = useStore((state) => state.safeMode);
@@ -33,6 +33,7 @@ export default function SchoolRunContentWarning() {
                     show={contentWarningAccept}
                     setShow={setContentWarningAccept}
                     title="Content Warning"
+                    size={"xs"}
                     disableClose
                     action={(setShowModal) => {
                         console.log("");

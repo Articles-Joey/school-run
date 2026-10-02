@@ -5,7 +5,7 @@ import { useKeyboard } from "@/hooks/useKeyboard";
 import useTouchControlsStore from "@/hooks/useTouchControlsStore";
 
 const RollManager = memo(function RollManager() {
-    const { roll } = useKeyboard();
+    const { roll } = useKeyboard("roll");
     const touchRoll = useTouchControlsStore(
         (state) => state.touchControls.roll,
     );
@@ -29,11 +29,8 @@ const RollManager = memo(function RollManager() {
 
     useEffect(() => {
         console.log("Handle touch roll change:", touchRoll);
-        setTouchControls({
-            ...useTouchControlsStore.getState().touchControls,
-            roll: false,
-        });
-    }, [touchRoll]);
+        setTouchControls({ roll: false });
+    }, [touchRoll, setTouchControls]);
 
     useEffect(() => {
         // ONLY execute when the key is pressed (roll becomes true)
@@ -74,7 +71,7 @@ const RollManager = memo(function RollManager() {
             clearTimeout(rollingTimeoutRef.current);
             clearTimeout(cooldownTimeoutRef.current);
         };
-    }, []);
+    }, [setIsRolling, setRollCooldown]);
 
     return null;
 });

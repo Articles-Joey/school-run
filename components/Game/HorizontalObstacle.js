@@ -39,6 +39,10 @@ export default function HorizontalObstacle({ obstacle }) {
 
         // const t = state.clock.getElapsedTime();
         // const xOffset = Math.sin(t * 2) * MOVE_RANGE;
+        if (ref.current) {
+            ref.current.position.set(0, obstacleY, obstacle.position[2]);
+            ref.current.updateMatrix();
+        }
         api.position.set(0, obstacleY, obstacle.position[2]);
     });
 

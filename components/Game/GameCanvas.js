@@ -5,7 +5,6 @@ import {
     Image,
     OrbitControls,
     Plane,
-    Sky,
     Stats,
     Text,
     Text3D,
@@ -59,28 +58,43 @@ const BackWalls = memo(function BackWalls(props) {
     );
 });
 
+// Debug mirrors every physics body and updates it each frame, even at scale 0
+function DebugWrapper({ enabled, children }) {
+    if (!enabled) return children;
+    return <Debug color="black">{children}</Debug>;
+}
+
+function Scene({ landingAnimationMode }) {
+    const { camera } = useThree();
+
+    useLayoutEffect(() => {
+        if (landingAnimationMode) {
+            camera.position.set(2, 2.5, 3.5);
+            camera.lookAt(0, 1.5, 0);
+        }
+    }, [landingAnimationMode, camera]);
+
+    return null;
+}
+
 function GameCanvas({ landingAnimationMode }) {
     const debug = useStore((state) => state.debug);
     const darkMode = useStore((state) => state.darkMode);
     const showStats = useStore((state) => state?.debugConfig?.showStats);
     const cameraMode = useGameStore((state) => state.cameraMode);
+    const graphicsQuality = useStore((state) => state.graphicsQuality);
 
-    function Scene() {
-        const { camera } = useThree();
-
-        useLayoutEffect(() => {
-            if (landingAnimationMode) {
-                camera.position.set(2, 2.5, 3.5);
-                camera.lookAt(0, 1.5, 0);
-            }
-        }, [landingAnimationMode, camera]);
-
-        return null;
-    }
+    // Fully fogged before the last loaded section (10 units each) so the hallway end is never visible
+    const fogFar =
+        graphicsQuality === "High" ? 70 : graphicsQuality === "Medium" ? 32 : 18;
+    const fogColor = darkMode ? "#020203" : "#101216";
 
     return (
-        <Canvas camera={{ fov: 45, position: [0, 5, 20] }}>
-            <Scene />
+        <Canvas
+            shadows
+            camera={{ fov: 45, position: [0, 5, 20] }}
+        >
+            <Scene landingAnimationMode={landingAnimationMode} />
 
             {showStats && (
                 <>
@@ -93,23 +107,43 @@ function GameCanvas({ landingAnimationMode }) {
                 args={[0, 0, 0]}
             /> */}
 
-            {darkMode ? (
-                <>
-                    <ambientLight intensity={0.1} />
-                    <Sky sunPosition={[100, -1, 20]} />
-                </>
-            ) : (
-                <>
-                    <ambientLight intensity={0.5} />
-                    <Sky sunPosition={[100, 10, 20]} />
-                </>
-            )}
+            {/* Background must equal the fog color or the hallway end shows as a hard edge */}
+            <color
+                attach="background"
+                args={[fogColor]}
+            />
+            <fog
+                attach="fog"
+                args={[fogColor, 2, fogFar]}
+            />
+
+            <ambientLight
+                color="#2a3050"
+                intensity={darkMode ? 0.3 : 0.55}
+            />
 
             {/* <color attach="background" args={['#215776']} /> */}
 
             {/* Add your 3D scene components here */}
             {/* <ambientLight intensity={2} /> */}
             {/* <spotLight position={[0, 10, 0]} angle={0.5} penumbra={1} /> */}
+
+            {/* Shadow caster for props; frustum is sized to cover the sections ahead of the player */}
+            <directionalLight
+                position={[2, 6, 4]}
+                color="#a8b8ff"
+                intensity={darkMode ? 0.45 : 0.75}
+                castShadow
+                shadow-mapSize={[2048, 2048]}
+                shadow-camera-left={-8}
+                shadow-camera-right={8}
+                shadow-camera-top={20}
+                shadow-camera-bottom={-20}
+                shadow-camera-near={0.5}
+                shadow-camera-far={40}
+                shadow-bias={-0.0005}
+                shadow-normalBias={0.02}
+            />
 
             <AnimatedPointLights />
 
@@ -154,10 +188,7 @@ function GameCanvas({ landingAnimationMode }) {
                 gravity={[0, -15, 0]}
                 contactMaterial={{ friction: 0.5 }}
             >
-                <Debug
-                    color="black"
-                    scale={debug ? 1 : 0}
-                >
+                <DebugWrapper enabled={debug}>
                     <Suspense>
                         <Sections />
                         <Floor position={[0, -0.125, 0]} />
@@ -168,7 +199,7 @@ function GameCanvas({ landingAnimationMode }) {
                             <Player position={[0, 1, 0]} />
                         </Suspense>
                     )}
-                </Debug>
+                </DebugWrapper>
             </Physics>
 
             {cameraMode === "Free" && <OrbitControls target={[0, 1, 0]} />}

@@ -1,18 +1,12 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import {
-    useBox,
-    useCompoundBody,
-    useSphere,
-    useCylinder,
-} from "@react-three/cannon";
-import { useGLTF, useAnimations, Text } from "@react-three/drei";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { useCompoundBody, useCylinder } from "@react-three/cannon";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { Vector3 } from "three";
 import * as THREE from "three";
-import { useKeyboard } from "@/hooks/useKeyboard";
+import { useKeyboardRef } from "@/hooks/useKeyboard";
 
 import { useControllerStore } from "@/hooks/useControllerStore";
-import { useGameStore, getActiveZone } from "@/hooks/useGameStore";
+import { useGameStore, getRunStep } from "@/hooks/useGameStore";
 
 import { ModelFpsRigAkm } from "@/components/Models/FpsRigAkm";
 import useTouchControlsStore from "@/hooks/useTouchControlsStore";
@@ -26,6 +20,15 @@ import useUserDetails from "@articles-media/articles-dev-box/useUserDetails";
 import { ModelHoodieCharacter } from "../Models/HoodieCharacter";
 import { ModelBloodSplat } from "../Models/BloodSplat";
 import RollManager from "./RollManager";
+import BlobShadow from "./BlobShadow";
+import smoothPlayerPosition from "@/util/smoothPlayerPosition";
+import {
+    installMovementDiagnostics,
+    recordMovementCommand,
+    recordMovementFrame,
+    recordPhysicsSample,
+    recordPlayerCommit,
+} from "@/util/movementDiagnostics";
 
 // import getAssetSource from "@/util/getAssetSource";
 import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
@@ -33,13 +36,7 @@ import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 const JUMP_FORCE = 6;
 const SPEED = 4;
 const MOVE_RANGE = 2.5;
-
-let lastLocation;
-
-function myToFixed(i, digits) {
-    var pow = Math.pow(10, digits);
-    return Math.floor(i * pow) / pow;
-}
+const WEAPON_WORLD_Y = 0.4;
 
 function playSound(audioFile, modifier = 0.5) {
     // REMOVED: if (safeMode) return
@@ -55,29 +52,27 @@ function playSound(audioFile, modifier = 0.5) {
 }
 
 function GunFlickerForJump() {
-    const { jump } = useKeyboard();
-    const { touchControls } = useTouchControlsStore();
-    const [visible, setVisible] = useState(false);
-    const timeoutRef = useRef(null);
+    const keys = useKeyboardRef();
+    const wasJumping = useRef(false);
+    const flickerUntil = useRef(0);
     const lightRef = useRef();
 
-    useEffect(() => {
-        if (jump || touchControls.jump) {
-            setVisible(true);
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-            timeoutRef.current = setTimeout(() => {
-                setVisible(false);
-            }, 400);
+    useFrame(({ clock }) => {
+        const jumping = Boolean(
+            keys.current.jump ||
+            useTouchControlsStore.getState().touchControls.jump,
+        );
+        if (jumping && !wasJumping.current) {
+            flickerUntil.current = clock.elapsedTime + 0.4;
         }
-    }, [jump, touchControls.jump]);
-
-    useFrame(() => {
-        if (visible && lightRef.current) {
-            lightRef.current.intensity = Math.random() * 10;
+        wasJumping.current = jumping;
+        if (lightRef.current) {
+            lightRef.current.visible = clock.elapsedTime < flickerUntil.current;
+            if (lightRef.current.visible) {
+                lightRef.current.intensity = Math.random() * 10;
+            }
         }
     });
-
-    if (!visible) return null;
 
     return (
         <pointLight
@@ -86,29 +81,24 @@ function GunFlickerForJump() {
             intensity={5}
             distance={5}
             color="orange"
+            visible={false}
         />
     );
 }
 
 function PlayerBase(props) {
+    useEffect(() => installMovementDiagnostics(), []);
+    useEffect(() => {
+        if (process.env.NODE_ENV === "development") recordPlayerCommit();
+    });
     const debug = useStore((state) => state.debug);
 
-    const {
-        cameraMode,
-        setCameraMode,
-        teleport,
-        setTeleport,
-        setPlayerLocation,
-        maxHeight,
-        setMaxHeight,
-        shift,
-        setShift,
-        addDistance,
-        gameOver,
-        setGameOver,
-        setHighScore,
-        freeze,
-    } = useGameStore();
+    // Selectors only; subscribing to the whole store re-renders on every distance tick
+    const teleport = useGameStore((s) => s.teleport);
+    const setTeleport = useGameStore((s) => s.setTeleport);
+    const gameOver = useGameStore((s) => s.gameOver);
+    const setGameOver = useGameStore((s) => s.setGameOver);
+    const setHighScore = useGameStore((s) => s.setHighScore);
     const isRolling = useGameStore((state) => state.isRolling);
 
     const {
@@ -127,12 +117,10 @@ function PlayerBase(props) {
         token: userToken,
     });
 
-    const { touchControls, setTouchControls } = useTouchControlsStore();
+    const setTouchControls = useTouchControlsStore((s) => s.setTouchControls);
 
-    const { controllerState, setControllerState } = useControllerStore();
-
-    const [showBlood, setShowBlood] = useState(false);
-    const [bloodScale, setBloodScale] = useState(0);
+    const bloodElapsed = useRef(0);
+    const bloodRef = useRef();
 
     // const saferMode = useGameStore((state) => state.saferMode);
     const safeMode = useStore((state) => state.safeMode);
@@ -184,25 +172,6 @@ function PlayerBase(props) {
         }
     }
 
-    // Attach event listeners when the component mounts
-    useEffect(() => {
-        if (controllerState.axes && Math.abs(controllerState?.axes[0]) > 0.3) {
-            if (controllerState?.axes[0] > 0) {
-                api.position.set([-1, 5, 0]);
-            } else {
-                api.position.set([1, 5, 0]);
-            }
-        }
-    }, [controllerState]);
-
-    useEffect(() => {
-        if (teleport) {
-            console.log("Teleport has been called!", teleport);
-            api.position.set(teleport[0], teleport[1], teleport[2]);
-            setTeleport(false);
-        }
-    }, [teleport]);
-
     function playDeathSound() {
         const safeMode = useStore.getState().safeMode;
         console.log("Playing death sound, safe mode is", safeMode);
@@ -224,14 +193,11 @@ function PlayerBase(props) {
         });
     }
 
-    const {
-        moveBackward,
-        moveForward,
-        moveRight,
-        moveLeft,
-        jump,
-        shift: isShifting,
-    } = useKeyboard();
+    const keys = useKeyboardRef();
+    const directionRef = useRef(new Vector3());
+    const visualRef = useRef();
+    const visualPosition = useRef(new Vector3(0, 2, 0));
+    const jumpPending = useRef(false);
 
     const { camera, size } = useThree();
 
@@ -255,8 +221,11 @@ function PlayerBase(props) {
         mass: 1,
         position: [0, 2, 0],
         angularFactor: [0, 0, 0],
+        linearDamping: 0,
+        linearFactor: [1, 1, 0],
         material: {
-            friction: 0.5,
+            // Lateral speed is controlled by input; floor friction would brake it.
+            friction: 0,
         },
         // Define the shapes that make up the capsule
         shapes: [
@@ -279,6 +248,7 @@ function PlayerBase(props) {
         onCollide: (e) => {
             if (
                 e.body.userData.isObstacle &&
+                !useGameStore.getState().gameOver &&
                 e.body.userData.id !== lastObstacleRef.current
             ) {
                 console.log("Player hit an obstacle", e?.body.userData);
@@ -292,6 +262,14 @@ function PlayerBase(props) {
             }
         },
     }));
+
+    useEffect(() => {
+        if (teleport) {
+            api.position.set(teleport[0], teleport[1], teleport[2]);
+            jumpPending.current = false;
+            setTeleport(false);
+        }
+    }, [teleport, api.position, setTeleport]);
 
     // External hitbox for when not rolling
     const rollRef = useRef(isRolling);
@@ -309,11 +287,12 @@ function PlayerBase(props) {
         // type: 'Static',
         isTrigger: true,
         onCollide: (e) => {
+            // collide fires every physics step while overlapping; gameOver guard stops repeated sound/fetch
             if (
                 !rollRef.current &&
-                e.body.userData.isObstacle
-                //  &&
-                //  e.body.userData.id !== lastObstacleRef.current
+                e.body.userData.isObstacle &&
+                !useGameStore.getState().gameOver &&
+                e.body.userData.id !== lastObstacleRef.current
             ) {
                 console.log(
                     "Player hit an obstacle (upper hitbox)",
@@ -331,21 +310,38 @@ function PlayerBase(props) {
         },
     }));
 
-    const material = new THREE.MeshPhysicalMaterial({
-        color: "green",
-        opacity: debug ? 0.5 : 0,
-        transparent: true,
-    });
+    const material = useMemo(
+        () =>
+            new THREE.MeshPhysicalMaterial({
+                color: "green",
+                opacity: debug ? 0.5 : 0,
+                transparent: true,
+            }),
+        [debug],
+    );
 
     const vel = useRef([0, 0, 0]);
+    const lastMovementX = useRef(0);
     useEffect(() => {
-        api.velocity.subscribe((v) => (vel.current = v));
+        return api.velocity.subscribe((v) => {
+            vel.current = v;
+            // Acknowledge the jump before allowing another one. Old grounded
+            // samples can arrive while the jump command is still in flight.
+            if (v[1] > 0.05) jumpPending.current = false;
+        });
     }, [api.velocity]);
 
-    const pos = useRef([0, 0, 0]);
+    const pos = useRef([0, 2, 0]);
+    const lastHitboxPosition = useRef([0, 2, 0]);
     useEffect(() => {
-        api.position.subscribe((p) => (pos.current = p));
+        return api.position.subscribe((p) => {
+            pos.current = p;
+            if (process.env.NODE_ENV === "development") recordPhysicsSample();
+        });
     }, [api.position]);
+
+    const shadowRef = useRef();
+    const weaponRef = useRef();
 
     // useEffect(() => {
     //     console.log("Shift", isShifting)
@@ -363,30 +359,64 @@ function PlayerBase(props) {
     //     }
     // }, [isShifting, api])
 
-    useEffect(() => {
-        if (gameOver) {
-            const timeout = setTimeout(() => {
-                setShowBlood(true);
-            }, 1000);
-            return () => clearTimeout(timeout);
-        } else {
-            setShowBlood(false);
-            setBloodScale(0);
-        }
-    }, [gameOver]);
-
     useFrame((state, delta) => {
-        // setDistance((prevDistance) => prevDistance + 1 * delta)
+        const { jump } = keys.current;
+        const { touchControls, movementInputs } =
+            useTouchControlsStore.getState();
+        const {
+            shift,
+            cameraMode,
+            gameOver: ended,
+            freeze,
+            distance,
+            addDistance,
+        } = useGameStore.getState();
 
-        if (!gameOver && !freeze) {
-            const currentDistance = useGameStore.getState().distance;
-            const speedMultiplier =
-                getActiveZone(currentDistance).speedMultiplier ?? 1;
-            addDistance(0.1 * speedMultiplier);
+        // Sections runs first at priority -1, using this same distance and delta.
+        // Keep scoring here so it starts only once the player has loaded.
+        if (!ended && !freeze) addDistance(getRunStep(distance, delta));
+
+        const renderedPosition = smoothPlayerPosition(
+            visualPosition.current,
+            pos.current,
+            delta,
+        );
+        if (visualRef.current)
+            visualRef.current.position.copy(renderedPosition);
+
+        // Weapon follows the player on X/Z only; Y is fixed in world space
+        if (weaponRef.current) {
+            weaponRef.current.position.set(
+                renderedPosition.x,
+                WEAPON_WORLD_Y,
+                renderedPosition.z + calculateChaserDistance(),
+            );
         }
 
-        if (showBlood && bloodScale < 1) {
-            setBloodScale((prev) => Math.min(1, prev + 1 * delta));
+        if (shadowRef.current) {
+            // Body Y when standing: capsule bottom sphere (r=0.2) resting on the floor at y=0
+            const restingY = cylinderHeight / 2 - 0.125 + 0.2;
+            const airHeight = Math.max(0, renderedPosition.y - restingY);
+            const fade = Math.max(0.3, 1 - airHeight / 3);
+
+            shadowRef.current.position.set(
+                renderedPosition.x,
+                0.015,
+                renderedPosition.z,
+            );
+            shadowRef.current.scale.setScalar(fade);
+            shadowRef.current.material.opacity = 0.6 * fade;
+        }
+
+        if (bloodRef.current) {
+            bloodElapsed.current = gameOver ? bloodElapsed.current + delta : 0;
+            const bloodScale = Math.min(
+                1,
+                Math.max(0, bloodElapsed.current - 1),
+            );
+            bloodRef.current.visible =
+                Boolean(gameOver) && bloodElapsed.current >= 1;
+            bloodRef.current.scale.set(bloodScale, 1, bloodScale);
         }
 
         if (cameraMode == "Player") {
@@ -397,63 +427,22 @@ function PlayerBase(props) {
                 // cameraZOffset = 7.5
             }
 
-            camera.position.copy(
-                new Vector3(0, 2, pos.current[2] + cameraZOffset),
-            );
-            camera.lookAt(new Vector3(0, 1, pos.current[2] + 0));
+            camera.position.set(0, 2, renderedPosition.z + cameraZOffset);
+            camera.lookAt(0, 1, renderedPosition.z);
         }
 
-        let posX = 0;
-        if (pos.current[0]) {
-            posX = myToFixed(pos.current[0], 2);
-        }
-
-        // console.log(pos.current[1])
-        let posY = 0;
-        if (pos.current[1]) {
-            posY = myToFixed(pos.current[1], 2);
-        }
-
-        let posZ = 0;
-        if (pos.current[2]) {
-            posZ = myToFixed(pos.current[2], 2);
-        }
-
-        // console.log(posX)
-
-        let newLocation = new Vector3(posX, posY, posZ);
-
-        if (JSON.stringify(lastLocation) !== JSON.stringify(newLocation)) {
-            // console.log(newLocation, lastLocation)
-            setPlayerLocation(newLocation);
-            lastLocation = newLocation;
-        }
-        // else {
-        //     console.log("location unchanged")
-        // }
-
-        if (pos.current[1] > maxHeight) {
-            setMaxHeight(pos.current[1].toFixed(2));
-        }
-
-        const direction = new Vector3();
-
-        const frontVector = new Vector3(
-            0,
-            (moveBackward ? -1 : 0) - (moveForward ? -1 : 0),
-            0,
-        );
-
-        const sideVector = new Vector3(
-            (moveLeft || touchControls.left ? 1 : 0) -
-                (moveRight || touchControls.right ? 1 : 0),
-            0,
-            0,
-        );
-
+        // Not writing player position/maxHeight to the store per frame: nothing reads them and each write re-rendered every store subscriber.
+        // Keyboard A/D and the joystick both write these same shared flags.
+        const inputAxis =
+            (touchControls.right ? 1 : 0) - (touchControls.left ? 1 : 0);
+        // Read controller input without subscribing React to gamepad polling.
+        const controllerAxis =
+            useControllerStore.getState().controllerState.axes?.[0] ?? 0;
+        const movementAxis =
+            inputAxis || (Math.abs(controllerAxis) > 0.3 ? controllerAxis : 0);
+        const direction = directionRef.current;
         direction
-            .subVectors(frontVector, sideVector)
-            .normalize()
+            .set(movementAxis, 0, 0)
             .multiplyScalar(
                 (rollRef.current ? SPEED / 2 : SPEED) * (shift ? 2 : 1),
             )
@@ -471,10 +460,45 @@ function PlayerBase(props) {
         //     return
         // }
 
-        api.velocity.set(direction.x, vel.current[1], 0);
-        hitboxApi.position.set(pos.current[0], pos.current[1], pos.current[2]);
+        // Mass is 1: an X-only impulse changes lateral velocity without
+        // overwriting gravity/jump velocity with an older worker sample.
+        const velocityChange = direction.x - lastMovementX.current;
+        if (velocityChange !== 0) {
+            api.applyImpulse([velocityChange, 0, 0], [0, 0, 0]);
+            if (process.env.NODE_ENV === "development") recordMovementCommand();
+        }
+        lastMovementX.current = direction.x;
+        if (process.env.NODE_ENV === "development") {
+            recordMovementFrame(
+                delta,
+                movementInputs.keyboard,
+                movementInputs.touch,
+                controllerAxis,
+                pos.current[0],
+                renderedPosition.x,
+            );
+        }
+        const hitboxPosition = lastHitboxPosition.current;
+        if (
+            pos.current[0] !== hitboxPosition[0] ||
+            pos.current[1] !== hitboxPosition[1] ||
+            pos.current[2] !== hitboxPosition[2]
+        ) {
+            hitboxApi.position.set(
+                pos.current[0],
+                pos.current[1],
+                pos.current[2],
+            );
+            hitboxPosition[0] = pos.current[0];
+            hitboxPosition[1] = pos.current[1];
+            hitboxPosition[2] = pos.current[2];
+        }
 
-        if ((jump || touchControls.jump) && Math.abs(vel.current[1]) < 0.05) {
+        if (
+            (jump || touchControls.jump) &&
+            !jumpPending.current &&
+            Math.abs(vel.current[1]) < 0.05
+        ) {
             console.log("Jump understood", pos.current[1]);
 
             if (pos.current[1] > 1) {
@@ -489,28 +513,21 @@ function PlayerBase(props) {
                 playSound("audio/mixkit-arrow-whoosh-1491.mp3", 1);
             }
 
-            api.velocity.set(vel.current[0], JUMP_FORCE, vel.current[2]);
+            api.applyImpulse([0, JUMP_FORCE - vel.current[1], 0], [0, 0, 0]);
+            jumpPending.current = true;
 
-            if (
-                touchControls.jump
-                // ||
-                // touchControls.left
-                // ||
-                // touchControls.right
-            ) {
-                setTouchControls({
-                    ...touchControls,
-                    jump: false,
-                    // left: false,
-                    // right: false
-                });
-            }
+            if (touchControls.jump) setTouchControls({ jump: false });
         }
-    });
+    }, -0.5);
 
     return (
         <group>
             <RollManager />
+
+            <BlobShadow
+                shadowRef={shadowRef}
+                size={1.1}
+            />
 
             <mesh ref={hitboxRef}>
                 {debug && (
@@ -532,6 +549,13 @@ function PlayerBase(props) {
                 // {...props}
                 // position={position}
                 material={material}
+            />
+
+            {/* The worker owns the collider matrix; visuals follow it independently. */}
+            <group
+                ref={visualRef}
+                name="player-visual"
+                position={[0, 2, 0]}
             >
                 {/* <boxGeometry
                     args={[1, 1]}
@@ -542,54 +566,52 @@ function PlayerBase(props) {
                     rotation={[0, -Math.PI, 0]}
                 />
 
-                {showBlood && !safeMode && (
-                    <ModelBloodSplat
+                {!safeMode && (
+                    <group
+                        ref={bloodRef}
+                        scale={[0, 1, 0]}
                         position={[-0.1, -cylinderHeight / 2 - 0.08, 1.5]}
                         rotation={[0, (-140 * Math.PI) / 180, 0]}
-                        scale={[bloodScale, 1, bloodScale]}
-                    />
+                        visible={false}
+                    >
+                        <ModelBloodSplat />
+                    </group>
                 )}
-
-                {/* TODO - Reverse Y good for now but could be improved for performance I am guessing */}
-                <group
-                    position={[
-                        0,
-                        -pos.current[1] + 0.5,
-                        calculateChaserDistance(),
-                    ]}
-                >
-                    {safeMode ? (
-                        <>
-                            <ModelHand
-                                position={[-0.18, -0.25, 3.5]}
-                                rotation={[0, degToRad(90), 0]}
-                                scale={0.1}
-                            />
-
-                            <ModelHand
-                                position={[0.18, -0.25, 3.5]}
-                                rotation={[0, degToRad(90), 0]}
-                                scale={[0.1, 0.1, -0.1]}
-                            />
-                        </>
-                    ) : (
-                        <>
-                            <ModelFpsRigAkm
-                                position={[-0.18, 0.3, 3.5]}
-                                rotation={[0, Math.PI / 2, 0]}
-                                scale={0.1}
-                            />
-                            <GunFlickerForJump />
-                        </>
-                    )}
-                </group>
 
                 {/* <Text
                     color="black" position={[0, -0.7, 0]} scale={0.3} anchorX="center" anchorY="middle"
                 >
                     Player ({character.model})
                 </Text> */}
-            </mesh>
+            </group>
+
+            {/* Not a child of the physics body: position is driven in useFrame so jumps never move it */}
+            <group ref={weaponRef}>
+                {safeMode ? (
+                    <>
+                        <ModelHand
+                            position={[-0.18, -0.25, 3.5]}
+                            rotation={[0, degToRad(90), 0]}
+                            scale={0.1}
+                        />
+
+                        <ModelHand
+                            position={[0.18, -0.25, 3.5]}
+                            rotation={[0, degToRad(90), 0]}
+                            scale={[0.1, 0.1, -0.1]}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <ModelFpsRigAkm
+                            position={[-0.18, 0.3, 3.5]}
+                            rotation={[0, Math.PI / 2, 0]}
+                            scale={0.1}
+                        />
+                        <GunFlickerForJump />
+                    </>
+                )}
+            </group>
         </group>
     );
 }

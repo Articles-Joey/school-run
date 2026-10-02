@@ -20,6 +20,8 @@ export function ModelChair(props) {
             dispose={null}
         >
             <mesh
+                castShadow
+                receiveShadow
                 geometry={nodes["chair(Clone)"].geometry}
                 material={materials.wood}
             />

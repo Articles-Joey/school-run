@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 export default function LeftPanelContent(props) {
     const debug = useStore((state) => state.debug);
 
-    const distance = useGameStore((state) => state.distance);
+    const distance = useGameStore((state) => Math.round(state.distance));
     const highScore = useGameStore((state) => state.highScore);
 
     return (

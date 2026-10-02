@@ -1,4 +1,5 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { memo, useMemo, useRef, useState } from "react";
+import { useFrame } from "@react-three/fiber";
 
 import { ModelDoorway } from "@/components/Models/doorway";
 import { degToRad } from "three/src/math/MathUtils.js";
@@ -9,14 +10,10 @@ import StoneBrickWall from "./StoneBrickWall";
 import WhiteTileFloor from "./WhiteTileFloor";
 import Ceiling from "./Ceiling";
 
-export default function Walls({ position }) {
-    const ref = useRef();
-
+// Section moves every frame; keep the static scene from re-rendering with it
+const WallsContent = memo(function WallsContent() {
     return (
-        <group
-            ref={ref}
-            position={[0, 0, position[2]]}
-        >
+        <>
             <StoneBrickWall
                 rotation={[0, -Math.PI / 2, 0]}
                 position={[4.5, 1.5, 0]}
@@ -58,6 +55,23 @@ export default function Walls({ position }) {
 
             <WallScene side="left" />
             <WallScene side="right" />
+        </>
+    );
+});
+
+export default function Walls({ position }) {
+    const ref = useRef();
+
+    useFrame(() => {
+        if (ref.current) ref.current.position.z = position[2];
+    });
+
+    return (
+        <group
+            ref={ref}
+            position={[0, 0, position[2]]}
+        >
+            <WallsContent />
         </group>
     );
 }

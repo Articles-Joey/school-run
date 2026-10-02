@@ -11,6 +11,7 @@ import DarkModeHandler from "@articles-media/articles-dev-box/DarkModeHandler";
 import GlobalBody from "@articles-media/articles-dev-box/GlobalBody";
 // import ToontownModeHandler from '@articles-media/articles-dev-box/ToontownModeHandler';
 import GlobalClientModals from "@articles-media/articles-dev-box/GlobalClientModals";
+import HotkeyHandler from "@articles-media/articles-dev-box/HotkeyHandler";
 
 import SchoolRunContentWarning from "@/components/ContentWarning";
 import { useGameStore } from "@/hooks/useGameStore";
@@ -37,14 +38,15 @@ export default function LayoutClient({ children }) {
         },
         [],
     );
-    useHotkeys(
-        "r",
-        () => {
-            console.log("Reloading Scene");
-            useStore.getState().reloadScene();
-        },
-        [],
-    );
+
+    // useHotkeys(
+    //     "r",
+    //     () => {
+    //         console.log("Reloading Scene");
+    //         useStore.getState().reloadScene();
+    //     },
+    //     [],
+    // );
 
     return (
         <>
@@ -52,6 +54,10 @@ export default function LayoutClient({ children }) {
             <DarkModeHandler useStore={useStore} />
             <AudioHandler />
             <Suspense>
+                <HotkeyHandler
+                    useStore={useStore}
+                    useHotkeys={useHotkeys}
+                />
                 <SchoolRunContentWarning />
                 <GlobalClientModals
                     useStore={useStore}

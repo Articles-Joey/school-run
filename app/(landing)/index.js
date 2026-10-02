@@ -74,7 +74,7 @@ export default function SchoolRunGameLandingPage() {
             <PageTemplateLandingPage
                 useSocketStore={useSocketStore}
                 useStore={useStore}
-                RotatingMascot={RotatingMascot}
+                RotatingMascot={<RotatingMascot />}
                 Link={Link}
                 // logoImage={logo.src}
                 LandingBackgroundAnimation={<LandingBackgroundAnimation />}
