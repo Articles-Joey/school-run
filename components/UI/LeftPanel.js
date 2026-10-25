@@ -9,9 +9,6 @@ import { useAudioStore } from "@/hooks/useAudioStore";
 export default function LeftPanelContent(props) {
     const debug = useStore((state) => state.debug);
 
-    const distance = useGameStore((state) => Math.round(state.distance));
-    const highScore = useGameStore((state) => state.highScore);
-
     return (
         <div className="w-100">
             <div className="card card-articles card-sm">
@@ -25,28 +22,41 @@ export default function LeftPanelContent(props) {
                 </div>
             </div>
 
-            <div className="card card-articles card-sm">
-                <div className="card-body d-flex justify-content-between">
-                    <div>
-                        {/* <div className="small text-muted">playerData</div> */}
+            <ScoreCard />
 
-                        <div className="small">
-                            {/* <div>X: {playerLocation?.x}</div> */}
-                            {/* <div>Y: {playerLocation?.y}</div> */}
-                            {/* <div>Z: {playerLocation.z}</div> */}
+            {/* Debug Controls */}
+            {debug && <DebugPanel />}
+        </div>
+    );
+}
 
-                            <div>Score: {distance.toFixed(0)}</div>
-                            <div className="mb-0">
-                                High Score: {(+highScore || 0)?.toFixed(0)}
-                            </div>
+function ScoreCard() {
+    const distance = useGameStore((state) => Math.round(state.distance));
+    const highScore = useGameStore((state) => state.highScore);
 
-                            {/* <div>Shift: {shift ? 'True' : 'False'}</div> */}
+    return (
+        <div className="card card-articles card-sm">
+            <div className="card-body d-flex justify-content-between">
+                <div>
+                    {/* <div className="small text-muted">playerData</div> */}
 
-                            {/* <div className="small">Character Animation: {characterAnimation ? characterAnimation : 'None'}</div> */}
+                    <div className="small">
+                        {/* <div>X: {playerLocation?.x}</div> */}
+                        {/* <div>Y: {playerLocation?.y}</div> */}
+                        {/* <div>Z: {playerLocation.z}</div> */}
+
+                        <div>Score: {distance.toFixed(0)}</div>
+                        <div className="mb-0">
+                            High Score: {(+highScore || 0)?.toFixed(0)}
                         </div>
-                    </div>
 
-                    {/* <div>
+                        {/* <div>Shift: {shift ? 'True' : 'False'}</div> */}
+
+                        {/* <div className="small">Character Animation: {characterAnimation ? characterAnimation : 'None'}</div> */}
+                    </div>
+                </div>
+
+                {/* <div>
                         <div className="small text-muted">maxHeight</div>
                         <div>Y: {maxHeight}</div>
                         <ArticlesButton
@@ -58,11 +68,7 @@ export default function LeftPanelContent(props) {
                             Reset
                         </ArticlesButton>
                     </div> */}
-                </div>
             </div>
-
-            {/* Debug Controls */}
-            {debug && <DebugPanel />}
         </div>
     );
 }

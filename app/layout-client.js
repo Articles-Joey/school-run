@@ -177,8 +177,8 @@ export default function LayoutClient({ children }) {
                     }}
                     infoModalConfig={{
                         previewImage: darkMode
-                            ? "img/preview.webp"
-                            : "img/preview.webp",
+                            ? "img/previews/preview.webp"
+                            : "img/previews/preview.webp",
                         appendContent: (
                             <>
                                 <div className="mb-2">

@@ -5,7 +5,7 @@ const configDirectory = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    transpilePackages: ['@articles-media/articles-dev-box'],
+    transpilePackages: ["@articles-media/articles-dev-box"],
     poweredByHeader: false,
     reactCompiler: true,
     // Only needed when using Turbopack when using linked packages like '@articles-media/articles-dev-box' as opposed to installed from npm

@@ -1,6 +1,6 @@
 # School Run
 
-![Game Preview](/public/img/preview.webp)
+![Game Preview](/public/img/previews/preview.webp)
 
 Get as far as you can in this endless runner game, dodging obstacles and collecting items along the way! Compete with friends and aim for the top of the leaderboard.
 
@@ -11,11 +11,11 @@ First you will need to setup a .env file from the .env.sample provided.
 Then development server can be run:
 
 ```bash
-npm i
+pnpm i
 ```
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ## Scripts
@@ -25,6 +25,12 @@ In the scripts folder is reset_public and sync_to_s3. This is only for Articles 
 ## Content Warning
 
 This game contains a opt in graphic mode with depictions of violence, including school shooting scenarios, which some players may find deeply disturbing. It features themes of gun violence, psychological trauma, and mature language. Viewer and player discretion is strongly advised.
+
+## Previews
+
+![Game Preview](/public/img/previews/preview-1.webp)
+![Game Preview](/public/img/previews/preview-2.webp)
+![Game Preview](/public/img/previews/preview-3.webp)
 
 ## Attributions
 

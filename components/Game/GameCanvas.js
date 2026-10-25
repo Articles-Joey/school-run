@@ -76,6 +76,9 @@ function GameCanvas({ landingAnimationMode }) {
     const debug = useStore((state) => state.debug);
     const darkMode = useStore((state) => state.darkMode);
     const showStats = useStore((state) => state?.debugConfig?.showStats);
+    const showPhysicsDebug = useStore(
+        (state) => state?.debugConfig?.showPhysicsDebug,
+    );
     const cameraMode = useGameStore((state) => state.cameraMode);
     const graphicsQuality = useStore((state) => state.graphicsQuality);
 
@@ -190,7 +193,7 @@ function GameCanvas({ landingAnimationMode }) {
                     interpolate
                     updatePriority={-1}
                     colliders={false}
-                    debug={debug}
+                    debug={showPhysicsDebug}
                 >
                     <ScrollingPhysics>
                         <Suspense>

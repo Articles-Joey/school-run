@@ -54,8 +54,7 @@ export default function RootLayout({ children }) {
 
             <body
             // className={`${geistSans.variable} ${geistMono.variable}`}
-            >                
-
+            >
                 <Suspense>
                     {process.env.NEXT_PUBLIC_ENABLE_ARTICLES && (
                         <SocketLogicHandler />

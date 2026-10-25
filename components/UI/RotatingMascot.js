@@ -8,7 +8,6 @@ export default function RotatingMascot() {
         <div className="rotating-mascot-container w-100 h-100">
             <Suspense>
                 <Canvas shadows>
-
                     <OrbitControls
                         autoRotate
                         enableZoom={false}
@@ -30,7 +29,6 @@ export default function RotatingMascot() {
                     <Suspense fallback={null}>
                         <ModelBackpack scale={3} />
                     </Suspense>
-                    
                 </Canvas>
             </Suspense>
         </div>

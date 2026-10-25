@@ -12,7 +12,7 @@ import useUserGameScore from "@/hooks/useUserGameScore";
 import { useStore } from "@/hooks/useStore";
 import RotatingMascot from "@/components/UI/RotatingMascot";
 import LandingBackgroundAnimation from "@/components/Game/LandingBackgroundAnimation";
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 
 // import getAssetSource from "@/util/getAssetSource";
 import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
@@ -23,7 +23,7 @@ import useUserToken from "@articles-media/articles-dev-box/useUserToken";
 import PageTemplateLandingPage from "@articles-media/articles-dev-box/PageTemplateLandingPage";
 import { useAudioStore } from "@/hooks/useAudioStore";
 
-const background_link = getAssetSource(`img/preview.webp`);
+const background_link = getAssetSource(`img/previews/preview.webp`);
 
 export default function SchoolRunGameLandingPage() {
     // const connected = useSocketStore(state => state.connected);
@@ -82,14 +82,13 @@ export default function SchoolRunGameLandingPage() {
                 LandingBackgroundAnimation={<LandingBackgroundAnimation />}
                 CardBodyOverride={
                     <>
-                        <Box 
+                        <Box
                             className="card-body"
-                            sx={{ 
+                            sx={{
                                 p: 2,
                                 textAlign: "center",
                             }}
                         >
-                            
                             <div className="fw-bold mb-1 small text-center d-flex justify-content-center align-items-center">
                                 <span
                                     className=""
@@ -206,7 +205,7 @@ export default function SchoolRunGameLandingPage() {
                                 justifyContent: "center",
                                 alignItems: "center",
                                 border: "5px solid rgb(68, 28, 5)",
-                                color: "white"
+                                color: "white",
                             }}
                         >
                             <Box
