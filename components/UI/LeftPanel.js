@@ -4,6 +4,7 @@ import { useStore } from "@/hooks/useStore";
 import { DebugPanel } from "./DebugPanel";
 import GameMenuPrimaryButtonGroup from "@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup";
 import { useRouter } from "next/navigation";
+import { useAudioStore } from "@/hooks/useAudioStore";
 
 export default function LeftPanelContent(props) {
     const debug = useStore((state) => state.debug);
@@ -19,6 +20,7 @@ export default function LeftPanelContent(props) {
                         useStore={useStore}
                         type="GameMenu"
                         useRouter={useRouter}
+                        useAudioStore={useAudioStore}
                     />
                 </div>
             </div>

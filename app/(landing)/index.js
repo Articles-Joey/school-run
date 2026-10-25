@@ -21,6 +21,7 @@ import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
 import useUserToken from "@articles-media/articles-dev-box/useUserToken";
 import PageTemplateLandingPage from "@articles-media/articles-dev-box/PageTemplateLandingPage";
+import { useAudioStore } from "@/hooks/useAudioStore";
 
 const background_link = getAssetSource(`img/preview.webp`);
 
@@ -74,6 +75,7 @@ export default function SchoolRunGameLandingPage() {
             <PageTemplateLandingPage
                 useSocketStore={useSocketStore}
                 useStore={useStore}
+                useAudioStore={useAudioStore}
                 RotatingMascot={<RotatingMascot />}
                 Link={Link}
                 // logoImage={logo.src}
