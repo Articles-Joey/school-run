@@ -19,6 +19,13 @@ export const useAudioStore = create()(
 
             audioSettings: initialAudioSettings,
             setAudioSettings: (newValue) => set({ audioSettings: newValue }),
+            toggleAudio: () =>
+                set((state) => ({
+                    audioSettings: {
+                        ...state.audioSettings,
+                        enabled: !state.audioSettings.enabled,
+                    },
+                })),
             resetAudioSettings: () =>
                 set({
                     audioSettings: initialAudioSettings,
@@ -26,7 +33,7 @@ export const useAudioStore = create()(
         }),
         {
             name: "audio-store", // name of the item in the storage (must be unique)
-            version: 2,
+            version: 3,
             onRehydrateStorage: () => (state) => {
                 state.setHasHydrated(true);
             },
